@@ -6,10 +6,11 @@
 class MonacoCssEdditor : public Wt::WContainerWidget
 {
     public:
-        MonacoCssEdditor();
+        MonacoCssEdditor(std::string text_content = "");
         void setDarkTheme(bool dark);
         void setCssEdditorText(std::string text);
     private:
         Wt::JSignal<std::string> js_signal_text_changed_;
         void cssEdditorTextChanged(const std::string text);
+        std::string current_text_;
 };

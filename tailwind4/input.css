@@ -12,8 +12,8 @@
 
 /* Source additional templates and styles */
 @source "../xml-templates";
-@source "../app-stylus/src";
-@source "../app-tailwind-classes/src";
+@source "../app-stylus/";
+@source "../app-tailwind-classes/";
 
 /* Define custom variants */
 @custom-variant dark (&:where(.dark, .dark *));

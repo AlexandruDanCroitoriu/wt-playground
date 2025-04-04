@@ -7,6 +7,7 @@ function initializeCssEditor(elementId, edditor_content) {
         language: 'css',
         value: edditor_content,
         theme: 'vs-dark',
+        wordWrap: 'on' 
       });
   
       // Event listener for content changes
@@ -15,7 +16,6 @@ function initializeCssEditor(elementId, edditor_content) {
       });
     });
 }
-
 
   
 function updateCssEditorValue(newValue) {

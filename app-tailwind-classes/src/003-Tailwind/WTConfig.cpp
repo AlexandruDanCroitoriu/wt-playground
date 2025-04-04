@@ -349,8 +349,8 @@ void WTConfig::writeConfig()
     
     file << "/* Source additional templates and styles */\n";
     file << "@source \"../xml-templates\";\n";
-    file << "@source \"../app-stylus/src\";\n";
-    file << "@source \"../app-tailwind-classes/src\";\n\n";
+    file << "@source \"../app-stylus/\";\n";
+    file << "@source \"../app-tailwind-classes/\";\n\n";
     
     file << "/* Define custom variants */\n";
     file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
