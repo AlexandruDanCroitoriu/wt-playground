@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+.bg-gradient-dark {
+    @apply bg-gradient-to-r from-slate-900 to-slate-700;
+}
