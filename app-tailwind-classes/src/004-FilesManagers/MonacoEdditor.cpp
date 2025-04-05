@@ -24,7 +24,7 @@ R"(
     require(['vs/editor/editor.main'], function () {
         window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
         window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
-            language: ')" + language + R"("',
+            language: ')" + language + R"(',
             value: `)" + current_text_ + R"(`,
             theme: 'vs-dark',
             wordWrap: 'on',

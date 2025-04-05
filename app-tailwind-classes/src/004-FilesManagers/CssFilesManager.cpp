@@ -30,7 +30,7 @@ CssFilesManager::CssFilesManager()
 
     setTreeFolderWidgets();
 
-    editor_ = addWidget(std::make_unique<MonacoEdditor>(default_css_path_ +"tests/0.css", "css"));
+    editor_ = addWidget(std::make_unique<MonacoEdditor>(default_css_path_ +folders_[0].first + "/" + folders_[0].second[0], "css"));
     editor_->avalable_save().connect(this, [=] (bool avalable) {
         if(avalable)
         {
@@ -56,12 +56,12 @@ void CssFilesManager::setTreeFolderWidgets()
         // panel->setCollapsed(true);
         panel->setAnimation(Wt::WAnimation(Wt::AnimationEffect::SlideInFromTop, Wt::TimingFunction::EaseInOut, 250));
         panel->setStyleClass("!border-none ");
-        panel->titleBarWidget()->setStyleClass("group flex items-center px-2 cursor-pointer tracking-widest  dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 border-b border-solid border-gray-200 dark:border-gray-700");
-        panel->titleBarWidget()->addWidget(std::make_unique<Wt::WText>(folder.first))->setStyleClass("text-md ml-2 font-semibold");
+        panel->titleBarWidget()->setStyleClass("group relative flex items-center px-2 cursor-pointer tracking-widest  dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 border-b border-solid border-gray-200 dark:border-gray-700");       
+        panel->titleBarWidget()->addWidget(std::make_unique<Wt::WText>(folder.first))->setStyleClass("text-xl ml-2 font-semibold");
 
         // add Files button
         auto add_file_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
-        add_file_btn->setStyleClass("group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1 ml-auto");
+        add_file_btn->setStyleClass("group-hover:block hidden absolute right-1 hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1 ");
         add_file_btn->clicked().preventPropagation();
 
         auto central_widget = panel->setCentralWidget(std::make_unique<Wt::WContainerWidget>());
@@ -70,13 +70,17 @@ void CssFilesManager::setTreeFolderWidgets()
         for(const auto& file : folder.second)
         {
             auto file_wrapper = central_widget->addWidget(std::make_unique<Wt::WContainerWidget>());
+            file_wrapper->setStyleClass("group relative flex items-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200");
+            auto delete_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
+            delete_file_btn->setStyleClass("absolute left-1 rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 group-hover:block hidden");
+            delete_file_btn->clicked().preventPropagation();
+
             auto file_name = file_wrapper->addWidget(std::make_unique<Wt::WText>(file));
-            file_wrapper->setStyleClass("flex items-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200");
-            file_name->setStyleClass("text-md ml-7");
+            file_name->setStyleClass("text-md ml-9");
 
             // file buttons
             auto save_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-            save_file_btn->setStyleClass("ml-auto rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 group:block hidden");
+            save_file_btn->setStyleClass("ml-auto rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 hidden");
             save_file_btn->clicked().preventPropagation();
             save_file_btn->clicked().connect(this, [=](){
                 editor_->saveTextToFile();
