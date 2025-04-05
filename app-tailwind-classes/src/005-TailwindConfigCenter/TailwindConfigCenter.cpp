@@ -38,9 +38,13 @@ TailwindConfigCenter::TailwindConfigCenter()
     auto js_files_manager_ = content_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
     js_files_manager_->setStyleClass("");
     
-    tailwind_menu_item->toggleStyleClass("?", true);
-    tailwind_config_->toggleStyleClass("hidden", false);
-    css_files_manager_->toggleStyleClass("hidden", true);
+    tailwind_menu_item->toggleStyleClass("?", false);
+    tailwind_config_->toggleStyleClass("hidden", true);
+
+    css_menu_item->toggleStyleClass("?", true);
+    css_files_manager_->toggleStyleClass("hidden", false);
+
+    javascript_menu_item->toggleStyleClass("?", false);
     js_files_manager_->toggleStyleClass("hidden", true);
 
     tailwind_menu_item->clicked().connect(this, [=]() {
@@ -62,7 +66,7 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", false);
         javascript_menu_item->toggleStyleClass("?", false);
         js_files_manager_->toggleStyleClass("hidden", true);
-        doJavaScript("setTimeout(function() { edditor_css.layout() }, 1);");
+        css_files_manager_->css_editor_->resetLayout();
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {

@@ -12,7 +12,6 @@ class CssFilesManager : public Wt::WContainerWidget
         std::string selected_css_file_; 
 private:
     Wt::WContainerWidget* selected_css_file_wrapper_;
-    std::string getCssFromFile(std::string file_path);
 
     std::vector<std::pair<std::string, std::vector<std::string>>> getCssFolders();
 };

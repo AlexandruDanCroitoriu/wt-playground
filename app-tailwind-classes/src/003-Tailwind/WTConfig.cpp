@@ -339,9 +339,8 @@ void WTConfig::writeConfig()
     file << "@import \"tailwindcss\";\n\n";
     
     file << "/* Import custom CSS files for additional styles */\n";
-    file << "@import \"./css/default.css\";\n";
+    file << "@import \"./css/tests/0.css\";\n";
     file << "@import \"./css/tests/button-classes.css\";\n";
-    file << "@import \"./css/tests/questionmark.css\";\n";
     file << "@import \"./css/tests/experiments.css\";\n";
     file << "@import \"./css/tests/gradients.css\";\n";
     file << "@import \"./css/tests/input-classes.css\";\n";

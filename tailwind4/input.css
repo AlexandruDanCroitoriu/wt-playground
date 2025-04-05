@@ -2,9 +2,8 @@
 @import "tailwindcss";
 
 /* Import custom CSS files for additional styles */
-@import "./css/default.css";
+@import "./css/tests/0.css";
 @import "./css/tests/button-classes.css";
-@import "./css/tests/questionmark.css";
 @import "./css/tests/experiments.css";
 @import "./css/tests/gradients.css";
 @import "./css/tests/input-classes.css";

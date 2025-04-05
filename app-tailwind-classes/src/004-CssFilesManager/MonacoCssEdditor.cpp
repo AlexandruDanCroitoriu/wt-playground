@@ -7,68 +7,113 @@
 #include <fstream>
 #include <regex>
 
-MonacoCssEdditor::MonacoCssEdditor(std::string text_content)
+MonacoCssEdditor::MonacoCssEdditor(std::string file_path)
     : js_signal_text_changed_(this, "cssEdditorTextChanged")
 {
-
     setStyleClass("flex-1");
     js_signal_text_changed_.connect(this, &MonacoCssEdditor::cssEdditorTextChanged);
-    // doJavaScript("require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });");
-    // std::string js_member = "";
-    // js_member += "require(['vs/editor/editor.main'], function() {";
-    // js_member += "  window.cssEditorInstance = monaco.editor.create(document.getElementById('" + id() + "'), {";
-    // js_member += "    language: 'css',";
-    // js_member += "  });";
-    // js_member += "  window.cssEditorInstance.onDidChangeModelContent(function() {";
-    // js_member += js_signal_text_changed_.createCall({ " window.cssEditorInstance.getValue()" });
-    // // js_member += "    Wt.emit("+id()+", 'cssEdditorTextChanged', window.cssEditorInstance.getValue());";
-    // js_member += "  });";
-    // js_member += "});";   
 
-    // setJavaScriptMember("initialize", js_member);
-    // setJavaScriptMember("initializeCssEditor("+id()+")", js_member);
-    // Wt::WApplication::instance()->doJavaScript("initializeCssEditor('" + id() + "', '"+"alkjdshfaijksdhf i"+"');", true);
-    text_content = std::regex_replace(text_content, std::regex("\n"), "\\n");
-    text_content = std::regex_replace(text_content, std::regex("\r"), "\\r");
-    std::string member = "initializeCssEditor('" + id() + "', '"+text_content+"');";
+    
+    current_text_ = getFileText(file_path);
+    unsaved_text_ = current_text_;
+    file_path_ = file_path;
+    std::string member = "initializeCssEditor('" + id() + "', '"+current_text_+"');";
     setJavaScriptMember("cssEdditorTextChanged", member);
-    // Wt::WApplication::instance()->doJavaScript("updateCssEditorValue('body { background-color: red; }')", true);
+
+    keyWentDown().connect([=](Wt::WKeyEvent e)
+    { 
+        if (e.modifiers().test(Wt::KeyboardModifier::Control))
+        {
+            if (e.key() == Wt::Key::S)
+            {
+                saveTextToFile();
+            }
+        }
+    });
 }
 
+void MonacoCssEdditor::saveTextToFile()
+{
+    // std::cout << "\n\n MonacoCssEdditor::saveTextToFile()\n\n";
+    std::ofstream file(file_path_);
+    if (!file.is_open()) {
+        std::cout << "\n\n Failed to open file: " << file_path_ << "\n\n";
+        return;
+    }
+    file << unsaved_text_;
+    file.close();
+    current_text_ = unsaved_text_;
+    avalable_save_.emit(false);
+}
 
 void MonacoCssEdditor::cssEdditorTextChanged(const std::string text)
 {
+    if(text.compare(unsaved_text_) == 0) return;
     if(text.compare(current_text_) == 0)
     {
+        avalable_save_.emit(false);
+        unsaved_text_ = text;
         std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
     }
-    std::cout << "\nText changed: " << text << "\n";
+    std::cout << "\n\n MonacoCssEdditor::cssEdditorTextChanged()\n\n";
+    avalable_save_.emit(true);
+    unsaved_text_ = text;
 }
+
+bool MonacoCssEdditor::unsavedChanges() 
+{
+    // std::cout << "\n\n MonacoCssEdditor::unsavedChanges()";
+    if(current_text_.compare(unsaved_text_) == 0)
+    {
+        std::cout << " No unsaved changes \n\n";
+        return false;
+    }
+    std::cout << "unsaved changes \n\n";
+    return true;
+}
+
+
+void MonacoCssEdditor::setFile(std::string file_path)
+{
+    file_path_ = file_path;
+    setCssEdditorText(getFileText(file_path));
+}
+
 
 void MonacoCssEdditor::setCssEdditorText(std::string text)
 {
-    if(text.compare(current_text_) == 0) {
-        std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
-        return;
-    }
-    // replace all new lines with \n
-    text = std::regex_replace(text, std::regex("\n"), "\\n");
-    text = std::regex_replace(text, std::regex("\r"), "\\r");
-    // replace \ with \\ 
-    text = std::regex_replace(text, std::regex("\\"), "U+005C");
-    // text = std::regex_replace(text, std::regex("/"), "\\/");
-    std::cout << "\n\n Text Changed to: " << text << "\n\n";    
     doJavaScript("updateCssEditorValue('" + text + "');");
     current_text_ = text;
+    unsaved_text_ = text;
+}
+
+void MonacoCssEdditor::resetLayout()
+{
+    doJavaScript("setTimeout(function() { edditor_css.layout() }, 1);");
 }
 
 void MonacoCssEdditor::setDarkTheme(bool dark)
 {
-    // doJavaScript("toggleEditorTheme()");
     if(dark)
         doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs-dark');");
     else
         doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs');");
 }
 
+std::string MonacoCssEdditor::getFileText(std::string file_path)
+{
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
+        std::cout << "\n\n Failed to open file: " << file_path << "\n\n";
+        return "";
+    }
+
+    std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    Wt::WString file_content_wt = Wt::WString::fromUTF8(file_content);
+    file_content = std::regex_replace(file_content, std::regex("\n"), "\\n");
+    file_content = std::regex_replace(file_content, std::regex("\r"), "\\r");
+    file_content = std::regex_replace(file_content, std::regex("\t"), "\\t");
+    return file_content;
+}
