@@ -9,7 +9,6 @@ class CssFilesManager : public Wt::WContainerWidget
         MonacoCssEdditor* css_editor_;
         std::vector<std::pair<std::string, std::vector<std::string>>> css_folders_;
         std::string default_css_path_ = "../../tailwind4/css/";
-        std::string default_css_file_ = "default.css";
         std::string selected_css_file_; 
 private:
     Wt::WContainerWidget* selected_css_file_wrapper_;

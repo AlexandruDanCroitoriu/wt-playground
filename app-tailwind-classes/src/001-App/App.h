@@ -1,8 +1,8 @@
 #pragma once
 #include <Wt/WApplication.h>
 #include "002-Dbo/Session.h"
-#include "003-Tailwind/WTConfig.h"
-#include <Wt/WDoubleSpinBox.h>
+
+#include "005-TailwindConfigCenter/TailwindConfigCenter.h"
 
 class App : public Wt::WApplication
 {
@@ -11,8 +11,7 @@ public:
 
     // Session session_;
 
-private:
-    WTConfig* tailwind_config_;
-    void updateTailwindCssFile();
-    Wt::WDoubleSpinBox *test_input;
+    private:
+    TailwindConfigCenter* tailwind_config_center_;
+
 };

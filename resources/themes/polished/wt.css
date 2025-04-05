@@ -261,9 +261,9 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
     background-position: right -13px;
 }
 
-.Wt-dialog .body, .Wt-dialog .footer {
+/* .Wt-dialog .body, .Wt-dialog .footer {
     padding: 4px 6px;
-}
+} */
 
 .Wt-dialog .footer {
     text-align: right;

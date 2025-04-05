@@ -11,8 +11,7 @@ MonacoCssEdditor::MonacoCssEdditor(std::string text_content)
     : js_signal_text_changed_(this, "cssEdditorTextChanged")
 {
 
-    setStyleClass("!text-start");
-
+    setStyleClass("flex-1");
     js_signal_text_changed_.connect(this, &MonacoCssEdditor::cssEdditorTextChanged);
     // doJavaScript("require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });");
     // std::string js_member = "";
@@ -29,6 +28,8 @@ MonacoCssEdditor::MonacoCssEdditor(std::string text_content)
     // setJavaScriptMember("initialize", js_member);
     // setJavaScriptMember("initializeCssEditor("+id()+")", js_member);
     // Wt::WApplication::instance()->doJavaScript("initializeCssEditor('" + id() + "', '"+"alkjdshfaijksdhf i"+"');", true);
+    text_content = std::regex_replace(text_content, std::regex("\n"), "\\n");
+    text_content = std::regex_replace(text_content, std::regex("\r"), "\\r");
     std::string member = "initializeCssEditor('" + id() + "', '"+text_content+"');";
     setJavaScriptMember("cssEdditorTextChanged", member);
     // Wt::WApplication::instance()->doJavaScript("updateCssEditorValue('body { background-color: red; }')", true);
@@ -54,7 +55,10 @@ void MonacoCssEdditor::setCssEdditorText(std::string text)
     // replace all new lines with \n
     text = std::regex_replace(text, std::regex("\n"), "\\n");
     text = std::regex_replace(text, std::regex("\r"), "\\r");
-    
+    // replace \ with \\ 
+    text = std::regex_replace(text, std::regex("\\"), "U+005C");
+    // text = std::regex_replace(text, std::regex("/"), "\\/");
+    std::cout << "\n\n Text Changed to: " << text << "\n\n";    
     doJavaScript("updateCssEditorValue('" + text + "');");
     current_text_ = text;
 }

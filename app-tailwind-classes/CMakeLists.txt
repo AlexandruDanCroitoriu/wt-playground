@@ -23,6 +23,7 @@ set(SOURCES
     ${SOURCE_DIR}/003-Tailwind/WTVariableText.cpp
     ${SOURCE_DIR}/004-CssFilesManager/CssFilesManager.cpp
     ${SOURCE_DIR}/004-CssFilesManager/MonacoCssEdditor.cpp
+    ${SOURCE_DIR}/005-TailwindConfigCenter/TailwindConfigCenter.cpp
     
     ${SOURCE_DIR}/010-TestWidgets/Test.cpp
     ${SOURCE_DIR}/010-TestWidgets/DarkModeToggle.cpp

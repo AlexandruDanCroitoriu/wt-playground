@@ -9,37 +9,24 @@
 
 CssFilesManager::CssFilesManager()
 {
-    setStyleClass("w-full min-h-[600px] flex");
+    setStyleClass("w-full h-full flex");
 
     // Add the default css file
     auto folder_tree_wrapper = addWidget(std::make_unique<Wt::WContainerWidget>());
     folder_tree_wrapper->setStyleClass("min-w-[280px]");
-    auto selected_css_file_wrapper = folder_tree_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-    selected_css_file_wrapper->setStyleClass("flex items-center");
-    auto file_name = selected_css_file_wrapper->addWidget(std::make_unique<Wt::WText>(default_css_file_));
-    selected_css_file_wrapper->setStyleClass("group flex items-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200");
-    file_name->setStyleClass("text-md ml-2");
-    auto btns_wrapper = selected_css_file_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-    btns_wrapper->setStyleClass("ml-auto flex items-center");
+    auto tree_header = folder_tree_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
+    tree_header->setStyleClass("group flex items-center border-b border-solid border-gray-200 dark:border-gray-700");
+    auto tree_header_title = tree_header->addWidget(std::make_unique<Wt::WText>("selected css file"));
+    tree_header_title->setStyleClass("text-xl font-semibold m-1 text-green-500 dark:text-green-400");
+
+    // folder buttons
+    auto add_file_btn = tree_header->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
+    add_file_btn->setStyleClass("ml-auto group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1");
+    add_file_btn->clicked().preventPropagation();
+
     
-    // default css file buttons
-    auto save_file_btn = btns_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-    save_file_btn->setStyleClass("rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900");
-    save_file_btn->clicked().preventPropagation();
-
-    selected_css_file_wrapper->clicked().connect(this, [=](){
-        css_editor_->setCssEdditorText(getCssFromFile(default_css_path_ + "/" + default_css_file_));
-        selected_css_file_wrapper_->removeStyleClass("?");
-        selected_css_file_wrapper_ = selected_css_file_wrapper;
-        selected_css_file_wrapper_->addStyleClass("?");
-    });
-    selected_css_file_wrapper->addStyleClass("?");
-    selected_css_file_wrapper_ = selected_css_file_wrapper;
-
-    css_editor_ = addWidget(std::make_unique<MonacoCssEdditor>(getCssFromFile(default_css_path_ + default_css_file_)));
-    css_editor_->setStyleClass("flex-1 w-full");
-
-
+    
+    selected_css_file_wrapper_ = nullptr;
     // add folders and files in the UI
     auto css_folders = getCssFolders();
     for(const auto& folder : css_folders)
@@ -52,50 +39,46 @@ CssFilesManager::CssFilesManager()
         panel->titleBarWidget()->setStyleClass("group flex items-center px-2 cursor-pointer tracking-widest  dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 border-b border-solid border-gray-200 dark:border-gray-700");
         panel->titleBarWidget()->addWidget(std::make_unique<Wt::WText>(folder.first))->setStyleClass("text-md ml-2 font-semibold");
 
-        // folder buttons
-        auto add_file_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
-        add_file_btn->setStyleClass("ml-auto group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1");
+        // add Files button
+        auto add_file_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
+        add_file_btn->setStyleClass("group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1 ml-auto");
         add_file_btn->clicked().preventPropagation();
 
         auto central_widget = panel->setCentralWidget(std::make_unique<Wt::WContainerWidget>());
-        central_widget->setStyleClass("dark:bg-gray-800 ");
+        central_widget->setStyleClass("w-full bg-white dark:bg-gray-800");
 
         for(const auto& file : folder.second)
         {
             auto file_wrapper = central_widget->addWidget(std::make_unique<Wt::WContainerWidget>());
             auto file_name = file_wrapper->addWidget(std::make_unique<Wt::WText>(file));
             file_wrapper->setStyleClass("group flex items-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200");
-            file_name->setStyleClass("text-md ml-5");
+            file_name->setStyleClass("text-md ml-7");
             auto btns_wrapper = file_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
             btns_wrapper->setStyleClass("ml-auto flex items-center");
 
             // file buttons
-            auto add_file_btn = btns_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
-            add_file_btn->setStyleClass("group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1");
-            add_file_btn->clicked().preventPropagation();
-            auto save_file_btn = btns_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-            save_file_btn->setStyleClass("rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900");
-            save_file_btn->clicked().preventPropagation();
+            // auto save_file_btn = btns_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
+            // save_file_btn->setStyleClass("rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900");
+            // save_file_btn->clicked().preventPropagation();
 
-            file_wrapper->clicked().connect(this, [=]   (){
+            file_wrapper->clicked().connect(this, [=] () {
                 css_editor_->setCssEdditorText(getCssFromFile(default_css_path_ + folder.first + "/" + file));
                 selected_css_file_wrapper_->removeStyleClass("?");
                 selected_css_file_wrapper_ = file_wrapper;
                 selected_css_file_wrapper_->addStyleClass("?");
+                tree_header_title->setText(file);
             });
+
+            if(!selected_css_file_wrapper_)
+            {
+                // css_editor_->setCssEdditorText(getCssFromFile(default_css_path_ + folder.first + "/" + file));
+                css_editor_ = addWidget(std::make_unique<MonacoCssEdditor>(getCssFromFile(default_css_path_ + folder.first + "/" + file)));
+                selected_css_file_wrapper_ = file_wrapper;
+                selected_css_file_wrapper_->addStyleClass("?");
+                tree_header_title->setText(file);
+            }
         }
     }
-
-
-    // auto btn = folder_tree_wrapper->addWidget(std::make_unique<Wt::WPushButton>("Test"));
-    // btn->setStyleClass("btn-default inline-block");
-    // btn->clicked().connect(this, [=](){
-    //     // css_editor_->setCssTextFromFile(default_css_path_ + css_folders[0].first + "/" + css_folders[0].second[0]);
-    //     css_editor_->setCssTextFromFile(default_css_path_ + css_folders[0].first + "/" + css_folders[0].second[1]);
-    // });
-
-
- 
 }
 
 std::string CssFilesManager::getCssFromFile(std::string file_path)

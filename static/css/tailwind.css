@@ -526,8 +526,8 @@
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
-  .ml-5 {
-    margin-left: calc(var(--spacing) * 5);
+  .ml-7 {
+    margin-left: calc(var(--spacing) * 7);
   }
   .ml-auto {
     margin-left: auto;
@@ -631,6 +631,9 @@
   .h-\[40px\] {
     height: 40px;
   }
+  .h-\[100vh\] {
+    height: 100vh;
+  }
   .h-\[calc\(100\%-70px\)\] {
     height: calc(100% - 70px);
   }
@@ -711,6 +714,9 @@
   }
   .w-\[60px\] {
     width: 60px;
+  }
+  .w-\[100vw\] {
+    width: 100vw;
   }
   .w-\[270px\] {
     width: 270px;
@@ -1616,9 +1622,6 @@
   .\!text-center {
     text-align: center !important;
   }
-  .\!text-start {
-    text-align: start !important;
-  }
   .text-center {
     text-align: center;
   }
@@ -1721,6 +1724,9 @@
   }
   .text-green-400 {
     color: var(--color-green-400);
+  }
+  .text-green-500 {
+    color: var(--color-green-500);
   }
   .text-green-600 {
     color: var(--color-green-600);
@@ -2486,6 +2492,11 @@
   .dark\:text-gray-500 {
     &:where(.dark, .dark *) {
       color: var(--color-gray-500);
+    }
+  }
+  .dark\:text-green-400 {
+    &:where(.dark, .dark *) {
+      color: var(--color-green-400);
     }
   }
   .dark\:shadow-md {

@@ -266,7 +266,7 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 .Wt-dialog .body, .Wt-dialog .footer {
-  padding: 4px 6px 4px;
+  /* padding: 4px 6px 4px; */
 }
 
 .Wt-dialog .footer {
