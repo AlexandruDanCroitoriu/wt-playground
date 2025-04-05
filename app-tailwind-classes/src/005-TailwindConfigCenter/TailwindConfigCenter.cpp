@@ -66,7 +66,7 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", false);
         javascript_menu_item->toggleStyleClass("?", false);
         js_files_manager_->toggleStyleClass("hidden", true);
-        css_files_manager_->css_editor_->resetLayout();
+        css_files_manager_->editor_->resetLayout();
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {

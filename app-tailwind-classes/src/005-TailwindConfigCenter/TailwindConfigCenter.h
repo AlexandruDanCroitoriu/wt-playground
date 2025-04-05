@@ -3,7 +3,7 @@
 #include <Wt/WDialog.h>
 #include "005-TailwindConfigCenter/TailwindConfigCenter.h"
 #include "003-Tailwind/WTConfig.h"
-#include "004-CssFilesManager/CssFilesManager.h"
+#include "004-FilesManagers/CssFilesManager.h"
 #include <Wt/WDoubleSpinBox.h>
 
 class TailwindConfigCenter : public Wt::WDialog

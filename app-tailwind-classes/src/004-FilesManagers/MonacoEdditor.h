@@ -4,10 +4,10 @@
 #include <Wt/WStringStream.h>
 #include <Wt/WSignal.h>
 
-class MonacoCssEdditor : public Wt::WContainerWidget
+class MonacoEdditor : public Wt::WContainerWidget
 {
     public:
-        MonacoCssEdditor(std::string file_path);
+        MonacoEdditor(std::string file_path, std::string language);
         void setDarkTheme(bool dark);
         void resetLayout();
         void saveTextToFile();
@@ -26,5 +26,5 @@ class MonacoCssEdditor : public Wt::WContainerWidget
         std::string file_path_;
         std::string current_text_;
         std::string unsaved_text_;
-        
+        std::string editor_js_var_name_;
 };

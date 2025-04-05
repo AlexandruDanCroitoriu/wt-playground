@@ -46,11 +46,11 @@ App::App(const Wt::WEnvironment &env)
     dark_mode_toggle->dark_mode_changed_.connect(this, [=] (bool dark) {
         if(dark){
             Wt::WApplication::instance()->setHtmlClass("dark");
-            tailwind_config_center_->css_files_manager_->css_editor_->setDarkTheme(true);
+            tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(true);
         }
         else{
             Wt::WApplication::instance()->setHtmlClass("");
-            tailwind_config_center_->css_files_manager_->css_editor_->setDarkTheme(false);
+            tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(false);
         }
     });
 

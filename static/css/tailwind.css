@@ -2460,6 +2460,11 @@
       fill: var(--color-green-400);
     }
   }
+  .dark\:fill-red-400 {
+    &:where(.dark, .dark *) {
+      fill: var(--color-red-400);
+    }
+  }
   .dark\:fill-white {
     &:where(.dark, .dark *) {
       fill: var(--color-white);
@@ -2789,14 +2794,6 @@
       }
     }
   }
-}
-.bg-gradient-dark {
-  --tw-gradient-position: to right in oklab;
-  background-image: linear-gradient(var(--tw-gradient-stops));
-  --tw-gradient-from: var(--color-slate-900);
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  --tw-gradient-to: var(--color-slate-700);
-  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
 }
 .btn-style-1 {
   display: flex;
@@ -3770,11 +3767,6 @@ body::-webkit-scrollbar-thumb {
   syntax: "*";
   initial-value: "";
   inherits: false;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 @keyframes spin {
   to {

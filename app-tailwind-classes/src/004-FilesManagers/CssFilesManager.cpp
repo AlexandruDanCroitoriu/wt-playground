@@ -1,4 +1,4 @@
-#include "004-CssFilesManager/CssFilesManager.h"
+#include "004-FilesManagers/CssFilesManager.h"
 #include <filesystem>
 #include <Wt/WPushButton.h>
 #include <Wt/WMenu.h>
@@ -17,22 +17,41 @@ CssFilesManager::CssFilesManager()
     folder_tree_wrapper->setStyleClass("min-w-[280px]");
     auto tree_header = folder_tree_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
     tree_header->setStyleClass("group flex items-center border-b border-solid border-gray-200 dark:border-gray-700");
-    auto tree_header_title = tree_header->addWidget(std::make_unique<Wt::WText>("selected css file"));
-    tree_header_title->setStyleClass("text-xl font-semibold m-1 text-green-500 dark:text-green-400");
+    tree_header_title_ = tree_header->addWidget(std::make_unique<Wt::WText>("selected css file"));
+    tree_header_title_->setStyleClass("text-xl font-semibold m-1 text-green-500 dark:text-green-400");
 
     // folder buttons
     auto add_file_btn = tree_header->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
     add_file_btn->setStyleClass("ml-auto group-hover:block hidden hover:bg-gray-200 dark:hover:bg-gray-900 rounded-md p-1");
     add_file_btn->clicked().preventPropagation();
 
-    
-    
+    folders_tree_wrapper_ = folder_tree_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
+    folders_tree_wrapper_->setStyleClass("w-full h-full overflow-y-auto flex flex-col");
+
+    setTreeFolderWidgets();
+
+    editor_ = addWidget(std::make_unique<MonacoEdditor>(default_css_path_ +"tests/0.css", "css"));
+    editor_->avalable_save().connect(this, [=] (bool avalable) {
+        if(avalable)
+        {
+            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", true);
+            
+        }else {
+            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
+        }
+    });
+}
+
+
+void CssFilesManager::setTreeFolderWidgets()
+{
+    folders_tree_wrapper_->clear();
     selected_css_file_wrapper_ = nullptr;
     // add folders and files in the UI
-    auto css_folders = getCssFolders();
-    for(const auto& folder : css_folders)
+    folders_ = getCssFolders();
+    for(const auto& folder : folders_)
     {
-        auto panel = folder_tree_wrapper->addWidget(std::make_unique<Wt::WPanel>());
+        auto panel = folders_tree_wrapper_->addWidget(std::make_unique<Wt::WPanel>());
         panel->setCollapsible(true);
         // panel->setCollapsed(true);
         panel->setAnimation(Wt::WAnimation(Wt::AnimationEffect::SlideInFromTop, Wt::TimingFunction::EaseInOut, 250));
@@ -60,11 +79,11 @@ CssFilesManager::CssFilesManager()
             save_file_btn->setStyleClass("ml-auto rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 group:block hidden");
             save_file_btn->clicked().preventPropagation();
             save_file_btn->clicked().connect(this, [=](){
-                css_editor_->saveTextToFile();
+                editor_->saveTextToFile();
             });
 
             file_wrapper->clicked().connect(this, [=] () {
-                if(css_editor_->unsavedChanges()){
+                if(editor_->unsavedChanges()){
                     std::cout << "\nUnsaved changes, please save the file first\n";
                     auto messageBox =
                     addChild(std::make_unique<Wt::WMessageBox>("Save the changes from the current file ?", "", Wt::Icon::None, Wt::StandardButton::None));
@@ -85,55 +104,44 @@ CssFilesManager::CssFilesManager()
                     messageBox->buttonClicked().connect([=] {
                         if (messageBox->buttonResult() == Wt::StandardButton::Yes)
                         {
-                            css_editor_->saveTextToFile();
+                            editor_->saveTextToFile();
                             selected_css_file_wrapper_->removeStyleClass("?");
                             selected_css_file_wrapper_ = file_wrapper;
                             selected_css_file_wrapper_->addStyleClass("?");
-                            tree_header_title->setText(file);
-                            css_editor_->setFile(default_css_path_ + folder.first + "/" + file);
+                            tree_header_title_->setText(file);
+                            editor_->setFile(default_css_path_ + folder.first + "/" + file);
                         }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
                         {
                             selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
                             selected_css_file_wrapper_->removeStyleClass("?");
                             selected_css_file_wrapper_ = file_wrapper;
                             selected_css_file_wrapper_->addStyleClass("?");
-                            css_editor_->setFile(default_css_path_ + folder.first + "/" + file);
-                            tree_header_title->setText(file);
+                            editor_->setFile(default_css_path_ + folder.first + "/" + file);
+                            tree_header_title_->setText(file);
                         }
                         removeChild(messageBox);
                     });
                     
                     messageBox->show();
                 }else {
-                    css_editor_->setFile(default_css_path_ + folder.first + "/" + file);
+                    editor_->setFile(default_css_path_ + folder.first + "/" + file);
                     selected_css_file_wrapper_->removeStyleClass("?");
                     selected_css_file_wrapper_ = file_wrapper;
                     selected_css_file_wrapper_->addStyleClass("?");
-                    tree_header_title->setText(file);
+                    tree_header_title_->setText(file);
                 }
             });
 
             if(!selected_css_file_wrapper_)
             {
-                // css_editor_->setCssEdditorText(getCssFromFile(default_css_path_ + folder.first + "/" + file));
-                css_editor_ = addWidget(std::make_unique<MonacoCssEdditor>(default_css_path_ + folder.first + "/" + file));
+                // editor_->setCssEdditorText(getCssFromFile(default_css_path_ + folder.first + "/" + file));
                 selected_css_file_wrapper_ = file_wrapper;
                 selected_css_file_wrapper_->addStyleClass("?");
-                tree_header_title->setText(file);
+                tree_header_title_->setText(file);
+                std::cout << "\n\n path: " << default_css_path_ + folder.first + "/" + file << "\n\n";
             }
         }
     }
-
-
-    css_editor_->avalable_save().connect(this, [=] (bool avalable) {
-        if(avalable)
-        {
-            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", true);
-            
-        }else {
-            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
-        }
-    });
 }
 
 

@@ -6,7 +6,6 @@
 #include <Wt/WCheckBox.h>
 #include <filesystem>
 #include <Wt/WComboBox.h>
-// #include "Utils.h"
 #include <Wt/WPanel.h>
 #include <boost/regex.hpp>
 #include "003-Tailwind/WTVariable.h"

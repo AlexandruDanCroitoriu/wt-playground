@@ -7,10 +7,8 @@ set(XMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -pthread")
 set(RLIB --docroot ../../ -c ../../wt_config.xml --http-address 0.0.0.0 --http-port 9020)
 set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/)
-set(SOURCE_DIR_UTILS ${PROJECT_SOURCE_DIR}/../utils/)
 
 include_directories(${SOURCE_DIR})
-include_directories(${SOURCE_DIR_UTILS})
 
 
 set(SOURCES
@@ -21,15 +19,14 @@ set(SOURCES
     ${SOURCE_DIR}/003-Tailwind/WTConfig.cpp
     ${SOURCE_DIR}/003-Tailwind/WTVariable.cpp
     ${SOURCE_DIR}/003-Tailwind/WTVariableText.cpp
-    ${SOURCE_DIR}/004-CssFilesManager/CssFilesManager.cpp
-    ${SOURCE_DIR}/004-CssFilesManager/MonacoCssEdditor.cpp
+    ${SOURCE_DIR}/004-FilesManagers/CssFilesManager.cpp
+    ${SOURCE_DIR}/004-FilesManagers/MonacoEdditor.cpp
     ${SOURCE_DIR}/005-TailwindConfigCenter/TailwindConfigCenter.cpp
     
     ${SOURCE_DIR}/010-TestWidgets/Test.cpp
     ${SOURCE_DIR}/010-TestWidgets/DarkModeToggle.cpp
     
-    ${SOURCE_DIR_UTILS}/tinyxml2/tinyxml2.cpp
-    # ${SOURCE_DIR_UTILS}/widgets/DarkModeToggle.cpp
+    ${SOURCE_DIR}100-Utils/tinyxml2/tinyxml2.cpp
 
 
 )
