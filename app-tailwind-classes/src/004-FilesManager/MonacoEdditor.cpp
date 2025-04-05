@@ -1,4 +1,4 @@
-#include "004-FilesManagers/MonacoEdditor.h"
+#include "004-FilesManager/MonacoEdditor.h"
 #include <Wt/WText.h>
 #include <Wt/WApplication.h>
 #include <Wt/WPushButton.h>
@@ -118,6 +118,7 @@ void MonacoEdditor::setFile(std::string file_path)
 
 void MonacoEdditor::setCssEdditorText(std::string text)
 {
+    // resetLayout();
     // doJavaScript("updateCssEditorValue('" + text + "');");
     doJavaScript(R"(
         if (window.)" + editor_js_var_name_ + R"() {

@@ -1,4 +1,4 @@
-#include "004-FilesManagers/CssFilesManager.h"
+#include "004-FilesManager/FilesManager.h"
 #include <filesystem>
 #include <Wt/WPushButton.h>
 #include <Wt/WMenu.h>
@@ -8,7 +8,8 @@
 #include <fstream>
 #include <Wt/WMessageBox.h>
 
-CssFilesManager::CssFilesManager()
+FilesManager::FilesManager(std::string default_folder_path, std::string language)
+    : default_folder_path_(default_folder_path)
 {
     setStyleClass("w-full h-full flex");
 
@@ -26,27 +27,27 @@ CssFilesManager::CssFilesManager()
     add_file_btn->clicked().preventPropagation();
 
     folders_tree_wrapper_ = folder_tree_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-    folders_tree_wrapper_->setStyleClass("w-full h-full overflow-y-auto flex flex-col");
+    folders_tree_wrapper_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
 
     setTreeFolderWidgets();
 
-    editor_ = addWidget(std::make_unique<MonacoEdditor>(default_css_path_ +folders_[0].first + "/" + folders_[0].second[0], "css"));
+    editor_ = addWidget(std::make_unique<MonacoEdditor>(default_folder_path_ +folders_[0].first + "/" + folders_[0].second[0], language));
     editor_->avalable_save().connect(this, [=] (bool avalable) {
         if(avalable)
         {
-            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", true);
+            selected_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", true);
             
         }else {
-            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
+            selected_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
         }
     });
 }
 
 
-void CssFilesManager::setTreeFolderWidgets()
+void FilesManager::setTreeFolderWidgets()
 {
     folders_tree_wrapper_->clear();
-    selected_css_file_wrapper_ = nullptr;
+    selected_file_wrapper_ = nullptr;
     // add folders and files in the UI
     folders_ = getCssFolders();
     for(const auto& folder : folders_)
@@ -72,7 +73,7 @@ void CssFilesManager::setTreeFolderWidgets()
             auto file_wrapper = central_widget->addWidget(std::make_unique<Wt::WContainerWidget>());
             file_wrapper->setStyleClass("group relative flex items-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200");
             auto delete_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-            delete_file_btn->setStyleClass("absolute left-1 rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 group-hover:block hidden");
+            delete_file_btn->setStyleClass("absolute left-0 rounded-md p-1 hover:bg-gray-200 dark:hover:bg-gray-900 group-hover:block hidden");
             delete_file_btn->clicked().preventPropagation();
 
             auto file_name = file_wrapper->addWidget(std::make_unique<Wt::WText>(file));
@@ -109,18 +110,18 @@ void CssFilesManager::setTreeFolderWidgets()
                         if (messageBox->buttonResult() == Wt::StandardButton::Yes)
                         {
                             editor_->saveTextToFile();
-                            selected_css_file_wrapper_->removeStyleClass("?");
-                            selected_css_file_wrapper_ = file_wrapper;
-                            selected_css_file_wrapper_->addStyleClass("?");
+                            selected_file_wrapper_->removeStyleClass("?");
+                            selected_file_wrapper_ = file_wrapper;
+                            selected_file_wrapper_->addStyleClass("?");
                             tree_header_title_->setText(file);
-                            editor_->setFile(default_css_path_ + folder.first + "/" + file);
+                            editor_->setFile(default_folder_path_ + folder.first + "/" + file);
                         }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
                         {
-                            selected_css_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
-                            selected_css_file_wrapper_->removeStyleClass("?");
-                            selected_css_file_wrapper_ = file_wrapper;
-                            selected_css_file_wrapper_->addStyleClass("?");
-                            editor_->setFile(default_css_path_ + folder.first + "/" + file);
+                            selected_file_wrapper_->toggleStyleClass("[&>*:last-child]:block", false);
+                            selected_file_wrapper_->removeStyleClass("?");
+                            selected_file_wrapper_ = file_wrapper;
+                            selected_file_wrapper_->addStyleClass("?");
+                            editor_->setFile(default_folder_path_ + folder.first + "/" + file);
                             tree_header_title_->setText(file);
                         }
                         removeChild(messageBox);
@@ -128,32 +129,32 @@ void CssFilesManager::setTreeFolderWidgets()
                     
                     messageBox->show();
                 }else {
-                    editor_->setFile(default_css_path_ + folder.first + "/" + file);
-                    selected_css_file_wrapper_->removeStyleClass("?");
-                    selected_css_file_wrapper_ = file_wrapper;
-                    selected_css_file_wrapper_->addStyleClass("?");
+                    editor_->setFile(default_folder_path_ + folder.first + "/" + file);
+                    selected_file_wrapper_->removeStyleClass("?");
+                    selected_file_wrapper_ = file_wrapper;
+                    selected_file_wrapper_->addStyleClass("?");
                     tree_header_title_->setText(file);
                 }
             });
 
-            if(!selected_css_file_wrapper_)
+            if(!selected_file_wrapper_)
             {
-                // editor_->setCssEdditorText(getCssFromFile(default_css_path_ + folder.first + "/" + file));
-                selected_css_file_wrapper_ = file_wrapper;
-                selected_css_file_wrapper_->addStyleClass("?");
+                // editor_->setCssEdditorText(getCssFromFile(default_folder_path_ + folder.first + "/" + file));
+                selected_file_wrapper_ = file_wrapper;
+                selected_file_wrapper_->addStyleClass("?");
                 tree_header_title_->setText(file);
-                std::cout << "\n\n path: " << default_css_path_ + folder.first + "/" + file << "\n\n";
+                std::cout << "\n\n path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
             }
         }
     }
 }
 
 
-std::vector<std::pair<std::string, std::vector<std::string>>> CssFilesManager::getCssFolders()
+std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getCssFolders()
 {
     std::vector<std::pair<std::string, std::vector<std::string>>> css_folders;
     std::vector<std::string> folders;
-    for (const auto& entry : std::filesystem::directory_iterator(default_css_path_)) {
+    for (const auto& entry : std::filesystem::directory_iterator(default_folder_path_)) {
         if (entry.is_directory()) {
             folders.push_back(entry.path().filename().string());
         }
@@ -161,7 +162,7 @@ std::vector<std::pair<std::string, std::vector<std::string>>> CssFilesManager::g
     for(const auto& folder : folders)
     {
         std::vector<std::string> files;
-        for (const auto& entry : std::filesystem::directory_iterator(default_css_path_ + folder)) {
+        for (const auto& entry : std::filesystem::directory_iterator(default_folder_path_ + folder)) {
             if (entry.is_regular_file()) {
                 files.push_back(entry.path().filename().string());
             }

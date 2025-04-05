@@ -33,10 +33,9 @@ TailwindConfigCenter::TailwindConfigCenter()
     css_menu_item->setStyleClass(nav_btns_styles);
     javascript_menu_item->setStyleClass(nav_btns_styles);
     
-    css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>());
+    css_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../../tailwind4/css/", "css"));
     tailwind_config_ = content_wrapper->addWidget(std::make_unique<WTConfig>());
-    auto js_files_manager_ = content_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-    js_files_manager_->setStyleClass("");
+    js_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../../static/js/", "javascript"));
     
     tailwind_menu_item->toggleStyleClass("?", false);
     tailwind_config_->toggleStyleClass("hidden", true);
@@ -77,6 +76,7 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", true);
         javascript_menu_item->toggleStyleClass("?", true);
         js_files_manager_->toggleStyleClass("hidden", false);
+        js_files_manager_->editor_->resetLayout();
     });
     
         

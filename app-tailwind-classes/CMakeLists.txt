@@ -19,8 +19,8 @@ set(SOURCES
     ${SOURCE_DIR}/003-Tailwind/WTConfig.cpp
     ${SOURCE_DIR}/003-Tailwind/WTVariable.cpp
     ${SOURCE_DIR}/003-Tailwind/WTVariableText.cpp
-    ${SOURCE_DIR}/004-FilesManagers/CssFilesManager.cpp
-    ${SOURCE_DIR}/004-FilesManagers/MonacoEdditor.cpp
+    ${SOURCE_DIR}/004-FilesManager/FilesManager.cpp
+    ${SOURCE_DIR}/004-FilesManager/MonacoEdditor.cpp
     ${SOURCE_DIR}/005-TailwindConfigCenter/TailwindConfigCenter.cpp
     
     ${SOURCE_DIR}/010-TestWidgets/Test.cpp
