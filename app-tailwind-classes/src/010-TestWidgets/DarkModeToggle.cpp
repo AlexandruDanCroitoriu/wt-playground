@@ -3,7 +3,6 @@
 #include <Wt/WLabel.h>
 
 DarkModeToggle::DarkModeToggle(bool dark)
-    // : WCheckBox("DarkMode")
 {
     setHtmlTagName("label");
     setStyleClass("inline-flex cursor-pointer items-center");

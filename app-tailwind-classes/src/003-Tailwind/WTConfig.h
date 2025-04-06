@@ -26,7 +26,7 @@ class WTConfig : public Wt::WContainerWidget
         Wt::WPushButton* duplicate_file_btn_;
         Wt::WPushButton* delete_file_btn_;
 
-        std::string default_config_path_ = "../../xml-base-templates/tailwind-config/";
+        std::string default_config_path_ = "../tailwind-config/";
         std::string default_config_file_ = "tailwind-config.xml";
         std::string selected_config_file_; 
 

@@ -324,7 +324,7 @@ void WTConfig::writeConfig()
 {
     const std::string import_statement = "@import \"tailwindcss\";\n\n";
     
-    std::ofstream file("../../tailwind4/input.css");
+    std::ofstream file("../tailwind4/input.css");
     if (!file.is_open()) {
         // Attempt to create the file if it doesn't exist
         file.open("tailwind-config.css", std::ios::out);
@@ -347,9 +347,9 @@ void WTConfig::writeConfig()
     file << "@import \"./css/tests/scroll-bar.css\";\n\n";
     
     file << "/* Source additional templates and styles */\n";
-    file << "@source \"../xml-templates\";\n";
-    file << "@source \"../app-stylus/\";\n";
-    file << "@source \"../app-tailwind-classes/\";\n\n";
+    file << "@source \"../../xml-templates\";\n";
+    file << "@source \"../../app-stylus/\";\n";
+    file << "@source \"../../app-tailwind-classes/\";\n\n";
     
     file << "/* Define custom variants */\n";
     file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
@@ -466,7 +466,7 @@ void WTConfig::writeConfig()
     file.close();
     auto session_id = Wt::WApplication::instance()->sessionId();
     Wt::WServer::instance()->ioService().post([this, session_id]() {
-        std::system("cd ../../tailwind4 && npm run build");
+        std::system("cd ../tailwind4 && npm run build");
         Wt::WServer::instance()->post(session_id, [this]() {
             Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/../static/css/tailwind.css?v=" + Wt::WRandom::generateId());
             Wt::WApplication::instance()->triggerUpdate();

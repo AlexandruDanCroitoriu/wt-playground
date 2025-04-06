@@ -18,8 +18,9 @@ App::App(const Wt::WEnvironment &env)
     messageResourceBundle().use(appRoot() + "../templates");
 
     // JSs
-    // require(docRoot() + "/static/js/default/utils.js");
-    require(docRoot() + "/static/js-stylus/monaco-edditor.js");
+    // require(docRoot() + "/static/js/utils.js");
+    require(docRoot() + "/app-tailwind-classes/js/default/utils.js");
+    require(docRoot() + "/static/js/monaco-edditor.js?v=" + Wt::WRandom::generateId());
     // require(docRoot() + "/static/js/default/monaco-css-edditor.js");
     require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
     
