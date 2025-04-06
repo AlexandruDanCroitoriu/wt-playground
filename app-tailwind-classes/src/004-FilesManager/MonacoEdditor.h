@@ -7,7 +7,7 @@
 class MonacoEdditor : public Wt::WContainerWidget
 {
     public:
-        MonacoEdditor(std::string file_path, std::string language);
+        MonacoEdditor(std::string language);
         void setDarkTheme(bool dark);
         void resetLayout();
         void saveTextToFile();

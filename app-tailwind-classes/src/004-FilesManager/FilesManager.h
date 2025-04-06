@@ -11,6 +11,7 @@ class FilesManager : public Wt::WContainerWidget
         std::string default_folder_path_;
 private:
         void setTreeFolderWidgets();
+        Wt::WMessageBox* createMessageBox(std::string title, std::string temp);
 
         Wt::WContainerWidget* selected_file_wrapper_;
         Wt::WContainerWidget* folders_tree_wrapper_;

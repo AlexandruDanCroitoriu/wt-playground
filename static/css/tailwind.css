@@ -2,13 +2,12 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --color-red-200: oklch(0.885 0.062 18.334);
     --color-red-300: oklch(0.808 0.114 19.571);
     --color-red-400: oklch(0.704 0.191 22.216);
     --color-red-500: oklch(0.637 0.237 25.331);
     --color-red-600: oklch(0.577 0.245 27.325);
-    --color-red-700: oklch(0.505 0.213 27.518);
+    --color-red-700: oklch(0.274 0.072 132.109);
     --color-red-800: oklch(0.444 0.177 26.899);
     --color-red-900: oklch(0.396 0.141 25.723);
     --color-yellow-200: oklch(0.945 0.129 101.54);
@@ -56,7 +55,6 @@
     --color-gray-700: oklch(0.373 0.034 259.733);
     --color-gray-800: oklch(0.278 0.033 256.848);
     --color-gray-900: oklch(0.21 0.034 264.665);
-    --color-gray-950: oklch(0.13 0.028 261.692);
     --color-neutral-100: oklch(0.97 0 0);
     --color-neutral-200: oklch(0.922 0 0);
     --color-neutral-300: oklch(0.87 0 0);
@@ -352,6 +350,9 @@
   }
   .top-\[37px\] {
     top: 37px;
+  }
+  .\!right-10 {
+    right: calc(var(--spacing) * 10) !important;
   }
   .right-1 {
     right: calc(var(--spacing) * 1);
@@ -722,9 +723,6 @@
   .w-\[450px\] {
     width: 450px;
   }
-  .w-\[880px\] {
-    width: 880px;
-  }
   .w-\[calc\(100vw-380px-450px\)\] {
     width: calc(100vw - 380px - 450px);
   }
@@ -766,6 +764,9 @@
   }
   .min-w-\[70px\] {
     min-width: 70px;
+  }
+  .min-w-\[200px\] {
+    min-width: 200px;
   }
   .min-w-\[280px\] {
     min-width: 280px;
@@ -1629,9 +1630,6 @@
   .align-middle {
     vertical-align: middle;
   }
-  .font-sans {
-    font-family: var(--font-sans);
-  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -2450,11 +2448,6 @@
   .dark\:bg-gray-900 {
     &:where(.dark, .dark *) {
       background-color: var(--color-gray-900);
-    }
-  }
-  .dark\:bg-gray-950 {
-    &:where(.dark, .dark *) {
-      background-color: var(--color-gray-950);
     }
   }
   .dark\:bg-transparent {

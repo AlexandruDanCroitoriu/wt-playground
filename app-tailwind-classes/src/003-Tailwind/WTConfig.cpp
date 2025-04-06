@@ -21,7 +21,7 @@ WTConfig::WTConfig()
 {
     auto header = addWidget(std::make_unique<Wt::WContainerWidget>());
     vars_wrapper_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    setStyleClass("w-[880px] rounded-md dark:bg-gray-950 shadow-xl dark:shadow-md dark:shadow-gray-800 border border-solid border-gray-200 dark:border-gray-700");
+    setStyleClass("w-full flex-1 rounded-md dark:bg-gray-800 shadow-xl dark:shadow-md dark:shadow-gray-800 border border-solid border-gray-200 dark:border-gray-700");
     
     auto files_wrapper = header->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto buttons_wrapper = header->addWidget(std::make_unique<Wt::WContainerWidget>());

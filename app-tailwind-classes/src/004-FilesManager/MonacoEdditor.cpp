@@ -7,7 +7,7 @@
 #include <fstream>
 #include <regex>
 
-MonacoEdditor::MonacoEdditor(std::string file_path, std::string language)
+MonacoEdditor::MonacoEdditor(std::string language)
     : js_signal_text_changed_(this, "cssEdditorTextChanged")
 {
     setStyleClass("flex-1");
@@ -15,17 +15,16 @@ MonacoEdditor::MonacoEdditor(std::string file_path, std::string language)
     doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
     editor_js_var_name_ = language + "_editor";
 
-    file_path_ = file_path;
-    current_text_ = getFileText(file_path);
-    unsaved_text_ = current_text_;
+    // file_path_ = file_path;
+    // current_text_ = getFileText(file_path);
+    // unsaved_text_ = current_text_;
 
     std::string initializer = 
-R"(
-    require(['vs/editor/editor.main'], function () {
-        window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
-        window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
+    R"(
+        require(['vs/editor/editor.main'], function () {
+            window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
+            window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
             language: ')" + language + R"(',
-            value: `)" + current_text_ + R"(`,
             theme: 'vs-dark',
             wordWrap: 'on',
             lineNumbers: 'on',
@@ -53,6 +52,7 @@ R"(
 )";
 
     setJavaScriptMember("cssEdditorTextChanged", initializer);
+    // setFile(file_path);
     // setJavaScriptMember("cssEdditorTextChanged", "initializeCssEditor('" + id() + "', '"+current_text_+"');");
 
     keyWentDown().connect([=](Wt::WKeyEvent e)
@@ -118,15 +118,15 @@ void MonacoEdditor::setFile(std::string file_path)
 
 void MonacoEdditor::setCssEdditorText(std::string text)
 {
-    // resetLayout();
-    // doJavaScript("updateCssEditorValue('" + text + "');");
     doJavaScript(R"(
-        if (window.)" + editor_js_var_name_ + R"() {
-            window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
-            window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
-        } else {
-            console.error("Editor instance is not initialized yet.");
-        }
+        setTimeout(function() {
+            if (window.)" + editor_js_var_name_ + R"() {
+                window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
+                window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
+            } else {
+                console.error("Editor instance is not initialized yet.");
+            }
+        }, 100);
     )");
     current_text_ = text;
     unsaved_text_ = text;
