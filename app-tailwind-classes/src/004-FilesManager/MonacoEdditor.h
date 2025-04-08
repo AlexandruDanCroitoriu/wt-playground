@@ -16,7 +16,7 @@ class MonacoEdditor : public Wt::WContainerWidget
         Wt::Signal<std::string>& save_file_signal() { return save_file_signal_; }
         std::string getUnsavedText() { return unsaved_text_; }
         void textSaved();
-        
+        void reuploadText() { setCssEdditorText(current_text_); }
         private:
         std::string getFileText(std::string file_path);
         void setCssEdditorText(std::string text);
@@ -29,4 +29,5 @@ class MonacoEdditor : public Wt::WContainerWidget
         std::string current_text_;
         std::string unsaved_text_;
         std::string editor_js_var_name_;
+        
 };

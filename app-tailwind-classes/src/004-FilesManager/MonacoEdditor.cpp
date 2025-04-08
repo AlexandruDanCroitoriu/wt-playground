@@ -8,7 +8,9 @@
 #include <regex>
 
 MonacoEdditor::MonacoEdditor(std::string language)
-    : js_signal_text_changed_(this, "cssEdditorTextChanged")
+    : js_signal_text_changed_(this, "cssEdditorTextChanged"),
+    unsaved_text_(""),
+    current_text_("")
 {
     setStyleClass("flex-1");
     js_signal_text_changed_.connect(this, &MonacoEdditor::cssEdditorTextChanged);

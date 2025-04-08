@@ -13,38 +13,35 @@
 
 App::App(const Wt::WEnvironment &env)
     : WApplication(env)
-    //   session_(appRoot() + "../dbo.db"),
+//   session_(appRoot() + "../dbo.db"),
 {
     messageResourceBundle().use(appRoot() + "../templates");
+    messageResourceBundle().use(appRoot() + "../stylus-resources/xml-templates/experiments/test");
 
     // JSs
-    // require(docRoot() + "/static/js/utils.js");
-    // require(docRoot() + "/app-tailwind-classes/stylus-resources/js/default/utils.js");
+    require(docRoot() + "/app-tailwind-classes/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
     require(docRoot() + "/static/js/monaco-edditor.js?v=" + Wt::WRandom::generateId());
-    // require(docRoot() + "/static/js/default/monaco-css-edditor.js");
     require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
-    
-    // CSS
-    useStyleSheet("static/css/questionmark.css");
     // require("https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js");
-    
+
+    // CSS
+    // useStyleSheet("static/css/questionmark.css");
+
     // Settings
     enableUpdates(true);
-    
+
     // Title
     setTitle("Starter App");
 
-
     tailwind_config_center_ = root()->addChild(std::make_unique<TailwindConfigCenter>());
     tailwind_config_center_->show();
-    
+
     auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
     root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease");
-    
-   
-    
+
     Wt::WApplication::instance()->setHtmlClass("dark");
-    dark_mode_toggle->dark_mode_changed_.connect(this, [=] (bool dark) {
+    dark_mode_toggle->dark_mode_changed_.connect(this, [=](bool dark)
+                                                 {
         if(dark){
             Wt::WApplication::instance()->setHtmlClass("dark");
             tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(true);
@@ -52,26 +49,8 @@ App::App(const Wt::WEnvironment &env)
         else{
             Wt::WApplication::instance()->setHtmlClass("");
             tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(false);
-        }
-    });
+        } });
 
-
-    globalKeyWentDown().connect([=](Wt::WKeyEvent e)
-    { 
-        if (e.modifiers().test(Wt::KeyboardModifier::Alt))
-        {
-            if (e.key() == Wt::Key::Q)
-            {
-                if(tailwind_config_center_->isHidden())
-                {
-                    tailwind_config_center_->show();
-                }
-                else
-                {
-                    tailwind_config_center_->hide();
-                }
-            }
-        }
-    });
-
+    auto test_template = root()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("app-root")));
+    
 }

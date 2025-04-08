@@ -2,11 +2,7 @@
 #include <Wt/WStackedWidget.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WTemplate.h>
-
-// void TailwindConfigCenter::setTabIndex(int index)
-// {
-
-// }
+#include <Wt/WApplication.h>
 
 TailwindConfigCenter::TailwindConfigCenter()
 {
@@ -23,6 +19,8 @@ TailwindConfigCenter::TailwindConfigCenter()
     setModal(false);
     setResizable(false);
     setMovable(false);
+
+    Wt::WApplication::instance()->useStyleSheet("static/css/questionmark.css");
 
     auto navbar = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
@@ -47,17 +45,15 @@ TailwindConfigCenter::TailwindConfigCenter()
     css_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../stylus-resources/tailwind4/css/", "css"));
     js_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../stylus-resources/js/", "javascript"));
     
-    templates_menu_item->toggleStyleClass("?", false);
     templates_menu_item->toggleStyleClass("?", true);
     tailwind_menu_item->toggleStyleClass("?", false);
-    css_menu_item->toggleStyleClass("?", true);
+    css_menu_item->toggleStyleClass("?", false);
     css_menu_item->toggleStyleClass("?", false);
     javascript_menu_item->toggleStyleClass("?", false);
     
-    templates_files_manager_->toggleStyleClass("hidden", true);
     templates_files_manager_->toggleStyleClass("hidden", false);
     tailwind_config_->toggleStyleClass("hidden", true);
-    css_files_manager_->toggleStyleClass("hidden", false);
+    css_files_manager_->toggleStyleClass("hidden", true);
     css_files_manager_->toggleStyleClass("hidden", true);
     js_files_manager_->toggleStyleClass("hidden", true);
 
@@ -71,6 +67,7 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", true);
         js_files_manager_->toggleStyleClass("hidden", true);
         templates_files_manager_->editor_->resetLayout();
+        templates_files_manager_->editor_->reuploadText();
     });
 
     tailwind_menu_item->clicked().connect(this, [=]() {
@@ -94,6 +91,7 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", false);
         js_files_manager_->toggleStyleClass("hidden", true);
         css_files_manager_->editor_->resetLayout();
+        css_files_manager_->editor_->reuploadText();
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {
@@ -106,28 +104,24 @@ TailwindConfigCenter::TailwindConfigCenter()
         css_files_manager_->toggleStyleClass("hidden", true);
         js_files_manager_->toggleStyleClass("hidden", false);
         js_files_manager_->editor_->resetLayout();
+        js_files_manager_->editor_->reuploadText();
     });
 
-    // navbar->keyWentDown().connect([=](Wt::WKeyEvent e)
-    // { 
-    //     keyWentDown().emit(e);
-    // });
-    // keyWentDown().connect([=](Wt::WKeyEvent e)
-    // { 
-    //     if (e.modifiers().test(Wt::KeyboardModifier::Alt))
-    //     {
-    //         if (e.key() == Wt::Key::Q)
-    //         {
-    //             if(isHidden())
-    //             {
-    //                 show();
-    //             }
-    //             else
-    //             {
-    //                 hide();
-    //             }
-    //         }
-    //     }
-    // });
-
+    Wt::WApplication::instance()->globalKeyWentDown().connect([=](Wt::WKeyEvent e)
+    { 
+        if (e.modifiers().test(Wt::KeyboardModifier::Alt))
+        {
+            if (e.key() == Wt::Key::Q)
+            {
+                if(isHidden())
+                {
+                    show();
+                }
+                else
+                {
+                    hide();
+                }
+            }
+        }
+    });
 }
