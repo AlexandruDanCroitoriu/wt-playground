@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <messages >
     <message id="stylus-svg-add-folder">
-        <svg viewBox="0 0 16 16" class="w-6 h-6 fill-black dark:fill-white"
+        <svg viewBox="0 0 16 16" class="w-4 h-4 fill-black dark:fill-white"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -21,7 +21,7 @@
         </svg>
     </message>
     <message id="stylus-svg-add-file">
-        <svg viewBox="0 0 24 24" class="w-6 h-6 stroke-black dark:stroke-white"
+        <svg viewBox="0 0 24 24" class="w-4 h-4 stroke-black dark:stroke-white"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -31,44 +31,8 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-tailwind-logo">
-        <svg viewBox="0 0 32 32" class="w-10 h-10"
-            xmlns="http://www.w3.org/2000/svg" fill="#000000">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <title>file_type_tailwind</title>
-                <path d="M9,13.7q1.4-5.6,7-5.6c5.6,0,6.3,4.2,9.1,4.9q2.8.7,4.9-2.1-1.4,5.6-7,5.6c-5.6,0-6.3-4.2-9.1-4.9Q11.1,10.9,9,13.7ZM2,22.1q1.4-5.6,7-5.6c5.6,0,6.3,4.2,9.1,4.9q2.8.7,4.9-2.1-1.4,5.6-7,5.6c-5.6,0-6.3-4.2-9.1-4.9Q4.1,19.3,2,22.1Z" style="fill:#44a8b3"></path>
-            </g>
-        </svg>
-    </message>
-    <message id="stylus-svg-css-logo">
-        <svg viewBox="0 0 32 32" fill="none" class="w-10 h-10"
-            xmlns="http://www.w3.org/2000/svg">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <path d="M6 28L4 3H28L26 28L16 31L6 28Z" fill="#1172B8"></path>
-                <path d="M26 5H16V29.5L24 27L26 5Z" fill="#33AADD"></path>
-                <path d="M19.5 17.5H9.5L9 14L17 11.5H9L8.5 8.5H24L23.5 12L17 14.5H23L22 24L16 26L10 24L9.5 19H12.5L13 21.5L16 22.5L19 21.5L19.5 17.5Z" fill="white"></path>
-            </g>
-        </svg>
-    </message>
-    <message id="stylus-svg-javascript-logo">
-        <svg viewBox="0 0 24 24" class="w-10 h-10"
-            xmlns="http://www.w3.org/2000/svg" fill="#000000">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <g fill="none" fill-rule="evenodd">
-                    <rect width="24" height="24" fill="#F1DC50"></rect>
-                    <path stroke="#333" stroke-width="2" d="M12,11 C12,15.749205 12,18.4158717 12,19 C12,19.8761925 11.4771235,21 10,21 C7.61461794,21 7.5,19 7.5,19 M20.7899648,13.51604 C20.1898831,12.5053467 19.3944074,12 18.4035378,12 C16.8563489,12 16,13 16,14 C16,15 16.5,16 18.5084196,16.5 C19.7864643,16.8181718 21,17.5 21,19 C21,20.5 19.6845401,21 18.5,21 C16.9861609,21 15.9861609,20.3333333 15.5,19"></path>
-                </g>
-            </g>
-        </svg>
-    </message>
     <message id="stylus-svg-trash">
-        <svg version="1.1" id="Layer_1" class="w-6 h-6 fill-red-500 dark:fill-red-300"
+        <svg version="1.1" id="Layer_1" class="w-4 h-4 fill-red-500 dark:fill-red-300"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -95,6 +59,80 @@
                     <path d="M14.302,12.201c-0.249,0.012-0.435,0.102-0.57,0.252c-0.135,0.152-0.203,0.348-0.192,0.551l0.998,17.608 c0.024,0.401,0.357,0.716,0.759,0.716v0.19l0.045-0.19c0.417-0.024,0.737-0.385,0.715-0.804l-0.999-17.606 C15.034,12.516,14.702,12.201,14.302,12.201L14.302,12.201z"></path>
                     <path d="M25.709,12.202c-0.445,0-0.776,0.314-0.8,0.716l-1,17.606c-0.022,0.419,0.298,0.779,0.717,0.804l0.044,0.19v-0.19 c0.402,0,0.735-0.314,0.757-0.716l1.001-17.608c0.011-0.203-0.058-0.398-0.192-0.551c-0.136-0.15-0.321-0.24-0.523-0.251 C25.711,12.202,25.71,12.202,25.709,12.202L25.709,12.202z"></path>
                     <path d="M20,12.201c-0.419,0-0.76,0.341-0.76,0.76v17.607c0,0.419,0.341,0.76,0.76,0.76s0.76-0.341,0.76-0.76V12.961 C20.76,12.542,20.419,12.201,20,12.201L20,12.201z"></path>
+                </g>
+            </g>
+        </svg>
+    </message>
+    <message id="stylus-svg-edit">
+        <svg viewBox="0 0 24 24" class="w-4 h-4 stroke-green-500 dark:stroke-green-300"
+            xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <title></title>
+                <g id="Complete">
+                    <g id="edit">
+                        <g>
+                            <path d="M20,16v4a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V6A2,2,0,0,1,4,4H8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <polygon fill="none" points="12.5 15.8 22 6.2 17.8 2 8.3 11.5 8 16 12.5 15.8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </message>
+    <message id="stylus-svg-xml-logo">
+        <svg height="200px" width="200px" version="1.1" id="Layer_1" class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path style="fill:#E2E5E7;" d="M128,0c-17.6,0-32,14.4-32,32v448c0,17.6,14.4,32,32,32h320c17.6,0,32-14.4,32-32V128L352,0H128z"></path>
+                <path style="fill:#B0B7BD;" d="M384,128h96L352,0v96C352,113.6,366.4,128,384,128z"></path>
+                <polygon style="fill:#CAD1D8;" points="480,224 384,128 480,128 "></polygon>
+                <path style="fill:#50BEE8;" d="M416,416c0,8.8-7.2,16-16,16H48c-8.8,0-16-7.2-16-16V256c0-8.8,7.2-16,16-16h352c8.8,0,16,7.2,16,16 V416z"></path>
+                <g>
+                    <path style="fill:#FFFFFF;" d="M131.28,326.176l22.272-27.888c6.64-8.688,19.568,2.432,12.288,10.752 c-7.664,9.088-15.728,18.944-23.424,29.024l26.112,32.496c7.024,9.6-7.04,18.816-13.952,9.344l-23.536-30.192l-23.152,30.832 c-6.528,9.328-20.992-1.152-13.68-9.856l25.712-32.624c-8.064-10.096-15.872-19.936-23.664-29.024 c-8.064-9.6,6.912-19.44,12.784-10.48L131.28,326.176z"></path>
+                    <path style="fill:#FFFFFF;" d="M201.264,327.84v47.328c0,5.648-4.608,8.832-9.2,8.832c-4.096,0-7.68-3.184-7.68-8.832v-72.016 c0-6.656,5.648-8.848,7.68-8.848c3.696,0,5.872,2.192,8.048,4.624l28.16,37.984l29.152-39.408c4.24-5.232,14.592-3.2,14.592,5.648 v72.016c0,5.648-3.584,8.832-7.664,8.832c-4.608,0-8.192-3.184-8.192-8.832V327.84l-21.248,26.864 c-4.592,5.648-10.352,5.648-14.576,0L201.264,327.84z"></path>
+                    <path style="fill:#FFFFFF;" d="M294.288,303.152c0-4.224,3.584-7.808,8.064-7.808c4.096,0,7.552,3.6,7.552,7.808v64.096h34.8 c12.528,0,12.8,16.752,0,16.752h-42.336c-4.48,0-8.064-3.184-8.064-7.808v-73.04H294.288z"></path>
+                </g>
+                <path style="fill:#CAD1D8;" d="M400,432H96v16h304c8.8,0,16-7.2,16-16v-16C416,424.8,408.8,432,400,432z"></path>
+            </g>
+        </svg>
+    </message>
+    <message id="stylus-svg-tailwind-logo">
+        <svg viewBox="0 0 32 32" class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <title>file_type_tailwind</title>
+                <path d="M9,13.7q1.4-5.6,7-5.6c5.6,0,6.3,4.2,9.1,4.9q2.8.7,4.9-2.1-1.4,5.6-7,5.6c-5.6,0-6.3-4.2-9.1-4.9Q11.1,10.9,9,13.7ZM2,22.1q1.4-5.6,7-5.6c5.6,0,6.3,4.2,9.1,4.9q2.8.7,4.9-2.1-1.4,5.6-7,5.6c-5.6,0-6.3-4.2-9.1-4.9Q4.1,19.3,2,22.1Z" style="fill:#44a8b3"></path>
+            </g>
+        </svg>
+    </message>
+    <message id="stylus-svg-css-logo">
+        <svg viewBox="0 0 32 32" fill="none" class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path d="M6 28L4 3H28L26 28L16 31L6 28Z" fill="#1172B8"></path>
+                <path d="M26 5H16V29.5L24 27L26 5Z" fill="#33AADD"></path>
+                <path d="M19.5 17.5H9.5L9 14L17 11.5H9L8.5 8.5H24L23.5 12L17 14.5H23L22 24L16 26L10 24L9.5 19H12.5L13 21.5L16 22.5L19 21.5L19.5 17.5Z" fill="white"></path>
+            </g>
+        </svg>
+    </message>
+    <message id="stylus-svg-javascript-logo">
+        <svg viewBox="0 0 24 24" class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <g fill="none" fill-rule="evenodd">
+                    <rect width="24" height="24" fill="#F1DC50"></rect>
+                    <path stroke="#333" stroke-width="2" d="M12,11 C12,15.749205 12,18.4158717 12,19 C12,19.8761925 11.4771235,21 10,21 C7.61461794,21 7.5,19 7.5,19 M20.7899648,13.51604 C20.1898831,12.5053467 19.3944074,12 18.4035378,12 C16.8563489,12 16,13 16,14 C16,15 16.5,16 18.5084196,16.5 C19.7864643,16.8181718 21,17.5 21,19 C21,20.5 19.6845401,21 18.5,21 C16.9861609,21 15.9861609,20.3333333 15.5,19"></path>
                 </g>
             </g>
         </svg>

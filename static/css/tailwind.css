@@ -744,6 +744,9 @@
   .\!max-w-\[450px\] {
     max-width: 450px !important;
   }
+  .max-w-\[1000px\] {
+    max-width: 1000px;
+  }
   .max-w-sm {
     max-width: var(--container-sm);
   }
@@ -1717,6 +1720,9 @@
   }
   .text-gray-700 {
     color: var(--color-gray-700);
+  }
+  .text-gray-800 {
+    color: var(--color-gray-800);
   }
   .text-green-400 {
     color: var(--color-green-400);

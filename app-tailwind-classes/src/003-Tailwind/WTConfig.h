@@ -10,7 +10,7 @@
 class WTConfig : public Wt::WContainerWidget 
 {
     public:
-        WTConfig();
+        WTConfig(std::string default_config_path);
 
         void writeConfig();
         std::vector<std::pair<std::string, std::string>> getCssVariables();
@@ -20,13 +20,14 @@ class WTConfig : public Wt::WContainerWidget
         std::vector<std::string> getConfigFiles();
         void readConfigFromXML(std::string config_path = "");   
         void createVariableWidgets();
+        void createVariableWidgetsV2();
 
         Wt::WContainerWidget* setPanelConfig(Wt::WPanel* panel, std::string title);
         Wt::WContainerWidget* vars_wrapper_;
         Wt::WPushButton* duplicate_file_btn_;
         Wt::WPushButton* delete_file_btn_;
 
-        std::string default_config_path_ = "../tailwind-config/";
+        std::string default_config_path_;
         std::string default_config_file_ = "tailwind-config.xml";
         std::string selected_config_file_; 
 

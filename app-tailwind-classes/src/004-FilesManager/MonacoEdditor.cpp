@@ -61,28 +61,31 @@ MonacoEdditor::MonacoEdditor(std::string language)
         {
             if (e.key() == Wt::Key::S)
             {
-                saveTextToFile();
+                save_file_signal_.emit(unsaved_text_);
+                current_text_ = unsaved_text_;
+                avalable_save_.emit(false);
             }
         }
     });
 }
 
-void MonacoEdditor::saveTextToFile()
-{
-    // std::cout << "\n\n MonacoEdditor::saveTextToFile()\n\n";
-    std::ofstream file(file_path_);
-    if (!file.is_open()) {
-        std::cout << "\n\n Failed to open file: " << file_path_ << "\n\n";
-        return;
-    }
-    file << unsaved_text_;
-    file.close();
-    current_text_ = unsaved_text_;
-    avalable_save_.emit(false);
-}
+// void MonacoEdditor::saveTextToFile()
+// {
+//     // std::cout << "\n\n MonacoEdditor::saveTextToFile()\n\n";
+//     std::ofstream file(file_path_);
+//     if (!file.is_open()) {
+//         std::cout << "\n\n Failed to open file: " << file_path_ << "\n\n";
+//         return;
+//     }
+//     file << unsaved_text_;
+//     file.close();
+//     current_text_ = unsaved_text_;
+//     avalable_save_.emit(false);
+// }
 
 void MonacoEdditor::cssEdditorTextChanged(const std::string text)
 {
+    std::cout << "\n\n redived text: " << text << "\n\n";
     if(text.compare(unsaved_text_) == 0) return;
     if(text.compare(current_text_) == 0)
     {
@@ -92,8 +95,14 @@ void MonacoEdditor::cssEdditorTextChanged(const std::string text)
         return;
     }
     std::cout << "\n\n MonacoEdditor::cssEdditorTextChanged()\n\n";
-    avalable_save_.emit(true);
     unsaved_text_ = text;
+    avalable_save_.emit(true);
+}
+
+void MonacoEdditor::textSaved()
+{
+    current_text_ = unsaved_text_;
+    avalable_save_.emit(false);
 }
 
 bool MonacoEdditor::unsavedChanges() 
@@ -111,7 +120,6 @@ bool MonacoEdditor::unsavedChanges()
 
 void MonacoEdditor::setFile(std::string file_path)
 {
-    file_path_ = file_path;
     setCssEdditorText(getFileText(file_path));
 }
 

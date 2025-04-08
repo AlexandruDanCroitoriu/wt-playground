@@ -19,7 +19,7 @@ App::App(const Wt::WEnvironment &env)
 
     // JSs
     // require(docRoot() + "/static/js/utils.js");
-    require(docRoot() + "/app-tailwind-classes/js/default/utils.js");
+    // require(docRoot() + "/app-tailwind-classes/stylus-resources/js/default/utils.js");
     require(docRoot() + "/static/js/monaco-edditor.js?v=" + Wt::WRandom::generateId());
     // require(docRoot() + "/static/js/default/monaco-css-edditor.js");
     require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");

@@ -4,8 +4,8 @@
     --questionmark-two-light: #f16bc9;
     --questionmark-two-dark: #f71fb6;
 
-    --questionmark-outline-width-start: 2px;
-    --questionmark-outline-width-end: 3px;
+    --questionmark-outline-width-start: 1px;
+    --questionmark-outline-width-end: 1px;
 }
 
 .\?\? {
