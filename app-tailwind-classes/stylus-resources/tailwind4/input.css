@@ -2,14 +2,6 @@
 @import "tailwindcss";
 
 /* Import custom CSS files for additional styles */
-@import "./css/tests/0.css";
-@import "./css/tests/button-classes.css";
-@import "./css/tests/experiments.css";
-@import "./css/tests/gradients.css";
-@import "./css/tests/input-classes.css";
-@import "./css/tests/override-wt.css";
-@import "./css/tests/scroll-bar.css";
-
 /* Source additional templates and styles */
 @source "../../xml-templates";
 @source "../../app-stylus/";
