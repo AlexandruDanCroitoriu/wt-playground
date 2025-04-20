@@ -1,4 +1,4 @@
-#include "101-Stylus/001-FilesManager/FilesManager.h"
+#include "100-Utils/FilesManager/FilesManager.h"
 #include <filesystem>
 #include <Wt/WPushButton.h>
 #include <Wt/WMenu.h>
@@ -14,12 +14,10 @@
 #include <Wt/WRandom.h>
 #include <Wt/WApplication.h>
 
-namespace Stylus
-{
 
     FilesManager::FilesManager(std::string default_folder_path, std::string language)
         : default_folder_path_(default_folder_path),
-          file_extension_(language)
+        file_extension_(language)
     {
         setStyleClass("h-full flex");
 
@@ -47,7 +45,7 @@ namespace Stylus
         folders_tree_wrapper_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
 
         folders_ = getFolders();
-        editor_ = addWidget(std::make_unique<MonacoEdditor>(language));
+        editor_ = addWidget(std::make_unique<MonacoEditor>(language));
         editor_->avalable_save().connect(this, [=](bool avalable)
                                          {
         if(selected_file_wrapper_ == nullptr) return;
@@ -62,7 +60,7 @@ namespace Stylus
 
         editor_->save_file_signal().connect(this, [=](std::string text)
                                             {
-        std::cout << "\n\n Save file signal received.\n\n";
+        // std::cout << "\n\n Save file signal received.\n\n";
         if(selected_file_path_.compare("") == 0) {
             std::cout << "\n\n No file selected to save.\n\n";
             return;
@@ -74,14 +72,11 @@ namespace Stylus
         }
         file << text;
         file.close();
-        std::cout << "\n\n File saved: " << selected_file_path_ << "\n\n";
-        if(file_extension_.compare("js") == 0)
-        {
-            std::string base_path = Wt::WApplication::instance()->docRoot() + "/app-tailwind-classes/";
-            std::string file_path = selected_file_path_.substr(2, selected_file_path_.length()-2);
-            Wt::WApplication::instance()->require(base_path + file_path + "?v=" + Wt::WRandom::generateId());
-        }
-        editor_->textSaved(); });
+        // std::cout << "\n\n File saved: " << selected_file_path_ << "\n\n";
+     
+        file_saved_.emit(selected_file_path_);
+        editor_->textSaved(); // this is fo monaco to set the current text and emit avalable_save_ signal to fase
+     });
 
         add_folder_btn->clicked().connect(this, [=]()
                                           {
@@ -347,6 +342,7 @@ namespace Stylus
                 setTreeFolderWidgets(); });
             }
 
+            // panel->centralWidget()->setStyleClass("asjkdhfaksjdfhajsdfk");
             auto central_widget = panel->setCentralWidget(std::make_unique<Wt::WContainerWidget>());
             central_widget->setStyleClass("w-full bg-gray-800");
 
@@ -557,7 +553,7 @@ namespace Stylus
 
     std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getFolders()
     {
-        std::vector<std::pair<std::string, std::vector<std::string>>> css_folders;
+        std::vector<std::pair<std::string, std::vector<std::string>>> return_folders;
         std::vector<std::string> folders;
         // if(!std::filesystem::exists(default_folder_path_))
         // {
@@ -585,16 +581,17 @@ namespace Stylus
                     files.push_back(entry.path().filename().string());
                 }
             }
-            css_folders.push_back(std::make_pair(folder, files));
+            return_folders.push_back(std::make_pair(folder, files));
         }
         // sort
-        std::sort(css_folders.begin(), css_folders.end(), [](const auto &a, const auto &b)
+        std::sort(return_folders.begin(), return_folders.end(), [](const auto &a, const auto &b)
                   { return a.first < b.first; });
-        for (auto &folder : css_folders)
+        for (auto &folder : return_folders)
         {
             std::sort(folder.second.begin(), folder.second.end());
         }
-        return css_folders;
+        get_folders_signal_.emit(return_folders);
+        return return_folders;
     }
 
     Wt::WMessageBox *FilesManager::createMessageBox(std::string title, std::string temp)
@@ -609,5 +606,3 @@ namespace Stylus
         message_box->footer()->setStyleClass("flex items-center justify-between  p-2 bg-gray-800 text-gray-300 hover:bg-gray-700");
         return message_box;
     }
-
-}

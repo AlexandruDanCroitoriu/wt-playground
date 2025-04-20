@@ -25,6 +25,7 @@ App::App(const Wt::WEnvironment &env)
 
     // CSS
     // useStyleSheet("static/css/questionmark.css");
+    useStyleSheet("../static/tailwind.css");
 
     // Settings
     enableUpdates(true);

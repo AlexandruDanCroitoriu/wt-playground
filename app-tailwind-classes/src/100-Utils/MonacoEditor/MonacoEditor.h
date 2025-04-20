@@ -4,12 +4,10 @@
 #include <Wt/WStringStream.h>
 #include <Wt/WSignal.h>
 
-namespace Stylus {
-
-class MonacoEdditor : public Wt::WContainerWidget
+class MonacoEditor : public Wt::WContainerWidget
 {
     public:
-        MonacoEdditor(std::string language);
+        MonacoEditor(std::string language);
         void setDarkTheme(bool dark);
         void resetLayout();
         void setFile(std::string file_path);
@@ -33,5 +31,3 @@ class MonacoEdditor : public Wt::WContainerWidget
         std::string editor_js_var_name_;
         
 };
-
-}

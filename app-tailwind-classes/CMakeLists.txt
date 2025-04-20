@@ -28,10 +28,14 @@ set(SOURCES
     ${SOURCE_DIR}/010-TestWidgets/DarkModeToggle.cpp
     
     ${SOURCE_DIR}100-Utils/tinyxml2/tinyxml2.cpp
+    ${SOURCE_DIR}100-Utils/MonacoEditor/MonacoEditor.cpp
+    ${SOURCE_DIR}100-Utils/FilesManager/FilesManager.cpp
     
     ${SOURCE_DIR}101-Stylus/Stylus.cpp
-    ${SOURCE_DIR}101-Stylus/001-FilesManager/FilesManager.cpp
-    ${SOURCE_DIR}101-Stylus/002-MonacoEditor/MonacoEdditor.cpp
+    ${SOURCE_DIR}101-Stylus/Brain.cpp
+    ${SOURCE_DIR}101-Stylus/001-JsFilesManager/JsFilesManager.cpp
+    ${SOURCE_DIR}101-Stylus/002-CssFilesManager/CssFilesManager.cpp
+    ${SOURCE_DIR}101-Stylus/003-XmlFilesManager/XmlFilesManager.cpp
     ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/TVariable.cpp
     ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/WTConfig.cpp
     ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/WTVariable.cpp

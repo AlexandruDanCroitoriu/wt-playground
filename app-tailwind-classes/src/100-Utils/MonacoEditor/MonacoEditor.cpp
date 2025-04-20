@@ -1,4 +1,4 @@
-#include "101-Stylus/002-MonacoEditor/MonacoEdditor.h"
+#include "100-Utils/MonacoEditor/MonacoEditor.h"
 #include <Wt/WText.h>
 #include <Wt/WApplication.h>
 #include <Wt/WPushButton.h>
@@ -7,16 +7,14 @@
 #include <fstream>
 #include <regex>
 
-namespace Stylus
-{
 
-    MonacoEdditor::MonacoEdditor(std::string language)
+    MonacoEditor::MonacoEditor(std::string language)
         : js_signal_text_changed_(this, "cssEdditorTextChanged"),
           unsaved_text_(""),
           current_text_("")
     {
         setStyleClass("flex-1");
-        js_signal_text_changed_.connect(this, &MonacoEdditor::cssEdditorTextChanged);
+        js_signal_text_changed_.connect(this, &MonacoEditor::cssEdditorTextChanged);
         doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
         editor_js_var_name_ = language + "_editor";
 
@@ -27,14 +25,11 @@ namespace Stylus
         std::string initializer =
             R"(
         require(['vs/editor/editor.main'], function () {
-            window.)" +
-            editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
-            window.)" +
-            editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
-            language: ')" +
-            language + R"(',
+            window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
+            window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
+            language: ')" + language + R"(',
             theme: 'vs-dark',
-            wordWrap: 'on',
+            wordWrap: 'off',
             lineNumbers: 'on',
             tabSize: 4,
             insertSpaces: false,
@@ -43,20 +38,15 @@ namespace Stylus
             lineEnding: '\n'
         });
 
-        window.)" +
-            editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
-            if (window.)" +
-            editor_js_var_name_ + R"(_current_text !== window.)" + editor_js_var_name_ + R"(.getValue()) {
-                window.)" +
-            editor_js_var_name_ + R"(_current_text = window.)" + editor_js_var_name_ + R"(.getValue();
-                Wt.emit(')" +
-            id() + R"(', 'cssEdditorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
+        window.)" + editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
+            if (window.)" + editor_js_var_name_ + R"(_current_text !== window.)" + editor_js_var_name_ + R"(.getValue()) {
+                window.)" + editor_js_var_name_ + R"(_current_text = window.)" + editor_js_var_name_ + R"(.getValue();
+                Wt.emit(')" + id() + R"(', 'cssEdditorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
             }
         });
 
         // Override the Ctrl+S command
-        window.)" +
-            editor_js_var_name_ + R"(.getDomNode().addEventListener('keydown', function(e) {
+        window.)" + editor_js_var_name_ + R"(.getDomNode().addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault();
             }
@@ -81,9 +71,9 @@ namespace Stylus
         } });
     }
 
-    // void MonacoEdditor::saveTextToFile()
+    // void MonacoEditor::saveTextToFile()
     // {
-    //     // std::cout << "\n\n MonacoEdditor::saveTextToFile()\n\n";
+    //     // std::cout << "\n\n MonacoEditor::saveTextToFile()\n\n";
     //     std::ofstream file(file_path_);
     //     if (!file.is_open()) {
     //         std::cout << "\n\n Failed to open file: " << file_path_ << "\n\n";
@@ -95,7 +85,7 @@ namespace Stylus
     //     avalable_save_.emit(false);
     // }
 
-    void MonacoEdditor::cssEdditorTextChanged(const std::string text)
+    void MonacoEditor::cssEdditorTextChanged(const std::string text)
     {
         std::cout << "\n\n redived text: " << text << "\n\n";
         if (text.compare(unsaved_text_) == 0)
@@ -107,20 +97,20 @@ namespace Stylus
             std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
             return;
         }
-        std::cout << "\n\n MonacoEdditor::cssEdditorTextChanged()\n\n";
+        std::cout << "\n\n MonacoEditor::cssEdditorTextChanged()\n\n";
         unsaved_text_ = text;
         avalable_save_.emit(true);
     }
 
-    void MonacoEdditor::textSaved()
+    void MonacoEditor::textSaved()
     {
         current_text_ = unsaved_text_;
         avalable_save_.emit(false);
     }
 
-    bool MonacoEdditor::unsavedChanges()
+    bool MonacoEditor::unsavedChanges()
     {
-        // std::cout << "\n\n MonacoEdditor::unsavedChanges()";
+        // std::cout << "\n\n MonacoEditor::unsavedChanges()";
         if (current_text_.compare(unsaved_text_) == 0)
         {
             std::cout << " No unsaved changes \n\n";
@@ -130,12 +120,12 @@ namespace Stylus
         return true;
     }
 
-    void MonacoEdditor::setFile(std::string file_path)
+    void MonacoEditor::setFile(std::string file_path)
     {
         setCssEdditorText(getFileText(file_path));
     }
 
-    void MonacoEdditor::setCssEdditorText(std::string text)
+    void MonacoEditor::setCssEdditorText(std::string text)
     {
         doJavaScript(R"(
         setTimeout(function() {
@@ -154,12 +144,12 @@ namespace Stylus
         unsaved_text_ = text;
     }
 
-    void MonacoEdditor::resetLayout()
+    void MonacoEditor::resetLayout()
     {
         doJavaScript("setTimeout(function() { window." + editor_js_var_name_ + ".layout() }, 1);");
     }
 
-    void MonacoEdditor::setDarkTheme(bool dark)
+    void MonacoEditor::setDarkTheme(bool dark)
     {
         if (dark)
             doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs-dark');");
@@ -167,7 +157,7 @@ namespace Stylus
             doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs');");
     }
 
-    std::string MonacoEdditor::getFileText(std::string file_path)
+    std::string MonacoEditor::getFileText(std::string file_path)
     {
         std::ifstream file(file_path);
         if (!file.is_open())
@@ -184,5 +174,3 @@ namespace Stylus
         file_content = std::regex_replace(file_content, std::regex("\t"), "\\t");
         return file_content;
     }
-
-}

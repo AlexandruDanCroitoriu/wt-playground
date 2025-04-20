@@ -1,23 +1,24 @@
 #pragma once
 #include "100-Utils/tinyxml2/tinyxml2.h"
 #include "101-Stylus/003-TailwindConfigManager/TVariable.h"
+#include "101-Stylus/Brain.h"
 #include <vector>
 #include <Wt/WContainerWidget.h>
 #include <map>
 #include <Wt/WPushButton.h>
-
 namespace Stylus
 {
 
     class WTConfig : public Wt::WContainerWidget
     {
     public:
-        WTConfig(std::string default_config_path);
+        WTConfig(std::shared_ptr<Brain> brain);
 
         void writeConfig();
         std::vector<std::pair<std::string, std::string>> getCssVariables();
 
     private:
+        std::shared_ptr<Brain> brain_;
         std::vector<std::string> getConfigFiles();
         void readConfigFromXML(std::string config_path = "");
         void createVariableWidgets();

@@ -20,8 +20,9 @@
 namespace Stylus
 {
 
-    WTConfig::WTConfig(std::string default_config_path)
-        : default_config_path_(default_config_path)
+    WTConfig::WTConfig(std::shared_ptr<Brain> brain)
+        : default_config_path_("../stylus-resources/tailwind-config/"),
+            brain_(brain)
     {
         auto header = addWidget(std::make_unique<Wt::WContainerWidget>());
         vars_wrapper_ = addWidget(std::make_unique<Wt::WContainerWidget>());
@@ -49,12 +50,14 @@ namespace Stylus
         files_combobox->activated().connect([=](int index)
                                             {
         std::string selected_file = files_combobox->itemText(index).toUTF8();
-        files_combobox->setValueText(selected_file);
+        // files_combobox->setValueText(selected_file);
         std::cout << "\nSelected file: " << selected_file << "\n";
         if(selected_file.compare(selected_config_file_) != 0)
         {
             readConfigFromXML(default_config_path_ + selected_file);
-        } });
+
+        } 
+    });
 
         delete_file_btn_->clicked().connect(this, [=]()
                                             {
@@ -539,158 +542,115 @@ namespace Stylus
 
     void WTConfig::writeConfig()
     {
-        const std::string import_statement = "@import \"tailwindcss\";\n\n";
 
-        std::ofstream file("../stylus-resources/tailwind4/input.css");
-        if (!file.is_open())
-        {
-            // Attempt to create the file if it doesn't exist
-            file.open("tailwind-config.css", std::ios::out);
-            if (!file.is_open())
-            {
-                Wt::WApplication::instance()->log("\n Failed to create and open tailwind-input.css for writing\n");
-                return;
-            }
-        }
-
-        file << "/* Import TailwindCSS base styles */\n";
-        file << "@import \"tailwindcss\";\n\n";
-
-        file << "/* Import custom CSS files for additional styles */\n";
-        // file << "@import \"./css/tests/0.css\";\n";
-        // file << "@import \"./css/tests/button-classes.css\";\n";
-        // file << "@import \"./css/tests/experiments.css\";\n";
-        // file << "@import \"./css/tests/gradients.css\";\n";
-        // file << "@import \"./css/tests/input-classes.css\";\n";
-        // file << "@import \"./css/tests/override-wt.css\";\n";
-        // file << "@import \"./css/tests/scroll-bar.css\";\n\n";
-
-        file << "/* Source additional templates and styles */\n";
-        file << "@source \"../../xml-templates\";\n";
-        file << "@source \"../../app-stylus/\";\n";
-        file << "@source \"../../app-tailwind-classes/\";\n\n";
-
-        file << "/* Define custom variants */\n";
-        file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
-
-        file << "/* Define custom theme */\n";
-        file << "@theme {\n";
-        file << "\t--*: initial;\n";
-
-        std::string previous_value = "";
-
+        std::string return_string = "";
+        return_string += "@theme {\n";
+        return_string += "\t--*: initial;\n";
         {
             for (auto &var_pair : var_font_family_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_color_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_spacing_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_breakpoint_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_container_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_text_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_font_weight_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_tracking_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_leading_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_radius_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_shadow_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_inset_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_drop_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_blur_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_perspective_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_aspect_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_ease_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_pair : var_animate_)
             {
-                file << var_pair.second->getCSSVariable();
+                return_string += var_pair.second->getCSSVariable();
             }
-            file << "\n";
+            return_string += "\n";
             for (auto &var_keyframes_pair : var_keyframes_)
             {
                 auto variable = var_keyframes_pair.second;
                 auto first_dash = variable->getName().find_first_of('-');
                 std::string keyframes_name = variable->getName().substr(first_dash + 1);
-                file << "\t@keyframes " << keyframes_name << " " << variable->getValue() << "\n";
+                return_string += "\t@keyframes " + keyframes_name + " " + variable->getValue() + "\n";
             }
-            file << "\n";
+            return_string += "\n";
         }
 
-        file << "}\n";
+        return_string += "}\n";
 
-        file.close();
-        auto session_id = Wt::WApplication::instance()->sessionId();
-        Wt::WServer::instance()->ioService().post([this, session_id]()
-                                                  {
-        std::system("cd ../stylus-resources/tailwind4 && npm run build");
-        Wt::WServer::instance()->post(session_id, [this]() {
-            Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/../static/css/tailwind.css?v=" + Wt::WRandom::generateId());
-            Wt::WApplication::instance()->triggerUpdate();
-        }); });
+        brain_->tailwind_config_ = return_string;
+        brain_->generateCssFile();
     }
 
     std::vector<std::pair<std::string, std::string>> WTConfig::getCssVariables()

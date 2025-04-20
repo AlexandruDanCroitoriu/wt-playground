@@ -9,6 +9,7 @@ namespace Stylus {
 
 Stylus::Stylus()
 {
+    brain_ = std::make_shared<Brain>();
     setOffsets(0, Wt::Side::Top | Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
     // setOffsets(0, Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
     // setOffsets(200, Wt::Side::Top);
@@ -34,7 +35,7 @@ Stylus::Stylus()
     auto tailwind_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-tailwind-logo")));
     auto css_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-css-logo")));
     auto javascript_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-javascript-logo")));
-
+    brain_->generateCssFile();
     std::string nav_btns_styles = "hover:bg-gray-700 rounded-md p-1 cursor-pointer flex items-center";
 
     templates_menu_item->setStyleClass(nav_btns_styles);
@@ -42,10 +43,10 @@ Stylus::Stylus()
     css_menu_item->setStyleClass(nav_btns_styles);
     javascript_menu_item->setStyleClass(nav_btns_styles);
     
-    templates_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../stylus-resources/xml-templates/", "xml"));    
-    tailwind_config_ = content_wrapper->addWidget(std::make_unique<WTConfig>("../stylus-resources/tailwind-config/"));
-    css_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../stylus-resources/tailwind4/css/", "css"));
-    js_files_manager_ = content_wrapper->addWidget(std::make_unique<FilesManager>("../stylus-resources/js/", "javascript"));
+    templates_files_manager_ = content_wrapper->addWidget(std::make_unique<XmlFilesManager>(brain_));    
+    tailwind_config_ = content_wrapper->addWidget(std::make_unique<WTConfig>(brain_));
+    css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>(brain_));
+    js_files_manager_ = content_wrapper->addWidget(std::make_unique<JsFilesManager>(brain_));
     
     templates_menu_item->toggleStyleClass("?", true);
     tailwind_menu_item->toggleStyleClass("?", false);
