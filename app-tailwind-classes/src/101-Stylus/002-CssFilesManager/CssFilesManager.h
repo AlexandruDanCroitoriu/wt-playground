@@ -5,12 +5,12 @@
 namespace Stylus
 {
 
-class CssFilesManager : public FilesManager
-{
-public:
-    CssFilesManager(std::shared_ptr<Brain> brain);
+    class CssFilesManager : public FilesManager
+    {
+    public:
+        CssFilesManager(std::shared_ptr<Brain> brain);
 
-private:
-    std::shared_ptr<Brain> brain_;
+    private:
+        std::shared_ptr<Brain> brain_;
     };
 }

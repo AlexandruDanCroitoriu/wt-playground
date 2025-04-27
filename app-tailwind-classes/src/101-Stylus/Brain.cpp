@@ -24,7 +24,7 @@ namespace Stylus {
         file << "/* Import TailwindCSS base styles */\n";
         file << "@import \"tailwindcss\";\n\n";
         file << "/* Import custom CSS files for additional styles */\n";
-        for(const auto& folder : css_folders_)
+        for(const auto& folder : *css_folders_)
         {
             for (const auto& file_name : folder.second)
             {
@@ -47,13 +47,16 @@ namespace Stylus {
 
 
         auto session_id = Wt::WApplication::instance()->sessionId();
-        Wt::WServer::instance()->ioService().post([this, session_id]()
-                                                  {
-        std::system("cd ../stylus-resources/tailwind4 && npm run build");
-        Wt::WServer::instance()->post(session_id, [this]() {
-            Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/../static/tailwind.css?v=" + Wt::WRandom::generateId());
-            Wt::WApplication::instance()->triggerUpdate();
-        }); });
+        Wt::WServer::instance()->ioService().post([this, session_id](){
+            std::system("cd ../stylus-resources/tailwind4 && npm run build");
+            Wt::WServer::instance()->post(session_id, [this]() {
+                current_css_file_ = Wt::WApplication::instance()->docRoot() + "/../static/tailwind.css?v=" + Wt::WRandom::generateId();
+                Wt::WApplication::instance()->removeStyleSheet(prev_css_file_.toUTF8());
+                Wt::WApplication::instance()->useStyleSheet(current_css_file_.toUTF8());
+                prev_css_file_ = current_css_file_;
+                Wt::WApplication::instance()->triggerUpdate();
+            }); 
+        });
     }
 
 

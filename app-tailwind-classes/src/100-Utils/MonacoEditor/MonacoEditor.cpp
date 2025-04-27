@@ -13,7 +13,7 @@
           unsaved_text_(""),
           current_text_("")
     {
-        setStyleClass("flex-1");
+        // setStyleClass("w-fill");
         js_signal_text_changed_.connect(this, &MonacoEditor::cssEdditorTextChanged);
         doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
         editor_js_var_name_ = language + "_editor";
@@ -65,8 +65,7 @@
             if (e.key() == Wt::Key::S)
             {
                 save_file_signal_.emit(unsaved_text_);
-                current_text_ = unsaved_text_;
-                avalable_save_.emit(false);
+                textSaved();
             }
         } });
     }
@@ -169,8 +168,8 @@
         std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         file.close();
         Wt::WString file_content_wt = Wt::WString::fromUTF8(file_content);
-        file_content = std::regex_replace(file_content, std::regex("\n"), "\\n");
-        file_content = std::regex_replace(file_content, std::regex("\r"), "\\r");
-        file_content = std::regex_replace(file_content, std::regex("\t"), "\\t");
+        // file_content = std::regex_replace(file_content, std::regex("\n"), "\\n");
+        // file_content = std::regex_replace(file_content, std::regex("\r"), "\\r");
+        // file_content = std::regex_replace(file_content, std::regex("\t"), "\\t");
         return file_content;
     }

@@ -35,7 +35,6 @@ Stylus::Stylus()
     auto tailwind_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-tailwind-logo")));
     auto css_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-css-logo")));
     auto javascript_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-javascript-logo")));
-    brain_->generateCssFile();
     std::string nav_btns_styles = "hover:bg-gray-700 rounded-md p-1 cursor-pointer flex items-center";
 
     templates_menu_item->setStyleClass(nav_btns_styles);
@@ -47,7 +46,8 @@ Stylus::Stylus()
     tailwind_config_ = content_wrapper->addWidget(std::make_unique<WTConfig>(brain_));
     css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>(brain_));
     js_files_manager_ = content_wrapper->addWidget(std::make_unique<JsFilesManager>(brain_));
-    
+    // brain_->generateCssFile();
+
     templates_menu_item->toggleStyleClass("?", true);
     tailwind_menu_item->toggleStyleClass("?", false);
     css_menu_item->toggleStyleClass("?", false);
@@ -122,6 +122,18 @@ Stylus::Stylus()
                 {
                     hide();
                 }
+            }else if (e.key() == Wt::Key::Key_1)
+            {
+                templates_menu_item->clicked().emit(Wt::WMouseEvent());
+            }else if (e.key() == Wt::Key::Key_2)
+            {
+                tailwind_menu_item->clicked().emit(Wt::WMouseEvent());
+            }else if (e.key() == Wt::Key::Key_3)
+            {
+                css_menu_item->clicked().emit(Wt::WMouseEvent());
+            }else if (e.key() == Wt::Key::Key_4)
+            {
+                javascript_menu_item->clicked().emit(Wt::WMouseEvent());
             }
         }
     });

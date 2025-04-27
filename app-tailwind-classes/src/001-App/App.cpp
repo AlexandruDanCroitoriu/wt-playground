@@ -9,6 +9,8 @@
 #include "010-TestWidgets/DarkModeToggle.h"
 #include "010-TestWidgets/Test.h"
 #include <Wt/WTemplate.h>
+#include <Wt/WHBoxLayout.h>
+#include <Wt/WPanel.h>
 
 App::App(const Wt::WEnvironment &env)
     : WApplication(env)
@@ -20,12 +22,12 @@ App::App(const Wt::WEnvironment &env)
     // JSs
     require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
     require(docRoot() + "/static/monaco-edditor.js");
-    require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
+    // require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
     // require("https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js");
 
     // CSS
     // useStyleSheet("static/css/questionmark.css");
-    useStyleSheet("../static/tailwind.css");
+    useStyleSheet("../static/tailwind.css?v=" + Wt::WRandom::generateId());
 
     // Settings
     enableUpdates(true);
@@ -37,23 +39,28 @@ App::App(const Wt::WEnvironment &env)
     // tailwind_config_center_->show();
 
     stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
-    stylus_->show();
+    // stylus_->show();
 
     auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
+    // dark_mode_toggle->setDarkMode(true);
     root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease");
 
-    Wt::WApplication::instance()->setHtmlClass("dark");
-    dark_mode_toggle->dark_mode_changed_.connect(this, [=](bool dark)
-                                                 {
-        if(dark){
-            Wt::WApplication::instance()->setHtmlClass("dark");
-            // tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(true);
-        }
-        else{
-            Wt::WApplication::instance()->setHtmlClass("");
-            // tailwind_config_center_->css_files_manager_->editor_->setDarkTheme(false);
-        } });
-
     auto test_template = root()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("app-root")));
-    
+
+    std::unique_ptr<WHBoxLayout> vbox = std::make_unique<WHBoxLayout>();
+    auto w1 = std::make_unique<Wt::WContainerWidget>();
+    w1->setStyleClass("p-12 m-1 bg-red-300 border");
+    w1->addWidget(std::make_unique<Wt::WText>("widget 1"));
+    auto w2 = std::make_unique<Wt::WContainerWidget>();
+    w2->setStyleClass("p-12 m-1 bg-blue-300 border");
+    w2->addWidget(std::make_unique<Wt::WText>("widget 2"));
+
+    vbox->addWidget(std::move(w1), 1);
+    vbox->addWidget(std::move(w2), 1);
+    vbox->setResizable(0);
+
+    auto test_containter = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    test_containter->setStyleClass("m-2 p-12 bg-green-300 border border-solid border-gray-800 rounded-md shadow-md w-full h-full");
+    test_containter->setLayout(std::move(vbox));
+
 }

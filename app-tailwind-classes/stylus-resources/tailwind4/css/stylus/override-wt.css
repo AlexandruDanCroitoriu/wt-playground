@@ -1,5 +1,6 @@
 @reference "tailwindcss";
 
 .Wt-panel .body {
-	@apply !p-0;
+	@apply !p-0; 
 }
+
