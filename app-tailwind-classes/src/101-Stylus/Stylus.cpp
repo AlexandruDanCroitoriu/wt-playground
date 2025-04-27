@@ -11,6 +11,7 @@ namespace Stylus {
 Stylus::Stylus()
 {
     brain_ = std::make_shared<Brain>();
+    
     setOffsets(0, Wt::Side::Top | Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
     // setOffsets(0, Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
     // setOffsets(200, Wt::Side::Top);
@@ -47,12 +48,7 @@ Stylus::Stylus()
     tailwind_config_ = content_wrapper->addWidget(std::make_unique<WTConfig>(brain_));
     css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>(brain_));
     js_files_manager_ = content_wrapper->addWidget(std::make_unique<JsFilesManager>(brain_));
-    // brain_->generateCssFile();
 
-    templates_menu_item->toggleStyleClass("?", true);
-    tailwind_menu_item->toggleStyleClass("?", false);
-    css_menu_item->toggleStyleClass("?", false);
-    javascript_menu_item->toggleStyleClass("?", false);
 
     templates_menu_item->clicked().connect(this, [=]() {
         templates_menu_item->toggleStyleClass("?", true);
@@ -62,6 +58,8 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(templates_files_manager_);
         // templates_files_manager_->editor_->resetLayout();
         // templates_files_manager_->editor_->reuploadText();
+        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "templates");
+        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
     });
 
     tailwind_menu_item->clicked().connect(this, [=]() {
@@ -70,6 +68,8 @@ Stylus::Stylus()
         css_menu_item->toggleStyleClass("?", false);
         javascript_menu_item->toggleStyleClass("?", false);
         content_wrapper->setCurrentWidget(tailwind_config_);
+        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "tailwind");
+        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
     });
 
     css_menu_item->clicked().connect(this, [=]() {
@@ -80,6 +80,8 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(css_files_manager_);
         // css_files_manager_->editor_->resetLayout();
         // css_files_manager_->editor_->reuploadText();
+        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "css");
+        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {
@@ -90,20 +92,36 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(js_files_manager_);
         // js_files_manager_->editor_->resetLayout();
         // js_files_manager_->editor_->reuploadText();
+        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "javascript");
+        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
     });
 
     content_wrapper->currentWidgetChanged().connect([=]() {
-        if(content_wrapper->currentIndex() == 0)
-        {
+        if(content_wrapper->currentIndex() == 0){
             templates_files_manager_->editor_->resetLayout();
-        }else if(content_wrapper->currentIndex() == 2)
-        {
+        }else if(content_wrapper->currentIndex() == 2){
             css_files_manager_->editor_->resetLayout();
-        }else if(content_wrapper->currentIndex() == 3)
-        {
+        }else if(content_wrapper->currentIndex() == 3){
             js_files_manager_->editor_->resetLayout();
         }
     });
+
+
+    auto selected_menu = brain_->state_.stylus_open_node_->Attribute("selected-menu");
+    if (std::strcmp(selected_menu, "templates") == 0)
+        templates_menu_item->clicked().emit(Wt::WMouseEvent());
+    else if (std::strcmp(selected_menu, "tailwind") == 0)
+        tailwind_menu_item->clicked().emit(Wt::WMouseEvent());
+    else if (std::strcmp(selected_menu, "css") == 0)
+        css_menu_item->clicked().emit(Wt::WMouseEvent());
+    else if (std::strcmp(selected_menu, "javascript") == 0)
+        javascript_menu_item->clicked().emit(Wt::WMouseEvent());
+
+    if(std::strcmp(brain_->state_.stylus_open_node_->Attribute("open"), "true") == 0)
+        show();
+    else
+        hide();
+
 
     Wt::WApplication::instance()->globalKeyWentDown().connect([=](Wt::WKeyEvent e)
     { 
@@ -114,11 +132,14 @@ Stylus::Stylus()
                 if(isHidden())
                 {
                     show();
+                    brain_->state_.stylus_open_node_->SetAttribute("open", "true");
                 }
                 else
                 {
                     hide();
+                    brain_->state_.stylus_open_node_->SetAttribute("open", "false");
                 }
+                brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
             }else if (e.key() == Wt::Key::Key_1)
             {
                 templates_menu_item->clicked().emit(Wt::WMouseEvent());
@@ -143,6 +164,9 @@ Stylus::Stylus()
             }
         }
     });
+
+
+
 }
 
 }

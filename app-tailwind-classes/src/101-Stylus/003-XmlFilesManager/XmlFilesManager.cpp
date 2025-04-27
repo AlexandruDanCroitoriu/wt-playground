@@ -22,26 +22,25 @@ namespace Stylus
 {
 
     XmlFilesManager::XmlFilesManager(std::shared_ptr<Brain> brain)
-        : FilesManager("../stylus-resources/xml-templates/", "xml"),
-          brain_(brain)
+        : brain_(brain),
+        // FilesManager("../stylus-resources/xml-templates/", "xml")
+        FilesManager("../stylus-resources/xml-templates/", "xml", brain->state_.xml_node_->IntAttribute("sidebar-width"))
     {
+        
+        auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
+        // temp_wrapper->setStyleClass("rounded-md p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
+        temp_wrapper->setStyleClass("rounded-md p-2 bg-white dark:bg-gray-900"); 
 
-
+        temp_wrapper->setOverflow(Wt::Overflow::Auto);
+        temp_wrapper->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+        temp_wrapper->setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
         // layout_->addLayout(std::make_unique<Wt::WLayout>(), 1);
-        auto test_template = layout_->insertWidget(2, std::make_unique<Wt::WTemplate>("<div></div>"), 1);
-        test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-
+        // test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+        auto test_template = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         // auto test_template = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
-        test_template->setStyleClass("flex-1 overflow-y-auto border rounded-md mt-2 p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
         auto dark_mode_toggle = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
         
-
-        layout_->setResizable(1);
-        // addWidget(std::move(layout));
-
-
-        // editor_->setStyleClass("flex-1 max-w-[220px]");
-
+        
         file_selected().connect(this, [=](Wt::WString file_path)
         {
             test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
@@ -51,6 +50,20 @@ namespace Stylus
             test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
             brain_->generateCssFile();
         });
+        
+        sidebar_->width_changed_.connect(this, [=](Wt::WString width)
+        {
+            brain_->state_.xml_node_->SetAttribute("sidebar-width", std::stoi(width.toUTF8()));
+            brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        });
+        layout_->setResizable(1, true, Wt::WLength(brain_->state_.xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
+
+        editor_->width_changed_.connect(this, [=](Wt::WString width)
+        {
+            brain_->state_.xml_node_->SetAttribute("editor-width", std::stoi(width.toUTF8()));
+            brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        });
+
     }
 
 

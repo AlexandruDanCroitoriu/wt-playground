@@ -22,7 +22,7 @@ App::App(const Wt::WEnvironment &env)
     // JSs
     require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
     require(docRoot() + "/static/monaco-edditor.js");
-    // require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
+    require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
     // require("https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js");
 
     // CSS
@@ -39,7 +39,6 @@ App::App(const Wt::WEnvironment &env)
     // tailwind_config_center_->show();
 
     stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
-    // stylus_->show();
 
     auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
     // dark_mode_toggle->setDarkMode(true);

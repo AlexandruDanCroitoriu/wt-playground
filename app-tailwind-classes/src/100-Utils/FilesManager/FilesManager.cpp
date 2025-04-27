@@ -21,7 +21,7 @@ FilesManagerSidebar::FilesManagerSidebar()
     setLayoutSizeAware(true);
     // tree header
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-    
+    setMaximumSize(Wt::WLength(1000, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     header_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     header_->setStyleClass("group flex items-center border-b border-solid border-gray-700");
     header_title_ = header_->addWidget(std::make_unique<Wt::WText>("selected file"));
@@ -42,10 +42,14 @@ FilesManagerSidebar::FilesManagerSidebar()
 void FilesManagerSidebar::layoutSizeChanged(int width, int height)
 {
     std::cout << "\n\n FilesManagerSidebar::layoutSizeChanged() " << width << " " << height << "\n\n";
+
+    if(width >= 240) {
+        width_changed_.emit(Wt::WString(std::to_string(width)));
+    }
 }
 
 
-FilesManager::FilesManager(std::string default_folder_path, std::string language)
+FilesManager::FilesManager(std::string default_folder_path, std::string language, int sidebar_width)
     : default_folder_path_(default_folder_path),
     file_extension_(language)
 {
@@ -56,19 +60,16 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
         file_extension_ = "js";
     }
 
-    auto contents = addWidget(std::make_unique<Wt::WContainerWidget>());
     auto layout = std::make_unique<Wt::WHBoxLayout>();
-
-    // sidebar wrapper
+    
     sidebar_ = layout->insertWidget(0, std::make_unique<FilesManagerSidebar>(), 1);
-    // sidebar_->setStyleClass("flex flex-col h-screen");
     editor_ = layout->insertWidget(1, std::make_unique<MonacoEditor>(language), 1);
-
-    layout->setResizable(0, true, Wt::WLength(240, Wt::LengthUnit::Pixel));
+    
+    layout->setResizable(0, true, Wt::WLength(sidebar_width, Wt::LengthUnit::Pixel));
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout_ = layout.get();
-    contents->setLayout(std::move(layout));
+    setLayout(std::move(layout));
  
     folders_ = std::make_shared<std::vector<std::pair<std::string, std::vector<std::string>>>>();
     auto folders = getFolders();
@@ -76,7 +77,7 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     {
         folders_->push_back(folder);
     }
-    setTreeFolderWidgets();
+    setTreeFolderWidgets(); 
 
 
     editor_->avalable_save().connect(this, [=](bool avalable)

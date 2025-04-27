@@ -18,6 +18,11 @@ DarkModeToggle::DarkModeToggle(bool dark)
         // dark_mode_changed_.emit(checkBox_->isChecked());
         setDarkMode(checkBox_->isChecked());
     });
+    keyWentDown().connect([=](Wt::WKeyEvent e)
+    { 
+        Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
+    });
+    
 }
 
 void DarkModeToggle::setDarkMode(bool dark)

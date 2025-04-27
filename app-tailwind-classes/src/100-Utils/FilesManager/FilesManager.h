@@ -14,15 +14,17 @@ public:
     Wt::WContainerWidget* footer_;
     Wt::WText* header_title_;
     Wt::WTemplate* add_folder_btn_;
+    Wt::Signal<Wt::WString> width_changed_;
 protected:
     // Custom implementation
-    void layoutSizeChanged(int width, int height) override;      
+    void layoutSizeChanged(int width, int height) override;
+    
 };
 
 class FilesManager : public Wt::WContainerWidget
 {
 public:
-    FilesManager(std::string default_folder_path, std::string language);
+    FilesManager(std::string default_folder_path, std::string language, int sidebar_width = 240);
 
     Wt::WHBoxLayout *layout_;
     MonacoEditor* editor_;

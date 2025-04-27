@@ -17,7 +17,9 @@ class MonacoEditor : public Wt::WContainerWidget
         std::string getUnsavedText() { return unsaved_text_; }
         void textSaved();
         void reuploadText() { setCssEdditorText(current_text_); }
-        private:
+        Wt::Signal<Wt::WString> width_changed_;
+        
+    private:
         std::string getFileText(std::string file_path);
         void setCssEdditorText(std::string text);
         void cssEdditorTextChanged(const std::string text);
@@ -29,7 +31,7 @@ class MonacoEditor : public Wt::WContainerWidget
         std::string current_text_;
         std::string unsaved_text_;
         std::string editor_js_var_name_;
-        
+
     protected:
         // Custom implementation
         void layoutSizeChanged(int width, int height) override;      
