@@ -131,6 +131,15 @@ Stylus::Stylus()
             }else if (e.key() == Wt::Key::Key_4)
             {
                 javascript_menu_item->clicked().emit(Wt::WMouseEvent());
+            }else if (e.key() == Wt::Key::A)
+            {
+                if(templates_files_manager_->layout_->itemAt(0)->widget()->isHidden())
+                {
+                    templates_files_manager_->layout_->itemAt(0)->widget()->show();
+                }else
+                {
+                    templates_files_manager_->layout_->itemAt(0)->widget()->hide();
+                }
             }
         }
     });

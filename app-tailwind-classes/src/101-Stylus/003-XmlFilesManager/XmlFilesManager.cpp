@@ -29,9 +29,11 @@ namespace Stylus
 
         // layout_->addLayout(std::make_unique<Wt::WLayout>(), 1);
         auto test_template = layout_->insertWidget(2, std::make_unique<Wt::WTemplate>("<div></div>"), 1);
+        test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+
         // auto test_template = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
-        test_template->setStyleClass("flex-1 overflow-y-auto border rounded-md m-2 p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
-        auto dark_mode_toggle = navigation_footer_->addWidget(std::make_unique<DarkModeToggle>());
+        test_template->setStyleClass("flex-1 overflow-y-auto border rounded-md mt-2 p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
+        auto dark_mode_toggle = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
         
 
         layout_->setResizable(1);
@@ -98,7 +100,7 @@ namespace Stylus
 
                 // delete file
                 if (std::filesystem::remove(file_path)) {
-                    folders_tree_wrapper_->clear();
+                    sidebar_->contents_->clear();
                     auto folders = getFolders();
                     folders_->clear();
                     for (const auto &folder : folders)
@@ -173,7 +175,7 @@ namespace Stylus
                 std::filesystem::path old_path(default_folder_path_ + folder_name + "/" + file_name);
                 std::filesystem::path new_path(default_folder_path_ + folder_name + "/" + new_file_name + "." + file_extension_);
                 std::filesystem::rename(old_path, new_path);
-                folders_tree_wrapper_->clear();
+                sidebar_->contents_->clear();
                 auto folders = getFolders();
                 folders_->clear();
                 for (const auto &folder : folders)
@@ -227,7 +229,7 @@ namespace Stylus
                         selected_file_wrapper_->removeStyleClass("?");
                         selected_file_wrapper_ = file_wrapper;
                         selected_file_wrapper_->addStyleClass("?");
-                        tree_header_title_->setText(file_name);
+                        sidebar_->header_title_->setText(file_name);
                         selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                         editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                     }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
@@ -238,7 +240,7 @@ namespace Stylus
                         selected_file_wrapper_->addStyleClass("?");
                         selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                         editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
-                        tree_header_title_->setText(file_name);
+                        sidebar_->header_title_->setText(file_name);
                     }
                     removeChild(messageBox);
                 });
@@ -256,7 +258,7 @@ namespace Stylus
                 }
                 selected_file_wrapper_ = file_wrapper;
                 selected_file_wrapper_->addStyleClass("?");
-                tree_header_title_->setText(file_name);
+                sidebar_->header_title_->setText(file_name);
                 selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                 editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
             } 

@@ -14,46 +14,45 @@ MonacoEditor::MonacoEditor(std::string language)
         current_text_("")
 {
     setLayoutSizeAware(true);
+    setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+
     // setStyleClass("w-fill");
     js_signal_text_changed_.connect(this, &MonacoEditor::cssEdditorTextChanged);
     doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
     editor_js_var_name_ = language + "_editor";
 
-    // file_path_ = file_path;
-    // current_text_ = getFileText(file_path);
-    // unsaved_text_ = current_text_;
-
     std::string initializer =
-        R"(
-    require(['vs/editor/editor.main'], function () {
-        window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
-        window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
-        language: ')" + language + R"(',
-        theme: 'vs-dark',
-        wordWrap: 'off',
-        lineNumbers: 'on',
-        tabSize: 4,
-        insertSpaces: false,
-        detectIndentation: false,
-        trimAutoWhitespace: false,
-        lineEnding: '\n'
-    });
+            R"(
+        require(['vs/editor/editor.main'], function () {
+                window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
+                window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
+                language: ')" + language + R"(',
+                theme: 'vs-dark',
+                wordWrap: 'off',
+                lineNumbers: 'on',
+                tabSize: 2,
+                insertSpaces: false,
+                detectIndentation: false,
+                trimAutoWhitespace: false,
+                lineEnding: '\n',
+                minimap: { enabled: false },
+            });
 
-    window.)" + editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
-        if (window.)" + editor_js_var_name_ + R"(_current_text !== window.)" + editor_js_var_name_ + R"(.getValue()) {
-            window.)" + editor_js_var_name_ + R"(_current_text = window.)" + editor_js_var_name_ + R"(.getValue();
-            Wt.emit(')" + id() + R"(', 'cssEdditorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
-        }
-    });
+            window.)" + editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
+                if (window.)" + editor_js_var_name_ + R"(_current_text !== window.)" + editor_js_var_name_ + R"(.getValue()) {
+                    window.)" + editor_js_var_name_ + R"(_current_text = window.)" + editor_js_var_name_ + R"(.getValue();
+                    Wt.emit(')" + id() + R"(', 'cssEdditorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
+                }
+            });
 
-    // Override the Ctrl+S command
-    window.)" + editor_js_var_name_ + R"(.getDomNode().addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-            e.preventDefault();
-        }
-    });
-});
-)";
+            // Override the Ctrl+S command
+            window.)" + editor_js_var_name_ + R"(.getDomNode().addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                }
+            });
+        });
+    )";
 
     setJavaScriptMember("cssEdditorTextChanged", initializer);
     // setFile(file_path);
@@ -61,6 +60,7 @@ MonacoEditor::MonacoEditor(std::string language)
 
     keyWentDown().connect([=](Wt::WKeyEvent e)
                             { 
+    Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
     if (e.modifiers().test(Wt::KeyboardModifier::Control))
     {
         if (e.key() == Wt::Key::S)

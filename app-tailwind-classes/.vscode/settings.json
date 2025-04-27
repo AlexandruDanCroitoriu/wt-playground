@@ -72,6 +72,8 @@
         "complex": "cpp",
         "typeindex": "cpp",
         "variant": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "coroutine": "cpp",
+        "source_location": "cpp"
     }
 }

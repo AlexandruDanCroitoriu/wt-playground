@@ -4,3 +4,6 @@
 	@apply !p-0; 
 }
 
+.Wt-vrh2 {
+	@apply bg-gray-700 hover:bg-gray-950;
+}

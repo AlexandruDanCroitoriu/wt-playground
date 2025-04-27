@@ -4,6 +4,21 @@
 #include <Wt/WSignal.h>
 #include <Wt/WHBoxLayout.h>
 
+
+class FilesManagerSidebar : public Wt::WContainerWidget
+{
+public:
+    FilesManagerSidebar();
+    Wt::WContainerWidget* header_;
+    Wt::WContainerWidget* contents_;
+    Wt::WContainerWidget* footer_;
+    Wt::WText* header_title_;
+    Wt::WTemplate* add_folder_btn_;
+protected:
+    // Custom implementation
+    void layoutSizeChanged(int width, int height) override;      
+};
+
 class FilesManager : public Wt::WContainerWidget
 {
 public:
@@ -29,11 +44,8 @@ public:
     std::string selected_file_path_;
     std::string file_extension_;
     
-    Wt::WContainerWidget* sidebar_wrapper_;
-    Wt::WContainerWidget* folders_tree_wrapper_;
-    Wt::WContainerWidget* navigation_footer_;
+    FilesManagerSidebar* sidebar_;
     Wt::WContainerWidget* selected_file_wrapper_;
-    Wt::WText* tree_header_title_;
 
     Wt::WMessageBox* createMessageBox(std::string title, std::string temp);
 
