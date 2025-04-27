@@ -10,12 +10,12 @@ namespace Stylus
           brain_(brain)
     {
 
-        // brain_->css_folders_ = folders_;
-        // file_saved().connect(this, [=](Wt::WString ile_path)
-        // {
-        //     brain_->generateCssFile();
-        // });
+        brain_->css_folders_ = folders_;
+        file_saved().connect(this, [=](Wt::WString ile_path)
+        {
+            brain_->generateCssFile();
+        });
         
-        // getFolders(); // to activate the signal and set the initial folders in brain_
+        getFolders(); // to activate the signal and set the initial folders in brain_
     }
 }

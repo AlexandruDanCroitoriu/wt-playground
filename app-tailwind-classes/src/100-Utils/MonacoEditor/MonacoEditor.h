@@ -30,4 +30,7 @@ class MonacoEditor : public Wt::WContainerWidget
         std::string unsaved_text_;
         std::string editor_js_var_name_;
         
+    protected:
+        // Custom implementation
+        void layoutSizeChanged(int width, int height) override;      
 };

@@ -30,20 +30,20 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
     // tree wrapper
     sidebar_wrapper_ = layout->insertWidget(0, std::make_unique<Wt::WContainerWidget>(), 1);
-    // sidebar_wrapper_ = layout->addWidget(std::make_unique<Wt::WContainerWidget>(), 1);
-    // sidebar_wrapper_->setStyleClass("flex flex-col h-screen");
-    // editor_ = layout->addWidget(std::make_unique<MonacoEditor>(language), 1);
+    sidebar_wrapper_->setStyleClass("flex flex-col h-screen");
     editor_ = layout->insertWidget(1, std::make_unique<MonacoEditor>(language), 1);
+
     layout->setResizable(0, true, Wt::WLength(240, Wt::LengthUnit::Pixel));
     // layout->setResizable(0);
     // std::cout << "\n\n\n\n ----------------- layout->isResizable(0) = " << layout->isResizable(0) << "\n\n\n\n";
     // layout->isResizable(0);
     // layout->setResizable(1, true);
     // layout->setSpacing(0);
-    // layout->setContentsMargins(0, 0, 0, 0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout_ = layout.get();
     contents->setLayout(std::move(layout));
     // layout->setResizable(0);
+
 
     // contents->setPadding(0, Wt::Side::Left | Wt::Side::Right | Wt::Side::Top | Wt::Side::Bottom);
     // tree header

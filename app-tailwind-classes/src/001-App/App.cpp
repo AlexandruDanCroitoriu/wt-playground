@@ -43,7 +43,7 @@ App::App(const Wt::WEnvironment &env)
 
     auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
     // dark_mode_toggle->setDarkMode(true);
-    root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease");
+    root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease overflow-hidden");
 
     auto test_template = root()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("app-root")));
 
@@ -62,5 +62,7 @@ App::App(const Wt::WEnvironment &env)
     auto test_containter = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
     test_containter->setStyleClass("m-2 p-12 bg-green-300 border border-solid border-gray-800 rounded-md shadow-md w-full h-full");
     test_containter->setLayout(std::move(vbox));
+
+    // stylus_->brain_->generateCssFile();
 
 }

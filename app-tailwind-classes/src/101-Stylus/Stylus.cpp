@@ -3,6 +3,7 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WTemplate.h>
 #include <Wt/WApplication.h>
+#include <Wt/WStackedWidget.h>
 
 namespace Stylus {
 
@@ -26,7 +27,7 @@ Stylus::Stylus()
     Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/static/stylus/questionmark.css");
 
     auto navbar = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
-    auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WStackedWidget>());
 
     navbar->setStyleClass("flex flex-col space-y-2 h-full bg-gray-800 p-2 border-r border-solid border-gray-600");
     content_wrapper->setStyleClass("flex-1 h-full bg-gray-800 overflow-y-auto");
@@ -52,23 +53,15 @@ Stylus::Stylus()
     tailwind_menu_item->toggleStyleClass("?", false);
     css_menu_item->toggleStyleClass("?", false);
     javascript_menu_item->toggleStyleClass("?", false);
-    
-    templates_files_manager_->toggleStyleClass("hidden", false);
-    tailwind_config_->toggleStyleClass("hidden", true);
-    css_files_manager_->toggleStyleClass("hidden", true);
-    js_files_manager_->toggleStyleClass("hidden", true);
 
     templates_menu_item->clicked().connect(this, [=]() {
         templates_menu_item->toggleStyleClass("?", true);
         tailwind_menu_item->toggleStyleClass("?", false);
         css_menu_item->toggleStyleClass("?", false);
         javascript_menu_item->toggleStyleClass("?", false);
-        templates_files_manager_->toggleStyleClass("hidden", false);
-        tailwind_config_->toggleStyleClass("hidden", true);
-        css_files_manager_->toggleStyleClass("hidden", true);
-        js_files_manager_->toggleStyleClass("hidden", true);
-        templates_files_manager_->editor_->resetLayout();
-        templates_files_manager_->editor_->reuploadText();
+        content_wrapper->setCurrentWidget(templates_files_manager_);
+        // templates_files_manager_->editor_->resetLayout();
+        // templates_files_manager_->editor_->reuploadText();
     });
 
     tailwind_menu_item->clicked().connect(this, [=]() {
@@ -76,10 +69,7 @@ Stylus::Stylus()
         tailwind_menu_item->toggleStyleClass("?", true);
         css_menu_item->toggleStyleClass("?", false);
         javascript_menu_item->toggleStyleClass("?", false);
-        templates_files_manager_->toggleStyleClass("hidden", true);
-        tailwind_config_->toggleStyleClass("hidden", false);
-        css_files_manager_->toggleStyleClass("hidden", true);
-        js_files_manager_->toggleStyleClass("hidden", true);
+        content_wrapper->setCurrentWidget(tailwind_config_);
     });
 
     css_menu_item->clicked().connect(this, [=]() {
@@ -87,12 +77,9 @@ Stylus::Stylus()
         tailwind_menu_item->toggleStyleClass("?", false);
         css_menu_item->toggleStyleClass("?", true);
         javascript_menu_item->toggleStyleClass("?", false);
-        templates_files_manager_->toggleStyleClass("hidden", true);
-        tailwind_config_->toggleStyleClass("hidden", true);
-        css_files_manager_->toggleStyleClass("hidden", false);
-        js_files_manager_->toggleStyleClass("hidden", true);
-        css_files_manager_->editor_->resetLayout();
-        css_files_manager_->editor_->reuploadText();
+        content_wrapper->setCurrentWidget(css_files_manager_);
+        // css_files_manager_->editor_->resetLayout();
+        // css_files_manager_->editor_->reuploadText();
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {
@@ -100,12 +87,22 @@ Stylus::Stylus()
         tailwind_menu_item->toggleStyleClass("?", false);
         css_menu_item->toggleStyleClass("?", false);
         javascript_menu_item->toggleStyleClass("?", true);
-        templates_files_manager_->toggleStyleClass("hidden", true);
-        tailwind_config_->toggleStyleClass("hidden", true);
-        css_files_manager_->toggleStyleClass("hidden", true);
-        js_files_manager_->toggleStyleClass("hidden", false);
-        js_files_manager_->editor_->resetLayout();
-        js_files_manager_->editor_->reuploadText();
+        content_wrapper->setCurrentWidget(js_files_manager_);
+        // js_files_manager_->editor_->resetLayout();
+        // js_files_manager_->editor_->reuploadText();
+    });
+
+    content_wrapper->currentWidgetChanged().connect([=]() {
+        if(content_wrapper->currentIndex() == 0)
+        {
+            templates_files_manager_->editor_->resetLayout();
+        }else if(content_wrapper->currentIndex() == 2)
+        {
+            css_files_manager_->editor_->resetLayout();
+        }else if(content_wrapper->currentIndex() == 3)
+        {
+            js_files_manager_->editor_->resetLayout();
+        }
     });
 
     Wt::WApplication::instance()->globalKeyWentDown().connect([=](Wt::WKeyEvent e)

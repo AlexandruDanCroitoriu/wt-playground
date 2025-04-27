@@ -30,8 +30,8 @@ namespace Stylus {
         JsFilesManager* js_files_manager_;
 
         
-    private:
         std::shared_ptr<Brain> brain_;
+    private:
     
 };
 }

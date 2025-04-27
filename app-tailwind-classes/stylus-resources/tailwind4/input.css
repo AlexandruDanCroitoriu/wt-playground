@@ -3,6 +3,7 @@
 
 /* Import custom CSS files for additional styles */
 @import "./css/stylus/override-wt.css";
+@import "./css/stylus/tests.css";
 /* Source additional templates and styles */
 @source "../xml-templates/";
 @source "../../src/";
