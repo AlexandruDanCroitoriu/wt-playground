@@ -106,6 +106,10 @@ void MonacoEditor::textSaved()
     avalable_save_.emit(false);
 }
 
+void MonacoEditor::setEditorReadOnly(bool read_only) { 
+    doJavaScript("setTimeout(function() { if(window." + editor_js_var_name_ + ") window." + editor_js_var_name_ + ".updateOptions({ readOnly: " + std::to_string(read_only) + " }); }, 200);");
+}
+
 bool MonacoEditor::unsavedChanges()
 {
     // std::cout << "\n\n MonacoEditor::unsavedChanges()";

@@ -11,9 +11,8 @@ class MonacoEditor : public Wt::WContainerWidget
         void setDarkTheme(bool dark);
         void resetLayout();
         void setFile(std::string file_path);
-        void setEditorReadOnly(bool read_only) { 
-            doJavaScript("setTimeout(function() { if(window." + editor_js_var_name_ + ") window." + editor_js_var_name_ + ".updateOptions({ readOnly: " + std::to_string(read_only) + " }); }, 200);");
-        }
+        void setEditorReadOnly(bool read_only);
+
         bool unsavedChanges();
         std::string getUnsavedText() { return unsaved_text_; }
         void textSaved();
