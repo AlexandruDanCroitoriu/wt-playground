@@ -73,8 +73,6 @@ namespace Stylus {
         std::cout << "\n\n stylus state loaded \n\n";
     }
 
-
-
     Brain::Brain()
         : state_()
     {

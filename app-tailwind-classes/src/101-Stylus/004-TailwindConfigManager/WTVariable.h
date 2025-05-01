@@ -1,5 +1,5 @@
 #pragma once
-#include "101-Stylus/003-TailwindConfigManager/TVariable.h"
+#include "101-Stylus/004-TailwindConfigManager/TVariable.h"
 #include <Wt/WContainerWidget.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WPushButton.h>
@@ -7,10 +7,10 @@
 namespace Stylus
 {
 
-    class WTVariableText : public Wt::WContainerWidget
+    class WTVariable : public Wt::WContainerWidget
     {
     public:
-        WTVariableText(std::shared_ptr<TVariableText> tVariable_text);
+        WTVariable(std::shared_ptr<TVariable> tVariable);
         void set_read_only();
 
     private:
@@ -18,7 +18,7 @@ namespace Stylus
         Wt::WPushButton *delete_btn_;
         Wt::WContainerWidget *inputs_wrapper_;
 
-        std::shared_ptr<TVariableText> tVariable_text_;
+        std::shared_ptr<TVariable> tVariable_;
     };
 
 }

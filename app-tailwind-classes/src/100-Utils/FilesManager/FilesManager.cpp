@@ -23,26 +23,24 @@ FilesManagerSidebar::FilesManagerSidebar()
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     setMaximumSize(Wt::WLength(1000, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     header_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    header_->setStyleClass("group flex items-center border-b border-solid border-gray-700");
+    header_->setStyleClass("group flex items-center border-b border-solid");
     header_title_ = header_->addWidget(std::make_unique<Wt::WText>("selected file"));
-    header_title_->setStyleClass("text-md m-1 text-green-400");
+    header_title_->setStyleClass("text-md m-1");
 
     // add folder btn
     add_folder_btn_ = header_->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
-    add_folder_btn_->setStyleClass("ml-auto group-hover:block hidden hover:bg-gray-900 rounded-md p-1");
+    add_folder_btn_->setStyleClass("ml-auto rounded-md m-[4px]");
     add_folder_btn_->clicked().preventPropagation();
 
     contents_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     contents_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
 
     footer_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    footer_->setStyleClass("flex items-center justify-between p-2 border-t border-solid border-gray-700");
+    footer_->setStyleClass("flex items-center justify-between p-[8px] border-t border-solid");
 }
 
 void FilesManagerSidebar::layoutSizeChanged(int width, int height)
 {
-    std::cout << "\n\n FilesManagerSidebar::layoutSizeChanged() " << width << " " << height << "\n\n";
-
     if(width >= 240) {
         width_changed_.emit(Wt::WString(std::to_string(width)));
     }
@@ -120,24 +118,24 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
         dialog->rejectWhenEscapePressed();
         dialog->setOffsets(100, Wt::Side::Top);
 
-        dialog->setStyleClass("bg-gray-800 text-gray-200");
-        dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
-        dialog->contents()->setStyleClass("flex flex-col bg-gray-800 text-gray-200");
+        dialog->setStyleClass("");
+        dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+        dialog->contents()->setStyleClass("flex flex-col");
 
         auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
         auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
         
-        content->setStyleClass("p-2");
-        footer->setStyleClass("flex items-center justify-between p-2");
+        content->setStyleClass("p-[8px]");
+        footer->setStyleClass("flex items-center justify-between p-[8px]");
         
         auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
         input_wrapper->setStyleClass("flex flex-col items-center justify-center");
         auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
-        error_label->setStyleClass("w-full text-red-500 text-md font-semibold");
+        error_label->setStyleClass("w-full text-[#B22222] text-md font-semibold");
         
         auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
         auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
-        new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow bg-gray-800 placeholder:text-gray-500 text-gray-200 border-gray-600 focus:border-gray-400 hover:border-gray-500");
+        new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
         label->setBuddy(new_folder_name_input);
         
         auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
@@ -196,18 +194,18 @@ void FilesManager::setTreeFolderWidgets()
         // panel->setCollapsed(true);
         panel->setAnimation(Wt::WAnimation(Wt::AnimationEffect::SlideInFromTop, Wt::TimingFunction::EaseInOut, 250));
         panel->setStyleClass("!border-none ");
-        panel->titleBarWidget()->setStyleClass("group relative flex items-center px-2 cursor-pointer tracking-widest bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700");
+        panel->titleBarWidget()->setStyleClass("group relative !bg-[#FFF] flex items-center px-2 cursor-pointer tracking-widest");
 
         auto folder_title = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WText>(folder.first));
         folder_title->setStyleClass("ml-2");
 
         auto edit_folder_name_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
-        edit_folder_name_btn->setStyleClass("group-hover:block hidden absolute right-6 rounded-md p-1 hover:bg-gray-900 group-hover:block hidden");
+        edit_folder_name_btn->setStyleClass("group-hover:block hidden absolute right-6 rounded-md p-[4px] group-hover:block hidden");
         edit_folder_name_btn->clicked().preventPropagation();
 
         // add File button
         auto add_file_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
-        add_file_btn->setStyleClass("group-hover:block hidden absolute right-0 hover:bg-gray-900 rounded-md p-1 overflow-hidden");
+        add_file_btn->setStyleClass("group-hover:block hidden absolute right-0 rounded-md p-[4px] overflow-hidden");
         add_file_btn->clicked().preventPropagation();
 
         edit_folder_name_btn->clicked().connect(this, [=]()
@@ -217,24 +215,24 @@ void FilesManager::setTreeFolderWidgets()
             dialog->setOffsets(100, Wt::Side::Top);
             dialog->setModal(true);
             dialog->rejectWhenEscapePressed();
-            dialog->setStyleClass("bg-gray-800 text-gray-200");
-            dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
-            dialog->contents()->setStyleClass("flex flex-col bg-gray-800 text-gray-200");
+            dialog->setStyleClass("");
+            dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+            dialog->contents()->setStyleClass("flex flex-col");
     
             auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
             auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
             
-            content->setStyleClass("p-2");
-            footer->setStyleClass("flex items-center justify-between p-2");
+            content->setStyleClass("p-[8px]");
+            footer->setStyleClass("flex items-center justify-between p-[8px]");
             
             auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
             input_wrapper->setStyleClass("flex flex-col items-center justify-center");
             auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
-            error_label->setStyleClass("w-full text-red-500 text-md font-semibold");
+            error_label->setStyleClass("w-full text-md font-semibold");
             
             auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
             auto new_file_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
-            new_file_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow bg-gray-800 placeholder:text-gray-500 text-gray-200 border-gray-600 focus:border-gray-400 hover:border-gray-500");
+            new_file_name_input->setStyleClass("w-full min-w-[200px] text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow");
             label->setBuddy(new_file_name_input);
             
             auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
@@ -287,24 +285,24 @@ void FilesManager::setTreeFolderWidgets()
         dialog->setOffsets(100, Wt::Side::Top);
         dialog->setModal(true);
         dialog->rejectWhenEscapePressed();
-        dialog->setStyleClass("bg-gray-800 text-gray-200 z-[2]");
-        dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
-        dialog->contents()->setStyleClass("flex flex-col bg-gray-800");
+        dialog->setStyleClass("z-[2]");
+        dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+        dialog->contents()->setStyleClass("flex flex-col");
 
         auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
         auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
         
-        content->setStyleClass("p-2");
-        footer->setStyleClass("flex items-center justify-between p-2");
+        content->setStyleClass("p-[8px]");
+        footer->setStyleClass("flex items-center justify-between p-[8px]");
             
         auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
         input_wrapper->setStyleClass("flex flex-col items-center justify-center");
         auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
-        error_label->setStyleClass("w-full text-red-500 text-md font-semibold");
+        error_label->setStyleClass("w-full text-md font-semibold");
         
         auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
         auto new_file_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
-        new_file_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400  text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow bg-gray-800 placeholder:text-gray-500 border-gray-600 focus:border-gray-400 hover:border-gray-500");
+        new_file_name_input->setStyleClass("w-full min-w-[200px] text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow");
         label->setBuddy(new_file_name_input);
         
         auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
@@ -354,7 +352,7 @@ void FilesManager::setTreeFolderWidgets()
         if (folder.second.size() == 0)
         {
             auto delete_folder_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-            delete_folder_btn->setStyleClass("absolute right-1 rounded-md p-1 hover:bg-gray-900");
+            delete_folder_btn->setStyleClass("absolute right-1 rounded-md p-[4px]");
             add_file_btn->addStyleClass("!right-5");
             add_file_btn->addStyleClass("!right-11");
             delete_folder_btn->clicked().preventPropagation();
@@ -406,7 +404,7 @@ void FilesManager::setTreeFolderWidgets()
 
         // panel->centralWidget()->setStyleClass("asjkdhfaksjdfhajsdfk");
         auto central_widget = panel->setCentralWidget(std::make_unique<Wt::WContainerWidget>());
-        central_widget->setStyleClass("w-full bg-gray-800");
+        central_widget->setStyleClass("w-full");
 
         for (const auto &file : folder.second)
         {
@@ -416,9 +414,9 @@ void FilesManager::setTreeFolderWidgets()
             if (selected_file_wrapper_ == nullptr)
             {
                 // editor_->setCssEdditorText(getCssFromFile(default_folder_path_ + folder.first + "/" + file));
-                std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
+                // std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
                 selected_file_wrapper_ = file_wrapper;
-                selected_file_wrapper_->addStyleClass("?");
+                selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
                 sidebar_->header_title_->setText(file);
                 selected_file_path_ = default_folder_path_ + folder.first + "/" + file;
                 editor_->setFile(default_folder_path_ + folder.first + "/" + file);
@@ -432,11 +430,11 @@ void FilesManager::setTreeFolderWidgets()
 Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* files_wrapper, std::string folder_name, std::string file_name)
 {
     auto file_wrapper = files_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-    file_wrapper->setStyleClass("group w-full relative flex items-center cursor-pointer hover:bg-gray-700 rounded-md text-gray-200");
+    file_wrapper->setStyleClass("group w-full relative flex items-center cursor-pointer filesManager-menu");
 
     // file buttons
     auto save_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-    save_file_btn->setStyleClass("absolute left-1 hover:bg-gray-900 hidden");
+    save_file_btn->setStyleClass("absolute left-1 hidden");
     save_file_btn->clicked().preventPropagation();
     save_file_btn->clicked().connect(this, [=]()
     {
@@ -453,7 +451,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     file_wrapper->addWidget(std::make_unique<Wt::WText>(file_name))->setStyleClass("ml-7 font-thin text-md");
 
     auto delete_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-    delete_file_btn->setStyleClass("absolute right-0 rounded-md p-1 hover:bg-gray-900 group-hover:block hidden");
+    delete_file_btn->setStyleClass("absolute right-0 rounded-md p-[4px] group-hover:block hidden");
     delete_file_btn->clicked().preventPropagation();
     delete_file_btn->clicked().connect(this, [=]()
                                         {
@@ -491,7 +489,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     messageBox->show(); });
 
     auto edit_file_name_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
-    edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-1 hover:bg-gray-900 group-hover:block hidden");
+    edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-[4px] group-hover:block hidden");
     edit_file_name_btn->clicked().preventPropagation();
     edit_file_name_btn->clicked().connect(this, [=]()
                                             {
@@ -500,14 +498,14 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     dialog->setModal(true);
     dialog->rejectWhenEscapePressed();
     dialog->setStyleClass("bg-gray-800 text-gray-200 z-[2]");
-    dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
+    dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
     dialog->contents()->setStyleClass("flex flex-col bg-gray-800 text-gray-200");
 
     auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     
-    content->setStyleClass("p-2");
-    footer->setStyleClass("flex items-center justify-between p-2");
+    content->setStyleClass("p-[8px]");
+    footer->setStyleClass("flex items-center justify-between p-[8px]");
     
     auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
     input_wrapper->setStyleClass("flex flex-col items-center justify-center");
@@ -599,18 +597,18 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                     sys_file << editor_->getUnsavedText();
                     sys_file.close();
                     editor_->textSaved();
-                    selected_file_wrapper_->removeStyleClass("?");
+                    selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
                     selected_file_wrapper_ = file_wrapper;
-                    selected_file_wrapper_->addStyleClass("?");
+                    selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
                     sidebar_->header_title_->setText(file_name);
                     selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                 }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
                 {
                     selected_file_wrapper_->toggleStyleClass("[&>*:first-child]:block", false);
-                    selected_file_wrapper_->removeStyleClass("?");
+                    selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
                     selected_file_wrapper_ = file_wrapper;
-                    selected_file_wrapper_->addStyleClass("?");
+                    selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
                     selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                     sidebar_->header_title_->setText(file_name);
@@ -624,13 +622,13 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
         else 
         {
             selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
-            editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
+            // editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
             if(selected_file_wrapper_ != nullptr) 
             {
-                selected_file_wrapper_->removeStyleClass("?");
+                selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
             }
             selected_file_wrapper_ = file_wrapper;
-            selected_file_wrapper_->addStyleClass("?");
+            selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
             sidebar_->header_title_->setText(file_name);
             selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
             editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
@@ -691,9 +689,9 @@ Wt::WMessageBox *FilesManager::createMessageBox(std::string title, std::string t
     message_box->setOffsets(100, Wt::Side::Top);
     message_box->setModal(true);
 
-    message_box->setStyleClass("bg-gray-800 text-gray-200");
-    message_box->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
-    message_box->contents()->addStyleClass("flex items-center bg-gray-800 text-gray-200");
-    message_box->footer()->setStyleClass("flex items-center justify-between  p-2 bg-gray-800 text-gray-300 hover:bg-gray-700");
+    message_box->setStyleClass("");
+    message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+    message_box->contents()->addStyleClass("flex items-center");
+    message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
     return message_box;
 }

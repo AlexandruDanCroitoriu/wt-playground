@@ -142,6 +142,7 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
             removeChild(dialog);
         });
         dialog->show(); });
+
 }
 
 void FilesManager::setTreeFolderWidgets()
@@ -543,7 +544,7 @@ void FilesManager::setTreeFolderWidgets()
             if (selected_file_wrapper_ == nullptr)
             {
                 // editor_->setCssEdditorText(getCssFromFile(default_folder_path_ + folder.first + "/" + file));
-                std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
+                // std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
                 selected_file_wrapper_ = file_wrapper;
                 selected_file_wrapper_->addStyleClass("?");
                 tree_header_title_->setText(file);

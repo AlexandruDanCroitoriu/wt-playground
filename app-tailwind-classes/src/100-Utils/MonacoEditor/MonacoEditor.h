@@ -11,18 +11,22 @@ class MonacoEditor : public Wt::WContainerWidget
         void setDarkTheme(bool dark);
         void resetLayout();
         void setFile(std::string file_path);
-        Wt::Signal<bool>& avalable_save() { return avalable_save_; }
+        void setEditorReadOnly(bool read_only) { 
+            doJavaScript("setTimeout(function() { if(window." + editor_js_var_name_ + ") window." + editor_js_var_name_ + ".updateOptions({ readOnly: " + std::to_string(read_only) + " }); }, 200);");
+        }
         bool unsavedChanges();
-        Wt::Signal<std::string>& save_file_signal() { return save_file_signal_; }
         std::string getUnsavedText() { return unsaved_text_; }
         void textSaved();
-        void reuploadText() { setCssEdditorText(current_text_); }
+        void reuploadText() { setEditorText(current_text_); }
+        
+        Wt::Signal<std::string>& save_file_signal() { return save_file_signal_; }
+        Wt::Signal<bool>& avalable_save() { return avalable_save_; }
         Wt::Signal<Wt::WString> width_changed_;
         
     private:
         std::string getFileText(std::string file_path);
-        void setCssEdditorText(std::string text);
-        void cssEdditorTextChanged(const std::string text);
+        void setEditorText(std::string text);
+        void editorTextChanged(const std::string text);
     
         Wt::JSignal<std::string> js_signal_text_changed_;
         Wt::Signal<bool> avalable_save_;

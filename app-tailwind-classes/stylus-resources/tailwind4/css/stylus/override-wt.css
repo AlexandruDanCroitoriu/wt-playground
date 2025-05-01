@@ -5,5 +5,13 @@
 }
 
 .Wt-vrh2 {
-	@apply bg-gray-700 hover:bg-gray-950 scale-125;
+	@apply scale-125;
+}
+
+
+.filesManager-menu {
+	@apply hover:bg-[oklch(0.932_0.032_255.585)] p-1;
+}
+.filesManager-menu-selected {
+		@apply bg-[oklch(0.623_0.214_259.815)] !font-extrabold hover:bg-[oklch(0.623_0.214_259.815)] text-[#FFF];
 }

@@ -8,7 +8,7 @@ TailwindConfigCenter::TailwindConfigCenter()
 {
     setOffsets(0, Wt::Side::Top | Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
     // setOffsets(0, Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
-    setTabIndex(1);
+    // setTabIndex(1);
     // setOffsets(200, Wt::Side::Top);
     titleBar()->children()[0]->removeFromParent();
     setStyleClass("!border-0 shadow-lg rounded-xl overflow-x-visible z-[1]");
@@ -20,7 +20,6 @@ TailwindConfigCenter::TailwindConfigCenter()
     setResizable(false);
     setMovable(false);
 
-    Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/static/css/questionmark.css");
 
     auto navbar = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());

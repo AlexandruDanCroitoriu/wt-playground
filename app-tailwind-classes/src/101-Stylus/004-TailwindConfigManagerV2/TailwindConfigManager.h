@@ -1,0 +1,31 @@
+#pragma once
+#include "100-Utils/tinyxml2/tinyxml2.h"
+#include "101-Stylus/Brain.h"
+#include <Wt/WContainerWidget.h>
+#include "100-Utils/MonacoEditor/MonacoEditor.h"
+#include <Wt/WHBoxLayout.h>
+#include <Wt/WVBoxLayout.h>
+#include <Wt/WComboBox.h>
+
+namespace Stylus
+{
+    class TailwindConfigManager : public Wt::WContainerWidget
+    {
+    public:
+        TailwindConfigManager(std::shared_ptr<Brain> brain);
+
+        MonacoEditor* editor_;
+    private:
+        Wt::WVBoxLayout* layout_;
+        Wt::WComboBox* config_files_combobox_;
+
+        std::shared_ptr<Brain> brain_;
+        std::string config_folder_path_;
+        std::string default_config_file_name_;
+        std::vector<std::string> config_files_;
+
+
+        std::vector<std::string> getConfigFiles();
+    };
+
+}

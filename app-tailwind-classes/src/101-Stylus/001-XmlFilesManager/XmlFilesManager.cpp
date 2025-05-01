@@ -1,4 +1,4 @@
-#include "101-Stylus/003-XmlFilesManager/XmlFilesManager.h"
+#include "101-Stylus/001-XmlFilesManager/XmlFilesManager.h"
 #include <filesystem>
 #include <Wt/WPushButton.h>
 #include <Wt/WMenu.h>
@@ -15,7 +15,6 @@
 #include <Wt/WApplication.h>
 #include <Wt/WText.h>
 #include <Wt/WContainerWidget.h>
-#include "010-TestWidgets/DarkModeToggle.h"
 #include <Wt/WLayout.h>
 
 namespace Stylus
@@ -29,7 +28,7 @@ namespace Stylus
         
         auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
         // temp_wrapper->setStyleClass("rounded-md p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
-        temp_wrapper->setStyleClass("rounded-md p-2 bg-white dark:bg-gray-900"); 
+        temp_wrapper->setStyleClass("rounded-md p-2"); 
 
         temp_wrapper->setOverflow(Wt::Overflow::Auto);
         temp_wrapper->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
@@ -38,8 +37,7 @@ namespace Stylus
         // test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
         auto test_template = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         // auto test_template = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
-        auto dark_mode_toggle = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
-        
+        dark_mode_toggle_ = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
         
         file_selected().connect(this, [=](Wt::WString file_path)
         {
@@ -66,17 +64,14 @@ namespace Stylus
 
     }
 
-
-
-    
     Wt::WContainerWidget* XmlFilesManager::setTreeFileWidget(Wt::WContainerWidget* files_wrapper, std::string folder_name, std::string file_name)
     {
         auto file_wrapper = files_wrapper->addWidget(std::make_unique<Wt::WContainerWidget>());
-        file_wrapper->setStyleClass("group w-full relative flex items-center cursor-pointer hover:bg-gray-700 rounded-md text-gray-200");
+        file_wrapper->setStyleClass("group w-full relative flex items-center cursor-pointer rounded-md");
 
         // file buttons
         auto save_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-        save_file_btn->setStyleClass("absolute left-1 hover:bg-gray-900 hidden");
+        save_file_btn->setStyleClass("absolute left-1 hidden");
         save_file_btn->clicked().preventPropagation();
         save_file_btn->clicked().connect(this, [=]()
         {
@@ -93,7 +88,7 @@ namespace Stylus
         file_wrapper->addWidget(std::make_unique<Wt::WText>(file_name))->setStyleClass("ml-7 font-thin text-md");
 
         auto delete_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-        delete_file_btn->setStyleClass("absolute right-0 rounded-md p-1 hover:bg-gray-900 group-hover:block hidden");
+        delete_file_btn->setStyleClass("absolute right-0 rounded-md p-1 group-hover:block hidden");
         delete_file_btn->clicked().preventPropagation();
         delete_file_btn->clicked().connect(this, [=]()
                                            {
@@ -131,7 +126,7 @@ namespace Stylus
         messageBox->show(); });
 
         auto edit_file_name_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
-        edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-1 hover:bg-gray-900 group-hover:block hidden");
+        edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-1 group-hover:block hidden");
         edit_file_name_btn->clicked().preventPropagation();
         edit_file_name_btn->clicked().connect(this, [=]()
                                               {
@@ -140,7 +135,7 @@ namespace Stylus
         dialog->setModal(true);
         dialog->rejectWhenEscapePressed();
         dialog->setStyleClass("bg-gray-800 text-gray-200 z-[2]");
-        dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer bg-gray-800 text-gray-300 hover:bg-gray-700 border-b border-solid border-gray-700 text-xl font-bold");
+        dialog->titleBar()->setStyleClass("flex items-center justify-center p-2 cursor-pointer border-b border-solid text-xl font-bold");
         dialog->contents()->setStyleClass("flex flex-col bg-gray-800 text-gray-200");
 
         auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());

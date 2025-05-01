@@ -1,6 +1,6 @@
-#include "101-Stylus/003-TailwindConfigManager/WTConfig.h"
-#include "101-Stylus/003-TailwindConfigManager/WTVariable.h"
-#include "101-Stylus/003-TailwindConfigManager/WTVariableText.h"
+#include "101-Stylus/004-TailwindConfigManager/WTConfig.h"
+#include "101-Stylus/004-TailwindConfigManager/WTVariable.h"
+#include "101-Stylus/004-TailwindConfigManager/WTVariableText.h"
 #include <Wt/WApplication.h>
 #include <iostream>
 #include <fstream>
@@ -17,7 +17,7 @@
 #include <Wt/WRandom.h>
 #include <Wt/WIOService.h>
 
-namespace Stylus
+namespace Stylus 
 {
 
     WTConfig::WTConfig(std::shared_ptr<Brain> brain)

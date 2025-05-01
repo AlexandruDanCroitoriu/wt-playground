@@ -1,4 +1,4 @@
-#include "101-Stylus/001-JsFilesManager/JsFilesManager.h"
+#include "101-Stylus/003-JsFilesManager/JsFilesManager.h"
 #include <Wt/WApplication.h>
 #include <Wt/WRandom.h>
 
@@ -10,9 +10,11 @@ namespace Stylus
         FilesManager("../stylus-resources/js/", "javascript", brain->state_.js_node_->IntAttribute("sidebar-width"))
     {
 
+        
+
         file_saved().connect(this, [=](Wt::WString file_path)
         {
-                Wt::WApplication::instance()->require(file_path.toUTF8() + "?v=" + Wt::WRandom::generateId());
+            Wt::WApplication::instance()->require(file_path.toUTF8() + "?v=" + Wt::WRandom::generateId());
         });
 
         sidebar_->width_changed_.connect(this, [=](Wt::WString width)

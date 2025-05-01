@@ -2,6 +2,8 @@
 #include <Wt/WText.h>
 #include <Wt/WApplication.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WRandom.h>
+
 #include <filesystem>
 #include <iostream>
 #include <fstream>
@@ -9,7 +11,7 @@
 
 
 MonacoEditor::MonacoEditor(std::string language)
-    : js_signal_text_changed_(this, "cssEdditorTextChanged"),
+    : js_signal_text_changed_(this, "editorTextChanged"),
         unsaved_text_(""),
         current_text_("")
 {
@@ -17,9 +19,9 @@ MonacoEditor::MonacoEditor(std::string language)
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     
-    js_signal_text_changed_.connect(this, &MonacoEditor::cssEdditorTextChanged);
+    js_signal_text_changed_.connect(this, &MonacoEditor::editorTextChanged);
     doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
-    editor_js_var_name_ = language + "_editor";
+    editor_js_var_name_ = language + Wt::WRandom::generateId() + "_editor";
 
     std::string initializer =
             R"(
@@ -27,7 +29,7 @@ MonacoEditor::MonacoEditor(std::string language)
                 window.)" + editor_js_var_name_ + R"(_current_text = `)" + current_text_ + R"(`;
                 window.)" + editor_js_var_name_ + R"( = monaco.editor.create(document.getElementById(')" + id() + R"('), {
                 language: ')" + language + R"(',
-                theme: 'vs-dark',
+                theme: 'vs-light',
                 wordWrap: 'off',
                 lineNumbers: 'on',
                 tabSize: 2,
@@ -41,7 +43,7 @@ MonacoEditor::MonacoEditor(std::string language)
             window.)" + editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
                 if (window.)" + editor_js_var_name_ + R"(_current_text !== window.)" + editor_js_var_name_ + R"(.getValue()) {
                     window.)" + editor_js_var_name_ + R"(_current_text = window.)" + editor_js_var_name_ + R"(.getValue();
-                    Wt.emit(')" + id() + R"(', 'cssEdditorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
+                    Wt.emit(')" + id() + R"(', 'editorTextChanged', window.)" + editor_js_var_name_ + R"(.getValue());
                 }
             });
 
@@ -54,9 +56,9 @@ MonacoEditor::MonacoEditor(std::string language)
         });
     )";
 
-    setJavaScriptMember("cssEdditorTextChanged", initializer);
+    setJavaScriptMember("editorTextChanged", initializer);
     // setFile(file_path);
-    // setJavaScriptMember("cssEdditorTextChanged", "initializeCssEditor('" + id() + "', '"+current_text_+"');");
+    // setJavaScriptMember("editorTextChanged", "initializeEditor('" + id() + "', '"+current_text_+"');");
 
     keyWentDown().connect([=](Wt::WKeyEvent e)
                             { 
@@ -73,28 +75,15 @@ MonacoEditor::MonacoEditor(std::string language)
 
 void MonacoEditor::layoutSizeChanged(int width, int height)
 {
-    std::cout << "\n\n MonacoEditor::layoutSizeChanged() " << width << " " << height << "\n\n";
-    resetLayout();
+    // resetLayout(); // This is not needed as it is already called in setEditorText
+    setEditorText(unsaved_text_); // This is not needed as some times the text is not set when the app server serves the first app instance
     if(width >= 240) {
         width_changed_.emit(Wt::WString(std::to_string(width)));
     }
 }
 
-// void MonacoEditor::saveTextToFile()
-// {
-//     // std::cout << "\n\n MonacoEditor::saveTextToFile()\n\n";
-//     std::ofstream file(file_path_);
-//     if (!file.is_open()) {
-//         std::cout << "\n\n Failed to open file: " << file_path_ << "\n\n";
-//         return;
-//     }
-//     file << unsaved_text_;
-//     file.close();
-//     current_text_ = unsaved_text_;
-//     avalable_save_.emit(false);
-// }
 
-void MonacoEditor::cssEdditorTextChanged(const std::string text)
+void MonacoEditor::editorTextChanged(const std::string text)
 {
     std::cout << "\n\n redived text: " << text << "\n\n";
     if (text.compare(unsaved_text_) == 0)
@@ -106,7 +95,7 @@ void MonacoEditor::cssEdditorTextChanged(const std::string text)
         std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
     }
-    std::cout << "\n\n MonacoEditor::cssEdditorTextChanged()\n\n";
+    std::cout << "\n\n MonacoEditor::editorTextChanged()\n\n";
     unsaved_text_ = text;
     avalable_save_.emit(true);
 }
@@ -131,24 +120,25 @@ bool MonacoEditor::unsavedChanges()
 
 void MonacoEditor::setFile(std::string file_path)
 {
-    setCssEdditorText(getFileText(file_path));
+    setEditorText(getFileText(file_path));
 }
 
-void MonacoEditor::setCssEdditorText(std::string text)
+void MonacoEditor::setEditorText(std::string text)
 {
+    resetLayout();
     doJavaScript(R"(
-    setTimeout(function() {
-        if (window.)" +
-                    editor_js_var_name_ + R"() {
-            window.)" +
-                    editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
-            window.)" +
-                    editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
-        } else {
-            console.error("Editor instance is not initialized yet.");
-        }
-    }, 100);
-)");
+        setTimeout(function() {
+            if (window.)" +
+                        editor_js_var_name_ + R"() {
+                window.)" +
+                        editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
+                window.)" +
+                        editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
+            } else {
+                console.error("Editor instance is not initialized yet.");
+            }
+        }, 100);
+    )");
     current_text_ = text;
     unsaved_text_ = text;
 }

@@ -1,6 +1,6 @@
 <messages>
     <message id="stylus-svg-add-folder">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 fill-white"
+        <svg viewBox="0 0 16 16" class="w-4 h-4"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -81,7 +81,7 @@
         </svg>
     </message>
     <message id="stylus-svg-xml-logo">
-        <svg height="200px" width="200px" version="1.1" id="Layer_1" class="w-6 h-6"
+        <svg class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -101,7 +101,7 @@
         </svg>
     </message>
     <message id="stylus-svg-tailwind-logo">
-        <svg viewBox="0 0 32 32" class="w-6 h-6"
+        <svg viewBox="0 0 32 32" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -112,7 +112,7 @@
         </svg>
     </message>
     <message id="stylus-svg-css-logo">
-        <svg viewBox="0 0 32 32" fill="none" class="w-6 h-6"
+        <svg viewBox="0 0 32 32" fill="none" class="w-full w-full"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -124,7 +124,7 @@
         </svg>
     </message>
     <message id="stylus-svg-javascript-logo">
-        <svg viewBox="0 0 24 24" class="w-6 h-6"
+        <svg viewBox="0 0 24 24" class="w-full w-full"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

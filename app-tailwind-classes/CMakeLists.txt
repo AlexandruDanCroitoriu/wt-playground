@@ -33,13 +33,14 @@ set(SOURCES
     
     ${SOURCE_DIR}101-Stylus/Stylus.cpp
     ${SOURCE_DIR}101-Stylus/Brain.cpp
-    ${SOURCE_DIR}101-Stylus/001-JsFilesManager/JsFilesManager.cpp
+    ${SOURCE_DIR}101-Stylus/001-XmlFilesManager/XmlFilesManager.cpp
     ${SOURCE_DIR}101-Stylus/002-CssFilesManager/CssFilesManager.cpp
-    ${SOURCE_DIR}101-Stylus/003-XmlFilesManager/XmlFilesManager.cpp
-    ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/TVariable.cpp
-    ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/WTConfig.cpp
-    ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/WTVariable.cpp
-    ${SOURCE_DIR}101-Stylus/003-TailwindConfigManager/WTVariableText.cpp
+    ${SOURCE_DIR}101-Stylus/003-JsFilesManager/JsFilesManager.cpp
+    ${SOURCE_DIR}101-Stylus/004-TailwindConfigManagerV2/TailwindConfigManager.cpp
+    # ${SOURCE_DIR}101-Stylus/004-TailwindConfigManager/WTConfig.cpp
+    # ${SOURCE_DIR}101-Stylus/004-TailwindConfigManager/TVariable.cpp
+    # ${SOURCE_DIR}101-Stylus/004-TailwindConfigManager/WTVariable.cpp
+    # ${SOURCE_DIR}101-Stylus/004-TailwindConfigManager/WTVariableText.cpp
 
 )
 
@@ -51,7 +52,6 @@ target_link_libraries(${PROJECT_NAME}
     wtdbo
     wtdbosqlite3
     wtdbopostgres
-    # boost_filesystem
     boost_regex
 )
 
