@@ -12,7 +12,6 @@ public:
     Wt::WContainerWidget* header_;
     Wt::WContainerWidget* contents_;
     Wt::WContainerWidget* footer_;
-    Wt::WText* header_title_;
     Wt::WTemplate* add_folder_btn_;
     Wt::Signal<Wt::WString> width_changed_;
 protected:

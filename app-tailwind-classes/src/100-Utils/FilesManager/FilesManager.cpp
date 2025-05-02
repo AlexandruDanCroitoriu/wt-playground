@@ -24,19 +24,19 @@ FilesManagerSidebar::FilesManagerSidebar()
     setMaximumSize(Wt::WLength(1000, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     header_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     header_->setStyleClass("group flex items-center border-b border-solid");
-    header_title_ = header_->addWidget(std::make_unique<Wt::WText>("selected file"));
-    header_title_->setStyleClass("text-md m-1");
-
-    // add folder btn
-    add_folder_btn_ = header_->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
-    add_folder_btn_->setStyleClass("ml-auto rounded-md m-[4px]");
-    add_folder_btn_->clicked().preventPropagation();
 
     contents_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     contents_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
 
     footer_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     footer_->setStyleClass("flex items-center justify-between p-[8px] border-t border-solid");
+
+
+    // add folder btn
+    add_folder_btn_ = footer_->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
+    add_folder_btn_->setStyleClass("ml-auto rounded-md m-[4px]");
+    add_folder_btn_->clicked().preventPropagation();
+    
 }
 
 void FilesManagerSidebar::layoutSizeChanged(int width, int height)
@@ -417,7 +417,6 @@ void FilesManager::setTreeFolderWidgets()
                 // std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
                 selected_file_wrapper_ = file_wrapper;
                 selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-                sidebar_->header_title_->setText(file);
                 selected_file_path_ = default_folder_path_ + folder.first + "/" + file;
                 editor_->setFile(default_folder_path_ + folder.first + "/" + file);
                 // file_selected_.emit(default_folder_path_ + folder.first + "/" + file);
@@ -600,7 +599,6 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                     selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
                     selected_file_wrapper_ = file_wrapper;
                     selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-                    sidebar_->header_title_->setText(file_name);
                     selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                 }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
@@ -611,7 +609,6 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                     selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
                     selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
-                    sidebar_->header_title_->setText(file_name);
                 }
                 removeChild(messageBox);
             });
@@ -629,7 +626,6 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
             }
             selected_file_wrapper_ = file_wrapper;
             selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-            sidebar_->header_title_->setText(file_name);
             selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
             editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
         } 
