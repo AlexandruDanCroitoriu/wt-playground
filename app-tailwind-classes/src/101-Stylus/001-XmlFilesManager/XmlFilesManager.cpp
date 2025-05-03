@@ -20,10 +20,10 @@
 namespace Stylus
 {
 
-    XmlFilesManager::XmlFilesManager(std::shared_ptr<Brain> brain)
-        : brain_(brain),
+    XmlFilesManager::XmlFilesManager(std::shared_ptr<StylusState> state)
+        : state_(state),
         // FilesManager("../stylus-resources/xml-templates/", "xml")
-        FilesManager("../stylus-resources/xml-templates/", "xml", brain->state_.xml_node_->IntAttribute("sidebar-width"))
+        FilesManager("../stylus-resources/xml-templates/", "xml", state->xml_node_->IntAttribute("sidebar-width"))
     {
         
         auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
@@ -46,20 +46,20 @@ namespace Stylus
         file_saved().connect(this, [=](Wt::WString file_path)
         {
             test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-            brain_->generateCssFile();
+            // file_saved().emit(file_path);
         });
         
         sidebar_->width_changed_.connect(this, [=](Wt::WString width)
         {
-            brain_->state_.xml_node_->SetAttribute("sidebar-width", std::stoi(width.toUTF8()));
-            brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+            state_->xml_node_->SetAttribute("sidebar-width", std::stoi(width.toUTF8()));
+            state_->doc_.SaveFile(state_->file_path_.c_str());
         });
-        layout_->setResizable(1, true, Wt::WLength(brain_->state_.xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
+        layout_->setResizable(1, true, Wt::WLength(state_->xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
 
         editor_->width_changed_.connect(this, [=](Wt::WString width)
         {
-            brain_->state_.xml_node_->SetAttribute("editor-width", std::stoi(width.toUTF8()));
-            brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+            state_->xml_node_->SetAttribute("editor-width", std::stoi(width.toUTF8()));
+            state_->doc_.SaveFile(state_->file_path_.c_str());
         });
 
     }

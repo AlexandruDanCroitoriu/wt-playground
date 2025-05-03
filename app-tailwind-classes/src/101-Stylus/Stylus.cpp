@@ -4,17 +4,20 @@
 #include <Wt/WTemplate.h>
 #include <Wt/WApplication.h>
 #include <Wt/WStackedWidget.h>
+#include <fstream>
+#include <Wt/WApplication.h>
+#include <Wt/WServer.h>
+#include <Wt/WIOService.h>
+#include <Wt/WRandom.h>
 
 namespace Stylus {
 
 
 Stylus::Stylus()
+    : state_(std::make_shared<StylusState>())
 {
-    brain_ = std::make_shared<Brain>();
     
     setOffsets(0, Wt::Side::Top | Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
-    // setOffsets(0, Wt::Side::Bottom | Wt::Side::Left | Wt::Side::Right);
-    // setOffsets(200, Wt::Side::Top);
     titleBar()->children()[0]->removeFromParent();
     setStyleClass("!border-0 overflow-auto !bg-[#FFF]");
     titleBar()->hide();
@@ -37,19 +40,18 @@ Stylus::Stylus()
     auto css_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-css-logo")));
     auto javascript_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-javascript-logo")));
     auto tailwind_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-tailwind-logo")));
-    std::string nav_btns_styles = "w-[50px] p-[10px] cursor-pointer flex items-center filesManager-menu";
+    std::string nav_btns_styles = "w-[50px] p-[10px] m-[4px] cursor-pointer rounded-md flex items-center filesManager-menu";
 
     templates_menu_item->setStyleClass(nav_btns_styles);
     tailwind_menu_item->setStyleClass(nav_btns_styles);
     css_menu_item->setStyleClass(nav_btns_styles);
     javascript_menu_item->setStyleClass(nav_btns_styles);
     
-    xml_files_manager_ = content_wrapper->addWidget(std::make_unique<XmlFilesManager>(brain_));    
-    css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>(brain_));
-    js_files_manager_ = content_wrapper->addWidget(std::make_unique<JsFilesManager>(brain_));
-    tailwind_config_ = content_wrapper->addWidget(std::make_unique<TailwindConfigManager>(brain_));
+    xml_files_manager_ = content_wrapper->addWidget(std::make_unique<XmlFilesManager>(state_));    
+    css_files_manager_ = content_wrapper->addWidget(std::make_unique<CssFilesManager>(state_));
+    js_files_manager_ = content_wrapper->addWidget(std::make_unique<JsFilesManager>(state_));
+    tailwind_config_ = content_wrapper->addWidget(std::make_unique<TailwindConfigManager>(state_));
 
-    brain_->generateCssFile();
 
     templates_menu_item->clicked().connect(this, [=]() {
         templates_menu_item->toggleStyleClass("filesManager-menu-selected", true);
@@ -59,8 +61,8 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(xml_files_manager_);
         xml_files_manager_->editor_->resetLayout();
         // xml_files_manager_->editor_->reuploadText();
-        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "templates");
-        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        state_->stylus_open_node_->SetAttribute("selected-menu", "templates");
+        state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
     tailwind_menu_item->clicked().connect(this, [=]() {
@@ -70,8 +72,8 @@ Stylus::Stylus()
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         content_wrapper->setCurrentWidget(tailwind_config_);
         tailwind_config_->editor_->resetLayout();
-        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "tailwind");
-        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        state_->stylus_open_node_->SetAttribute("selected-menu", "tailwind");
+        state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
     css_menu_item->clicked().connect(this, [=]() {
@@ -82,8 +84,8 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(css_files_manager_);
         css_files_manager_->editor_->resetLayout();
         // css_files_manager_->editor_->reuploadText();
-        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "css");
-        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        state_->stylus_open_node_->SetAttribute("selected-menu", "css");
+        state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
     javascript_menu_item->clicked().connect(this, [=]() {
@@ -94,8 +96,8 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(js_files_manager_);
         js_files_manager_->editor_->resetLayout();
         // js_files_manager_->editor_->reuploadText();
-        brain_->state_.stylus_open_node_->SetAttribute("selected-menu", "javascript");
-        brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+        state_->stylus_open_node_->SetAttribute("selected-menu", "javascript");
+        state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
     content_wrapper->currentWidgetChanged().connect([=]() {
@@ -109,7 +111,7 @@ Stylus::Stylus()
     });
 
 
-    auto selected_menu = brain_->state_.stylus_open_node_->Attribute("selected-menu");
+    auto selected_menu = state_->stylus_open_node_->Attribute("selected-menu");
     if (std::strcmp(selected_menu, "templates") == 0)
         templates_menu_item->clicked().emit(Wt::WMouseEvent());
     else if (std::strcmp(selected_menu, "tailwind") == 0)
@@ -119,7 +121,7 @@ Stylus::Stylus()
     else if (std::strcmp(selected_menu, "javascript") == 0)
         javascript_menu_item->clicked().emit(Wt::WMouseEvent());
 
-    if(std::strcmp(brain_->state_.stylus_open_node_->Attribute("open"), "true") == 0)
+    if(std::strcmp(state_->stylus_open_node_->Attribute("open"), "true") == 0)
         show();
     else
         hide();
@@ -133,12 +135,12 @@ Stylus::Stylus()
             {
                 if(isHidden()){
                     show();
-                    brain_->state_.stylus_open_node_->SetAttribute("open", "true");
+                    state_->stylus_open_node_->SetAttribute("open", "true");
                 }else{
                     hide();
-                    brain_->state_.stylus_open_node_->SetAttribute("open", "false");
+                    state_->stylus_open_node_->SetAttribute("open", "false");
                 }
-                brain_->state_.doc_.SaveFile(brain_->state_.file_path_.c_str());
+                state_->doc_.SaveFile(state_->file_path_.c_str());
             }else if (e.key() == Wt::Key::Key_1){
                 templates_menu_item->clicked().emit(Wt::WMouseEvent());
             }else if (e.key() == Wt::Key::Key_2){
@@ -161,6 +163,68 @@ Stylus::Stylus()
 
 
 
+    css_files_manager_->file_saved().connect(this, [=]()
+    {
+        generateCssFile();
+    });
+    xml_files_manager_->file_saved().connect(this, [=]()
+    {
+        generateCssFile();
+    });
+    generateCssFile();
+
 }
 
+
+
+
+    void Stylus::generateCssFile()
+    {
+        // std::cout << "\n\n start writing file \n\n";
+
+        std::ofstream file("../stylus-resources/tailwind4/input.css");
+        if (!file.is_open())
+        {
+            std::cerr << "Error opening file for writing: " << "../stylus-resources/tailwind4/input.css" << std::endl;
+            return;
+        }   
+        // std::cout << "\n\n file opened \n\n";
+        file << "/* Import TailwindCSS base styles */\n";
+        file << "@import \"tailwindcss\";\n\n";
+        file << "/* Import custom CSS files for additional styles */\n";
+        // std::cout << "\n\n writing file imports \n\n";
+        for(const auto& folder : *css_files_manager_->folders_)
+        {
+            for (const auto& file_name : folder.second)
+            {
+                file << "@import \"./css/" << folder.first << "/" << file_name << "\";\n";
+            }
+        }
+        file << "\n";
+        file << "/* Source additional templates and styles */\n";
+        file << "@source \"../xml-templates/\";\n";
+        file << "@source \"../../src/\";\n\n";
+
+        file << "/* Define custom variants */\n";
+        file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
+
+        file << "/* Define custom theme */\n";
+        file << tailwind_config_->getConfig() << "\n\n";
+
+        // std::cout << "\n\nFile written successfully: " << "../stylus-resources/tailwind4/input.css\n\n";
+        file.close();
+
+        // std::cout << "\n\nGenerating CSS file...\n\n";
+        auto session_id = Wt::WApplication::instance()->sessionId();
+        Wt::WServer::instance()->ioService().post([this, session_id](){
+            std::system("cd ../stylus-resources/tailwind4 && npm run build");
+            Wt::WServer::instance()->post(session_id, [this]() {
+                current_css_file_ = Wt::WApplication::instance()->docRoot() + "/../static/tailwind.css?v=" + Wt::WRandom::generateId();
+                Wt::WApplication::instance()->removeStyleSheet(prev_css_file_.toUTF8());
+                Wt::WApplication::instance()->useStyleSheet(current_css_file_.toUTF8());
+                prev_css_file_ = current_css_file_;
+                Wt::WApplication::instance()->triggerUpdate();
+            }); 
+        });
+    }
 }

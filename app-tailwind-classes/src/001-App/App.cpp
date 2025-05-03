@@ -16,18 +16,18 @@ App::App(const Wt::WEnvironment &env)
     : WApplication(env)
 //   session_(appRoot() + "../dbo.db"),
 {
-    messageResourceBundle().use(docRoot() + "/templates");
-    messageResourceBundle().use(docRoot() + "/stylus-resources/xml-templates/experiments/test");
+    // messageResourceBundle().use(docRoot() + "/templates");
+    messageResourceBundle().use(docRoot() + "/stylus-resources/xml-templates/stylus/svg");
 
     // JSs
-    require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
+    // require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
     require(docRoot() + "/static/monaco-edditor.js");
-    // require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
+    require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
     // require("https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js");
 
     // CSS
     // useStyleSheet("static/css/questionmark.css");
-    useStyleSheet("../static/tailwind.css?v=" + Wt::WRandom::generateId());
+    // useStyleSheet("../static/tailwind.css?v=" + Wt::WRandom::generateId());
 
     // Settings
     enableUpdates(true);
@@ -57,13 +57,13 @@ App::App(const Wt::WEnvironment &env)
 
     stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
 
-    auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
-    stylus_->xml_files_manager_->dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark){
-        dark_mode_toggle->setDarkMode(dark);
-    });
-    dark_mode_toggle->dark_mode_changed_.connect(this, [=](bool dark){
-        stylus_->xml_files_manager_->dark_mode_toggle_->setDarkMode(dark);
-    });
+    // auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
+    // stylus_->xml_files_manager_->dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark){
+    //     dark_mode_toggle->setDarkMode(dark);
+    // });
+    // dark_mode_toggle->dark_mode_changed_.connect(this, [=](bool dark){
+    //     stylus_->xml_files_manager_->dark_mode_toggle_->setDarkMode(dark);
+    // });
 
     root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease overflow-hidden");
 

@@ -1,6 +1,6 @@
-<messages>
-    <message id="stylus-svg-add-folder">
-        <svg viewBox="0 0 16 16" class="w-4 h-4"
+<messages class="flex flex-wrap">
+    <message id="stylus-svg-add-folder" class="h-[100px] block utility-button-colors">
+        <svg viewBox="0 0 16 16" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -9,8 +9,8 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-green-checked">
-        <svg viewBox="0 0 24 24" class="w-4 h-4 fill-green-400"
+    <message id="stylus-svg-green-checked" class="h-[100px] block ">
+        <svg viewBox="0 0 24 24" class="w-full h-full fill-green-400"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -19,8 +19,8 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-add-file">
-        <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4"
+    <message id="stylus-svg-add-file" class="h-[100px] block utility-button-colors">
+        <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[#000] fill-[#000]"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -29,8 +29,8 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-trash">
-        <svg version="1.1" id="Layer_1" class="w-4 h-4 fill-red-300"
+    <message id="stylus-svg-trash" class="h-[100px] block utility-button-colors">
+        <svg version="1.1" id="Layer_1" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -61,8 +61,8 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-edit">
-        <svg viewBox="0 0 24 24" class="w-4 h-4 stroke-[#FFF]"
+    <message id="stylus-svg-edit" class="h-[100px] block utility-button-colors">
+        <svg viewBox="0 0 24 24" class="w-full h-full stroke-[#000]"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -79,7 +79,7 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-xml-logo">
+    <message id="stylus-svg-xml-logo" class="h-[100px] block ">
         <svg class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
@@ -99,7 +99,7 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-tailwind-logo">
+    <message id="stylus-svg-tailwind-logo" class="h-[100px] block ">
         <svg viewBox="0 0 32 32" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -110,7 +110,7 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-css-logo">
+    <message id="stylus-svg-css-logo" class="h-[100px] block ">
         <svg viewBox="0 0 32 32" fill="none" class="w-full w-full"
             xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -122,7 +122,7 @@
             </g>
         </svg>
     </message>
-    <message id="stylus-svg-javascript-logo">
+    <message id="stylus-svg-javascript-logo" class="h-[100px] block ">
         <svg viewBox="0 0 24 24" class="w-full w-full"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

@@ -32,7 +32,7 @@ set(SOURCES
     ${SOURCE_DIR}100-Utils/FilesManager/FilesManager.cpp
     
     ${SOURCE_DIR}101-Stylus/Stylus.cpp
-    ${SOURCE_DIR}101-Stylus/Brain.cpp
+    ${SOURCE_DIR}101-Stylus/StylusState.cpp
     ${SOURCE_DIR}101-Stylus/001-XmlFilesManager/XmlFilesManager.cpp
     ${SOURCE_DIR}101-Stylus/002-CssFilesManager/CssFilesManager.cpp
     ${SOURCE_DIR}101-Stylus/003-JsFilesManager/JsFilesManager.cpp

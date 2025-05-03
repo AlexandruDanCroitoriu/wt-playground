@@ -1,7 +1,8 @@
 #pragma once
 #include "100-Utils/FilesManager/FilesManager.h"
-#include "101-Stylus/Brain.h"
+#include "101-Stylus/StylusState.h"
 #include "010-TestWidgets/DarkModeToggle.h"
+#include <Wt/WSignal.h>
 
 namespace Stylus
 {
@@ -9,10 +10,10 @@ namespace Stylus
     class XmlFilesManager : public FilesManager
     {
     public:
-        XmlFilesManager(std::shared_ptr<Brain> brain);
+        XmlFilesManager(std::shared_ptr<StylusState> state);
         // virtual Wt::WContainerWidget* setTreeFileWidget(Wt::WContainerWidget* files_wrapper, std::string folder_name, std::string file_name) override;
         DarkModeToggle* dark_mode_toggle_;
     private:
-        std::shared_ptr<Brain> brain_;
+        std::shared_ptr<StylusState> state_;
     };
 }

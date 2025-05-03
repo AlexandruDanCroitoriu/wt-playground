@@ -12,7 +12,7 @@
 #include "101-Stylus/003-JsFilesManager/JsFilesManager.h"
 // #include "101-Stylus/004-TailwindConfigManager/WTConfig.h"
 #include "101-Stylus/004-TailwindConfigManagerV2/TailwindConfigManager.h"
-#include "101-Stylus/Brain.h"
+#include "101-Stylus/StylusState.h"
 
 namespace Stylus {
 
@@ -21,7 +21,7 @@ namespace Stylus {
     {
     public:
         Stylus();
-        
+            
         
     
         // TemplatesManager* templates_files_manager_;
@@ -31,8 +31,11 @@ namespace Stylus {
         TailwindConfigManager* tailwind_config_;
 
         
-        std::shared_ptr<Brain> brain_;
-    private:
-    
+        private:
+        std::shared_ptr<StylusState> state_;
+        void generateCssFile();
+        Wt::WString current_css_file_;
+        Wt::WString prev_css_file_;
+
 };
 }

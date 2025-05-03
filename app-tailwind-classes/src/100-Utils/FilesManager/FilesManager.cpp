@@ -29,12 +29,12 @@ FilesManagerSidebar::FilesManagerSidebar()
     contents_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
 
     footer_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    footer_->setStyleClass("flex items-center justify-between p-[8px] border-t border-solid");
+    footer_->setStyleClass("flex items-center justify-between p-[3px] border-t border-solid");
 
 
     // add folder btn
     add_folder_btn_ = footer_->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
-    add_folder_btn_->setStyleClass("ml-auto rounded-md m-[4px]");
+    add_folder_btn_->setStyleClass("rounded-md w-[30px] p-[2px] utility-button-colors");
     add_folder_btn_->clicked().preventPropagation();
     
 }
@@ -194,18 +194,19 @@ void FilesManager::setTreeFolderWidgets()
         // panel->setCollapsed(true);
         panel->setAnimation(Wt::WAnimation(Wt::AnimationEffect::SlideInFromTop, Wt::TimingFunction::EaseInOut, 250));
         panel->setStyleClass("!border-none ");
-        panel->titleBarWidget()->setStyleClass("group relative !bg-[#FFF] flex items-center px-2 cursor-pointer tracking-widest");
+        // panel->titleBarWidget()->setStyleClass("group relative !bg-[#FFF] flex items-center px-2 cursor-pointer tracking-widest");
+        panel->titleBarWidget()->setStyleClass("relative !bg-[#FFF] flex items-center px-2 cursor-pointer tracking-widest");
 
         auto folder_title = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WText>(folder.first));
         folder_title->setStyleClass("ml-2");
 
         auto edit_folder_name_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
-        edit_folder_name_btn->setStyleClass("group-hover:block hidden absolute right-6 rounded-md p-[4px] group-hover:block hidden");
+        edit_folder_name_btn->setStyleClass("absolute right-6 rounded-md p-[2px] h-[24px] utility-button-colors");
         edit_folder_name_btn->clicked().preventPropagation();
 
         // add File button
         auto add_file_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
-        add_file_btn->setStyleClass("group-hover:block hidden absolute right-0 rounded-md p-[4px] overflow-hidden");
+        add_file_btn->setStyleClass("absolute right-0 rounded-md p-[2px] h-[24px] utility-button-colors ");
         add_file_btn->clicked().preventPropagation();
 
         edit_folder_name_btn->clicked().connect(this, [=]()
@@ -321,7 +322,7 @@ void FilesManager::setTreeFolderWidgets()
                 error_label->setText("Match reges:" + pattern);
                 return;
             }
-            std::filesystem::path new_path(default_folder_path_ + folder.first + "/" + new_file_name + ".css");
+            std::filesystem::path new_path(default_folder_path_ + folder.first + "/" + new_file_name + "." + file_extension_);
             if (std::filesystem::exists(new_path)) {
                 error_label->setText("file with the same name already exists.");
             }else {
@@ -352,7 +353,7 @@ void FilesManager::setTreeFolderWidgets()
         if (folder.second.size() == 0)
         {
             auto delete_folder_btn = panel->titleBarWidget()->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-            delete_folder_btn->setStyleClass("absolute right-1 rounded-md p-[4px]");
+            delete_folder_btn->setStyleClass("absolute right-1 rounded-md p-[2px] h-[24px] utility-button-colors");
             add_file_btn->addStyleClass("!right-5");
             add_file_btn->addStyleClass("!right-11");
             delete_folder_btn->clicked().preventPropagation();
@@ -433,24 +434,18 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
 
     // file buttons
     auto save_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-green-checked")));
-    save_file_btn->setStyleClass("absolute left-1 hidden");
+    save_file_btn->setStyleClass("absolute left-1 hidden h-[24px]");
     save_file_btn->clicked().preventPropagation();
     save_file_btn->clicked().connect(this, [=]()
     {
-        std::ofstream sys_file(selected_file_path_);
-        if (!sys_file.is_open()) {
-            std::cout << "\n\n Failed to open file: " << selected_file_path_ << "\n\n";
-            return;
-        }
-        sys_file << editor_->getUnsavedText();
-        sys_file.close();
-        editor_->textSaved(); 
+        editor_->save_file_signal().emit(editor_->getUnsavedText());
     });
 
     file_wrapper->addWidget(std::make_unique<Wt::WText>(file_name))->setStyleClass("ml-7 font-thin text-md");
 
     auto delete_file_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-trash")));
-    delete_file_btn->setStyleClass("absolute right-0 rounded-md p-[4px] group-hover:block hidden");
+    // delete_file_btn->setStyleClass("absolute right-0 rounded-md p-[4px] group-hover:block hidden");
+    delete_file_btn->setStyleClass("absolute right-0 rounded-md p-[2px] h-[24px] utility-button-colors");
     delete_file_btn->clicked().preventPropagation();
     delete_file_btn->clicked().connect(this, [=]()
                                         {
@@ -488,7 +483,8 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     messageBox->show(); });
 
     auto edit_file_name_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
-    edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-[4px] group-hover:block hidden");
+    // edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-[4px] group-hover:block hidden");
+    edit_file_name_btn->setStyleClass("absolute right-6 rounded-md p-[2px] h-[24px] utility-button-colors");
     edit_file_name_btn->clicked().preventPropagation();
     edit_file_name_btn->clicked().connect(this, [=]()
                                             {

@@ -50,13 +50,13 @@ public:
 
     Wt::WMessageBox* createMessageBox(std::string title, std::string temp);
 
+    
+    
+    
+private:
+    
     Wt::Signal<Wt::WString> file_saved_; // returns path of the file
     Wt::Signal<Wt::WString> file_selected_; // returns path of the file
     Wt::Signal<> get_folders_signal_;
-
-
-    
-private:
-
     
 };

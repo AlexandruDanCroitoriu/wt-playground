@@ -7,3 +7,8 @@
 .filesManager-menu-selected {
 		@apply bg-[oklch(0.623_0.214_259.815)] !font-extrabold hover:bg-[oklch(0.623_0.214_259.815)] text-[#FFF];
 }
+
+
+.utility-button-colors {
+	@apply hover:bg-[#9a9a9a]/60;
+}

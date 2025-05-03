@@ -1,4 +1,4 @@
-<stylus selected-menu="templates" open="true" navigation-bar-hidden="false" dark-mode="true">
+<stylus selected-menu="tailwind" open="true" navigation-bar-hidden="false" dark-mode="true">
     <xml-manager editor-width="1080" sidebar-width="240"/>
     <css-manager sidebar-width="240"/>
     <js-manager sidebar-width="240"/>

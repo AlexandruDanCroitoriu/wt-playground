@@ -67,8 +67,8 @@ MonacoEditor::MonacoEditor(std::string language)
     {
         if (e.key() == Wt::Key::S)
         {
+            // textSaved();
             save_file_signal_.emit(unsaved_text_);
-            textSaved();
         }
     } });
 }
@@ -83,9 +83,9 @@ void MonacoEditor::layoutSizeChanged(int width, int height)
 }
 
 
-void MonacoEditor::editorTextChanged(const std::string text)
+void MonacoEditor::editorTextChanged(std::string text)
 {
-    std::cout << "\n\n redived text: " << text << "\n\n";
+    std::cout << "\n\n redived text: " << "\n\n";
     if (text.compare(unsaved_text_) == 0)
         return;
     if (text.compare(current_text_) == 0)

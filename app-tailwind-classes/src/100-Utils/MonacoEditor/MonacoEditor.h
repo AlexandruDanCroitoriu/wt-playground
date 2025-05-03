@@ -25,7 +25,7 @@ class MonacoEditor : public Wt::WContainerWidget
     private:
         std::string getFileText(std::string file_path);
         void setEditorText(std::string text);
-        void editorTextChanged(const std::string text);
+        void editorTextChanged(std::string text);
     
         Wt::JSignal<std::string> js_signal_text_changed_;
         Wt::Signal<bool> avalable_save_;
