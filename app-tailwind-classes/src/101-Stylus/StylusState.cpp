@@ -65,6 +65,16 @@ namespace Stylus {
             stylus_open_node_->InsertEndChild(js_node_);
         }
         // save the file
+        tailwind_config_node_ = stylus_open_node_->FirstChildElement("tailwind-config");
+        if (tailwind_config_node_ == nullptr)
+        {
+            std::cerr << "Error finding <tailwind-config> node in XML file." << std::endl;
+            // create the node
+            tailwind_config_node_ = doc_.NewElement("tailwind-config");
+            tailwind_config_node_->SetAttribute("selected-file-name", "");
+            stylus_open_node_->InsertEndChild(tailwind_config_node_);
+        }
+
         doc_.SaveFile(file_path_.c_str());
         if (doc_.ErrorID() != tinyxml2::XML_SUCCESS)
         {

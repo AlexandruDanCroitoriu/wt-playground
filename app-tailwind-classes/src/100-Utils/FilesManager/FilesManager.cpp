@@ -448,39 +448,40 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     delete_file_btn->setStyleClass("absolute right-0 rounded-md p-[2px] h-[24px] utility-button-colors");
     delete_file_btn->clicked().preventPropagation();
     delete_file_btn->clicked().connect(this, [=]()
-                                        {
-    // delete file 
-    std::string title = "Are you sure you want to delete the file ?";
-    std::string content = "<div class='flex-1 text-center font-bold text-2xl'>" + file_name + "</div>";
-    auto messageBox = createMessageBox(title, content);
-    auto delete_btn = messageBox->addButton("Delete", Wt::StandardButton::Yes);
-    auto cancel_btn = messageBox->addButton("Cancel", Wt::StandardButton::No);
-    delete_btn->setStyleClass("btn-red");
-    cancel_btn->setStyleClass("btn-default");
-    
-    messageBox->buttonClicked().connect([=] {
-        if (messageBox->buttonResult() == Wt::StandardButton::Yes)
-            {
-            std::filesystem::path file_path = default_folder_path_ + folder_name + "/" + file_name;
-
-            // delete file
-            if (std::filesystem::remove(file_path)) {
-                sidebar_->contents_->clear();
-                auto folders = getFolders();
-                folders_->clear();
-                for (const auto &folder : folders)
+                                            {
+        // delete file 
+        std::string title = "Are you sure you want to delete the file ?";
+        std::string content = "<div class='flex-1 text-center font-bold text-2xl'>" + file_name + "</div>";
+        auto messageBox = createMessageBox(title, content);
+        auto delete_btn = messageBox->addButton("Delete", Wt::StandardButton::Yes);
+        auto cancel_btn = messageBox->addButton("Cancel", Wt::StandardButton::No);
+        delete_btn->setStyleClass("btn-red");
+        cancel_btn->setStyleClass("btn-default");
+        
+        messageBox->buttonClicked().connect([=] {
+            if (messageBox->buttonResult() == Wt::StandardButton::Yes)
                 {
-                    folders_->push_back(folder);
+                std::filesystem::path file_path = default_folder_path_ + folder_name + "/" + file_name;
+
+                // delete file
+                if (std::filesystem::remove(file_path)) {
+                    sidebar_->contents_->clear();
+                    auto folders = getFolders();
+                    folders_->clear();
+                    for (const auto &folder : folders)
+                    {
+                        folders_->push_back(folder);
+                    }
+                    setTreeFolderWidgets();
+                } else {
+                    Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
                 }
-                setTreeFolderWidgets();
-            } else {
-                Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
             }
-        }
-        removeChild(messageBox);
+            removeChild(messageBox);
+        });
+        
+        messageBox->show(); 
     });
-    
-    messageBox->show(); });
 
     auto edit_file_name_btn = file_wrapper->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-edit")));
     // edit_file_name_btn->setStyleClass("absolute right-5 rounded-md p-[4px] group-hover:block hidden");

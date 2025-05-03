@@ -6,6 +6,7 @@
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WComboBox.h>
+#include <Wt/WPushButton.h>
 
 namespace Stylus
 {
@@ -20,6 +21,7 @@ namespace Stylus
     private:
         Wt::WVBoxLayout* layout_;
         Wt::WComboBox* config_files_combobox_;
+        Wt::WPushButton* delete_file_btn_;
 
         std::shared_ptr<StylusState> state_;
         std::string config_folder_path_;

@@ -12,6 +12,7 @@ namespace Stylus
         tinyxml2::XMLElement* xml_node_ = nullptr;
         tinyxml2::XMLElement* css_node_ = nullptr;
         tinyxml2::XMLElement* js_node_ = nullptr;
+        tinyxml2::XMLElement* tailwind_config_node_ = nullptr;
     
     };
 
