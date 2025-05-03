@@ -299,6 +299,9 @@
   .z-10 {
     z-index: 10;
   }
+  .z-\[1\] {
+    z-index: 1;
+  }
   .z-\[2\] {
     z-index: 2;
   }
@@ -514,8 +517,8 @@
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
-  .w-\[30px\] {
-    width: 30px;
+  .w-\[16px\] {
+    width: 16px;
   }
   .w-\[40px\] {
     width: 40px;
@@ -627,6 +630,9 @@
   .justify-center {
     justify-content: center;
   }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
@@ -672,6 +678,9 @@
   }
   .overflow-hidden {
     overflow: hidden;
+  }
+  .overflow-x-hidden {
+    overflow-x: hidden;
   }
   .overflow-x-visible {
     overflow-x: visible;
@@ -763,6 +772,9 @@
   }
   .\!bg-yellow-200\/40 {
     background-color: color-mix(in oklab, var(--color-yellow-200) 40%, transparent) !important;
+  }
+  .bg-\[\#FFF\] {
+    background-color: #FFF;
   }
   .bg-blue-50 {
     background-color: var(--color-blue-50);
@@ -942,6 +954,9 @@
   }
   .pb-20 {
     padding-bottom: calc(var(--spacing) * 20);
+  }
+  .pl-\[2px\] {
+    padding-left: 2px;
   }
   .text-center {
     text-align: center;
@@ -1123,6 +1138,10 @@
       outline: 2px solid transparent;
       outline-offset: 2px;
     }
+  }
+  .outline-1 {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
   }
   .blur {
     --tw-blur: blur(8px);
@@ -2044,6 +2063,9 @@
     }
   }
 }
+.Wt-item {
+  zoom: 120%;
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -2222,6 +2244,11 @@
   syntax: "*";
   inherits: false;
   initial-value: 0 0 #0000;
+}
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
 }
 @property --tw-blur {
   syntax: "*";

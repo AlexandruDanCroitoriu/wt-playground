@@ -32,24 +32,24 @@ App::App(const Wt::WEnvironment &env)
     // Settings
     enableUpdates(true);
 
-    // declareJavaScriptFunction("dsblCtrlS", R"(
-    //     function (inputId) {
-    //       const inputElement = document.getElementById(inputId);
-    //       if (!inputElement) {
-    //         console.warn(`Element with id "${inputId}" not found.`);
-    //         return;
-    //       }
+    declareJavaScriptFunction("dsblCtrlS", R"(
+        function (id) {
+          const inputElement = document.getElementById(id);
+          if (!inputElement) {
+            console.warn(`Element with id "${id}" not found.`);
+            return;
+          }
 
-    //       inputElement.addEventListener('keydown', function(e) {
-    //         console.log(e);
-    //         if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
-    //           e.preventDefault();
-    //         }
-    //       });
-    //     }
-    // )");
+          inputElement.addEventListener('keydown', function(e) {
+            console.log(e);
+            if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+              e.preventDefault();
+            }
+          });
+        }
+    )");
 
-// Title
+    // Title
     setTitle("Starter App");
 
     // tailwind_config_center_ = root()->addChild(std::make_unique<TailwindConfigCenter>());

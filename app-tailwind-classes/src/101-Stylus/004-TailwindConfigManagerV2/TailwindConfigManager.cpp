@@ -47,15 +47,33 @@ namespace Stylus
 
      
 
+        std::string btn_styles = " rounded-[6px] w-[40px] h-[40px] p-[6px] utility-button-colors ";
+        auto add_file_btn = sidebar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
+        add_file_btn->setStyleClass(btn_styles);
+        
+        delete_file_btn_ = sidebar->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-trash"), Wt::TextFormat::XHTML));
+        delete_file_btn_->setAttributeValue("tabindex", "-1");
+        delete_file_btn_->setStyleClass(btn_styles + "disabled:cursor-not-allowed disabled:bg-[#EC133B]/50 hover:disabled:!bg-[#EC133B]/50");
+
+        auto save_file_btn = sidebar->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-green-checked"), Wt::TextFormat::XHTML));
+        save_file_btn->setAttributeValue("tabindex", "-1");
+        save_file_btn->setStyleClass(btn_styles);
+
+
+
         editor_->avalable_save().connect(this, [=](bool avalable)
         {
             if(avalable)
             {
                 config_files_combobox_->setEnabled(false);
+                save_file_btn->setEnabled(true);
+                save_file_btn->setHidden(false);
             }
             else
             {
                 config_files_combobox_->setEnabled(true);
+                save_file_btn->setEnabled(false);
+                save_file_btn->setHidden(true);
             }
         });
 
@@ -76,10 +94,58 @@ namespace Stylus
             }
         });
 
-
-        auto add_file_btn = sidebar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
-        add_file_btn->setStyleClass("rounded-[6px] w-[40px] p-[6px] utility-button-colors");
+        save_file_btn->clicked().connect(this, [=]()
+        {
+            editor_->save_file_signal().emit(editor_->getUnsavedText());
+        });
         
+        delete_file_btn_->clicked().connect(this, [=]()
+        {
+            if(config_files_combobox_->currentText().toUTF8().compare(default_config_file_name_) == 0)
+            {
+                delete_file_btn_->setEnabled(false);
+                return;
+            }
+            auto message_box = addChild(std::make_unique<Wt::WMessageBox>("Are you sure you want to delete the file ?", 
+                "<div class='flex-1 text-center font-bold text-2xl'>" + config_files_combobox_->currentText().toUTF8() + "</div>",
+                Wt::Icon::Warning, Wt::StandardButton::None)
+            );
+            message_box->setOffsets(100, Wt::Side::Top);
+            message_box->setModal(true);
+        
+            message_box->setStyleClass("");
+            message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-[18px] font-bold");
+            message_box->contents()->addStyleClass("flex items-center");
+            message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
+            auto delete_btn = message_box->addButton("Delete", Wt::StandardButton::Yes);
+            auto cancel_btn = message_box->addButton("Cancel", Wt::StandardButton::No);
+            delete_btn->setStyleClass("btn-red");
+            cancel_btn->setStyleClass("btn-default");
+            
+            message_box->buttonClicked().connect([=] {
+                if (message_box->buttonResult() == Wt::StandardButton::Yes)
+                    {
+                    std::filesystem::path file_path = config_folder_path_ + config_files_combobox_->currentText().toUTF8();
+    
+                    // delete file
+                    if (std::filesystem::remove(file_path)) {
+                        getConfigFiles();
+                        config_files_combobox_->clear();
+                        for(const auto &file : config_files_)
+                        {
+                            config_files_combobox_->addItem(file);
+                        }
+                        
+                    } else {
+                        Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
+                    }
+                }
+                removeChild(message_box);
+            });
+            
+            message_box->show(); 
+        });
+
         add_file_btn->clicked().connect(this, [=]()
                                         {
             auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new config file"));
@@ -148,61 +214,7 @@ namespace Stylus
             dialog->show();
         });
 
-        delete_file_btn_ = sidebar->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-trash"), Wt::TextFormat::XHTML));
-        delete_file_btn_->setStyleClass("rounded-[6px] w-[40px] p-[6px] utility-button-colors disabled:cursor-not-allowed disabled:bg-[#EC133B]/50 hover:disabled:!bg-[#EC133B]/50");
-
-        delete_file_btn_->clicked().connect(this, [=]()
-        {
-            if(config_files_combobox_->currentText().toUTF8().compare(default_config_file_name_) == 0)
-            {
-                delete_file_btn_->setEnabled(false);
-                return;
-            }
-            auto message_box = addChild(std::make_unique<Wt::WMessageBox>("Are you sure you want to delete the file ?", 
-                "<div class='flex-1 text-center font-bold text-2xl'>" + config_files_combobox_->currentText().toUTF8() + "</div>",
-                Wt::Icon::Warning, Wt::StandardButton::None)
-            );
-            message_box->setOffsets(100, Wt::Side::Top);
-            message_box->setModal(true);
-        
-            message_box->setStyleClass("");
-            message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-[18px] font-bold");
-            message_box->contents()->addStyleClass("flex items-center");
-            message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
-            auto delete_btn = message_box->addButton("Delete", Wt::StandardButton::Yes);
-            auto cancel_btn = message_box->addButton("Cancel", Wt::StandardButton::No);
-            delete_btn->setStyleClass("btn-red");
-            cancel_btn->setStyleClass("btn-default");
-            
-            message_box->buttonClicked().connect([=] {
-                if (message_box->buttonResult() == Wt::StandardButton::Yes)
-                    {
-                    std::filesystem::path file_path = config_folder_path_ + config_files_combobox_->currentText().toUTF8();
-    
-                    // delete file
-                    if (std::filesystem::remove(file_path)) {
-                        getConfigFiles();
-                        config_files_combobox_->clear();
-                        for(const auto &file : config_files_)
-                        {
-                            config_files_combobox_->addItem(file);
-                        }
-                        
-                    } else {
-                        Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
-                    }
-                }
-                removeChild(message_box);
-            });
-            
-            message_box->show(); 
-        });
-
-        for(const auto &file : config_files_)
-        {
-            std::cout << "\n\n file: " << file << "\n\n";
-            config_files_combobox_->addItem(file);
-        }
+       
         
         config_files_combobox_->activated().connect(this, [=]()
         {
@@ -228,12 +240,18 @@ namespace Stylus
             }
             state_->tailwind_config_node_->SetAttribute("selected-file-name", file_name.c_str());
             state_->doc_.SaveFile(state_->file_path_.c_str());
+            save_file_btn->setEnabled(false);
+            save_file_btn->setHidden(true);
         });
+
+        for(const auto &file : config_files_)
+        {
+            std::cout << "\n\n file: " << file << "\n\n";
+            config_files_combobox_->addItem(file);
+        }
+
         config_files_combobox_->setCurrentIndex(config_files_combobox_->findText(state_->tailwind_config_node_->Attribute("selected-file-name")));
-        std::cout << "\n\n current file: " << config_files_combobox_->currentIndex() << "\n\n";
         config_files_combobox_->activated().emit(config_files_combobox_->currentIndex());
-
-
     }
 
     std::vector<std::string> TailwindConfigManager::getConfigFiles()

@@ -29,6 +29,23 @@ Stylus::Stylus()
     setMovable(false);
     
     Wt::WApplication::instance()->useStyleSheet(Wt::WApplication::instance()->docRoot() + "/static/stylus/questionmark.css");
+    // Wt::WApplication::instance()->declareJavaScriptFunction("dsblCtrlS", R"(
+    //     function (inputId) {
+    //       const inputElement = document.getElementById(inputId);
+    //       if (!inputElement) {
+    //         console.warn(`Element with id "${inputId}" not found.`);
+    //         return;
+    //       }
+
+    //       inputElement.addEventListener('keydown', function(e) {
+    //         console.log(e);
+    //         if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+    //           e.preventDefault();
+    //         }
+    //       });
+    //     }
+    // )");
+
 
     auto navbar = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WStackedWidget>());
@@ -193,9 +210,9 @@ Stylus::Stylus()
         file << "@import \"tailwindcss\";\n\n";
         file << "/* Import custom CSS files for additional styles */\n";
         // std::cout << "\n\n writing file imports \n\n";
-        for(const auto& folder : *css_files_manager_->folders_)
+        for(auto folder : css_files_manager_->folders_)
         {
-            for (const auto& file_name : folder.second)
+            for (auto file_name : folder.second)
             {
                 file << "@import \"./css/" << folder.first << "/" << file_name << "\";\n";
             }

@@ -13,7 +13,7 @@
 #include <regex>
 #include <Wt/WRandom.h>
 #include <Wt/WApplication.h>
-
+#include <Wt/WText.h>
 
 FilesManagerSidebar::FilesManagerSidebar()
 {
@@ -26,17 +26,10 @@ FilesManagerSidebar::FilesManagerSidebar()
     header_->setStyleClass("group flex items-center border-b border-solid");
 
     contents_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    contents_->setStyleClass("w-full flex-1 overflow-y-auto flex flex-col");
+    contents_->setStyleClass("w-full flex-1 overflow-y-auto overflow-x-hidden flex flex-col");
 
     footer_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     footer_->setStyleClass("flex items-center justify-between p-[3px] border-t border-solid");
-
-
-    // add folder btn
-    add_folder_btn_ = footer_->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-folder")));
-    add_folder_btn_->setStyleClass("rounded-md w-[30px] p-[2px] utility-button-colors");
-    add_folder_btn_->clicked().preventPropagation();
-    
 }
 
 void FilesManagerSidebar::layoutSizeChanged(int width, int height)
@@ -45,6 +38,31 @@ void FilesManagerSidebar::layoutSizeChanged(int width, int height)
         width_changed_.emit(Wt::WString(std::to_string(width)));
     }
 }
+
+
+TreeNode::TreeNode(std::string name, std::unique_ptr<Wt::WIconPair> icon)
+    : Wt::WTreeNode(name, std::move(icon))
+    {
+        addStyleClass("relative");
+        labelArea()->addStyleClass("flex items-center");
+        labelArea()->clicked().connect(this, [=]()
+        {
+            label_clicked_.emit();
+        });
+
+        label_edit_ = labelArea()->addWidget(std::make_unique<Wt::WLineEdit>(name.substr(0, name.find_last_of('.'))));
+        label_edit_->clicked().preventPropagation();
+        label_edit_->setStyleClass("outline-1 w-full pl-[2px]");
+        label_edit_->hide();
+
+
+        aditional_buttons_wrapper_ = labelArea()->addWidget(std::make_unique<Wt::WContainerWidget>());
+        aditional_buttons_wrapper_->setStyleClass("flex-1 flex items-center justify-end absolute right-0 z-[1]");
+
+        delete_btn_ = aditional_buttons_wrapper_->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-trash"), Wt::TextFormat::XHTML));
+        delete_btn_->setStyleClass("w-[16px] utility-button-colors");
+        delete_btn_->setAttributeValue("tabindex", "-1");
+    }
 
 
 FilesManager::FilesManager(std::string default_folder_path, std::string language, int sidebar_width)
@@ -69,13 +87,12 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     layout_ = layout.get();
     setLayout(std::move(layout));
  
-    folders_ = std::make_shared<std::vector<std::pair<std::string, std::vector<std::string>>>>();
-    auto folders = getFolders();
-    for (const auto &folder : folders)
-    {
-        folders_->push_back(folder);
-    }
-    setTreeFolderWidgets(); 
+    folders_ = getFolders();
+    // setTreeFolderWidgets(); 
+    tree_ = sidebar_->contents_->addWidget(std::make_unique<Wt::WTree>());
+   
+    
+    setTreeFolderWidgetsV2(); 
 
 
     editor_->avalable_save().connect(this, [=](bool avalable)
@@ -109,75 +126,306 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
         
         file_saved_.emit(selected_file_path_);
     });
-
-    sidebar_->add_folder_btn_->clicked().connect(this, [=]()
+    selected_tree_path_ = default_folder_path_;
+    file_selected_.connect(this, [=](Wt::WString file_path)
                                         {
-        auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new folder"));
-
-        dialog->setModal(true);
-        dialog->rejectWhenEscapePressed();
-        dialog->setOffsets(100, Wt::Side::Top);
-
-        dialog->setStyleClass("");
-        dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
-        dialog->contents()->setStyleClass("flex flex-col");
-
-        auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
-        auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+        selected_tree_path_ = file_path.toUTF8();
+        if(selected_file_path_.compare(default_folder_path_) != 0 ) {
+            selected_file_path_ = file_path.toUTF8();
+            editor_->setFile(default_folder_path_ + selected_file_path_);
+            std::cout << "\n\n File selected: " << default_folder_path_ + selected_file_path_ << "\n\n";
+        }
         
-        content->setStyleClass("p-[8px]");
-        footer->setStyleClass("flex items-center justify-between p-[8px]");
-        
-        auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
-        input_wrapper->setStyleClass("flex flex-col items-center justify-center");
-        auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
-        error_label->setStyleClass("w-full text-[#B22222] text-md font-semibold");
-        
-        auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
-        auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
-        new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
-        label->setBuddy(new_folder_name_input);
-        
-        auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
-        confirm_btn->setStyleClass("btn-default");
-        auto cancel_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Cancel"));
-        cancel_btn->setStyleClass("btn-red");
-
-        cancel_btn->clicked().connect(this, [=](){ dialog->reject(); });
-        new_folder_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
-        confirm_btn->clicked().connect(this, [=](){ 
-            // check if the folder already exists
-            std::string new_folder_name = new_folder_name_input->text().toUTF8();
-            std::string pattern = R"(^[a-z0-9-_]+$)";
-            if(std::regex_match(new_folder_name, std::regex(pattern)) == false) {
-                error_label->setText("Match reges:" + pattern);
-                return;
-            }
-            std::filesystem::path new_path(default_folder_path_ + new_folder_name);
-            if (std::filesystem::exists(new_path)) {
-                error_label->setText("Folder with the same name already exists.");
-            }else {
-                dialog->accept();                
-            }
-        });
-        dialog->finished().connect(this, [=](){
-            if (dialog->result() == Wt::DialogCode::Accepted) {
-                std::string new_folder_name = new_folder_name_input->text().toUTF8();
-                std::filesystem::path new_path(default_folder_path_ + new_folder_name);
-                std::filesystem::create_directory(new_path);
-                sidebar_->contents_->clear();
-                folders_->clear();
-                auto folders = getFolders();
-                for (const auto &folder : folders)
-                {
-                    folders_->push_back(folder);
-                }
-                setTreeFolderWidgets();
-            }
-            removeChild(dialog);
-        });
-        dialog->show(); 
+        setTreeFolderWidgetsV2();
     });
+}
+
+void FilesManager::createNewFolderDialog()
+{
+    auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new folder"));
+
+    dialog->setModal(true);
+    dialog->rejectWhenEscapePressed();
+    dialog->setOffsets(100, Wt::Side::Top);
+
+    dialog->setStyleClass("");
+    dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+    dialog->contents()->setStyleClass("flex flex-col");
+
+    auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    
+    content->setStyleClass("p-[8px]");
+    footer->setStyleClass("flex items-center justify-between p-[8px]");
+    
+    auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
+    input_wrapper->setStyleClass("flex flex-col items-center justify-center");
+    auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
+    error_label->setStyleClass("w-full text-[#B22222] text-md font-semibold");
+    
+    auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
+    auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
+    new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
+    label->setBuddy(new_folder_name_input);
+    
+    auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
+    confirm_btn->setStyleClass("btn-default");
+    auto cancel_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Cancel"));
+    cancel_btn->setStyleClass("btn-red");
+
+    cancel_btn->clicked().connect(this, [=](){ dialog->reject(); });
+    new_folder_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
+    confirm_btn->clicked().connect(this, [=](){ 
+        // check if the folder already exists
+        std::string new_folder_name = new_folder_name_input->text().toUTF8();
+        std::string pattern = R"(^[a-z0-9-_]+$)";
+        if(std::regex_match(new_folder_name, std::regex(pattern)) == false) {
+            error_label->setText("Match reges:" + pattern);
+            return;
+        }
+        std::filesystem::path new_path(default_folder_path_ + new_folder_name);
+        if (std::filesystem::exists(new_path)) {
+            error_label->setText("Folder with the same name already exists.");
+        }else {
+            dialog->accept();                
+        }
+    });
+    dialog->finished().connect(this, [=](){
+        if (dialog->result() == Wt::DialogCode::Accepted) {
+            std::string new_folder_name = new_folder_name_input->text().toUTF8();
+            std::filesystem::path new_path(default_folder_path_ + new_folder_name);
+            std::filesystem::create_directory(new_path);
+            sidebar_->contents_->clear();
+            folders_ = getFolders();
+            // setTreeFolderWidgets();
+            tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(new_folder_name, std::move(getIcon(icon_type::folder))));
+        }
+        removeChild(dialog);
+    });
+    dialog->show(); 
+}
+
+void FilesManager::createNewFileDialog(std::string folder_name)
+{
+    auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new file in folder " + folder_name));
+    dialog->setOffsets(100, Wt::Side::Top);
+    dialog->setModal(true);
+    dialog->rejectWhenEscapePressed();
+    dialog->setStyleClass("z-[2]");
+    dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+    dialog->contents()->setStyleClass("flex flex-col");
+
+    auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
+    
+    content->setStyleClass("p-[8px]");
+    footer->setStyleClass("flex items-center justify-between p-[8px]");
+        
+    auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
+    input_wrapper->setStyleClass("flex flex-col items-center justify-center");
+    auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
+    error_label->setStyleClass("w-full text-md font-semibold");
+    
+    auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
+    auto new_file_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
+    new_file_name_input->setStyleClass("w-full min-w-[200px] text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow");
+    label->setBuddy(new_file_name_input);
+    
+    auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
+    confirm_btn->setStyleClass("btn-default");
+    auto cancel_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Cancel"));
+    cancel_btn->setStyleClass("btn-red");
+
+    cancel_btn->clicked().connect(this, [=](){ dialog->reject(); });
+    new_file_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
+
+    confirm_btn->clicked().connect(this, [=](){ 
+        // check if the folder already exists
+        std::string new_file_name = new_file_name_input->text().toUTF8();
+        std::string pattern = R"(^[a-z-]+$)";
+        if(std::regex_match(new_file_name, std::regex(pattern)) == false) {
+            error_label->setText("Match reges:" + pattern);
+            return;
+        }
+        std::filesystem::path new_path(default_folder_path_ + folder_name + "/" + new_file_name + "." + file_extension_);
+        if (std::filesystem::exists(new_path)) {
+            error_label->setText("file with the same name already exists.");
+        }else {
+            dialog->accept();                
+        }
+    });
+    dialog->finished().connect(this, [=](){
+        if (dialog->result() == Wt::DialogCode::Accepted) {
+            std::string new_file_name = new_file_name_input->text().toUTF8();
+            std::filesystem::path new_path(default_folder_path_ + folder_name + "/" + new_file_name + "." + file_extension_);
+            std::ofstream new_file(new_path);
+            sidebar_->contents_->clear();
+            folders_ = getFolders();
+            setTreeFolderWidgetsV2();
+        }
+        removeChild(dialog);
+    });
+
+    dialog->show();
+}
+
+void FilesManager::deleteFileMessageBox(std::string file_name, std::string folder_name)
+{
+    auto message_box = addChild(std::make_unique<Wt::WMessageBox>(
+        "Are you sure you want to delete the file ?", 
+        R"(
+            <div class='flex-1 text-center font-bold text-2xl'>Folder: )" + folder_name + R"(</div>
+            <div class='flex-1 text-center font-bold text-2xl'>File: )" + file_name + R"(</div>
+        )",
+        Wt::Icon::Warning, Wt::StandardButton::None));
+    message_box->setOffsets(100, Wt::Side::Top);
+    message_box->setModal(true);
+
+    message_box->setStyleClass("");
+    message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
+    message_box->contents()->addStyleClass("flex items-center");
+    message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
+
+    auto delete_btn = message_box->addButton("Delete", Wt::StandardButton::Yes);
+    auto cancel_btn = message_box->addButton("Cancel", Wt::StandardButton::No);
+    delete_btn->setStyleClass("btn-red");
+    cancel_btn->setStyleClass("btn-default");
+    
+    message_box->buttonClicked().connect([=] {
+        if (message_box->buttonResult() == Wt::StandardButton::Yes)
+            {
+            std::filesystem::path file_path = default_folder_path_ + folder_name + "/" + file_name;
+
+            // delete file
+            if (std::filesystem::remove(file_path)) {
+                folders_ = getFolders();
+                setTreeFolderWidgetsV2();
+            } else {
+                Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
+            }
+        }
+        removeChild(message_box);
+    });
+    
+    message_box->show(); 
+}
+
+
+void FilesManager::setTreeFolderWidgetsV2()
+{
+    auto node = std::make_unique<TreeNode>(default_folder_path_, std::move(getIcon(icon_type::folder)));
+    auto root_folder = node.get();
+    root_folder->delete_btn_->disable();
+    root_folder->delete_btn_->hide();
+    root_folder->label_clicked_.connect(this, [=]()
+    {
+        setTreeFolderWidgetsV2();
+    });
+    tree_->setTreeRoot(std::move(node));
+    tree_->setSelectionMode(Wt::SelectionMode::Extended);
+    tree_->treeRoot()->label()->setTextFormat(Wt::TextFormat::Plain);
+    tree_->treeRoot()->expand();
+    tree_->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
+    // tree_->treeRoot()->setSelectable(false);
+    auto add_folder_btn = root_folder->aditional_buttons_wrapper_->insertBefore(
+        std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-add-folder"), Wt::TextFormat::XHTML),
+        root_folder->delete_btn_
+    );
+    add_folder_btn->setStyleClass("w-[16px] utility-button-colors bg-[#FFF]");
+    add_folder_btn->setAttributeValue("tabindex", "-1");
+    
+    add_folder_btn->clicked().connect(this, [=]() {
+        createNewFolderDialog();
+    });
+  
+    root_folder->label_clicked_.connect(this, [=]()
+    {
+        file_selected_.emit(default_folder_path_);
+    });
+    if(selected_tree_path_.compare(default_folder_path_) == 0) {
+        tree_->select(root_folder);
+    }
+
+    for(auto folder : folders_)
+    {
+        TreeNode *folder_tree_node = dynamic_cast<TreeNode*>(tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(folder.first, std::move(getIcon(icon_type::folder)))));
+        // tree_->treeRoot()->addChildNode(std::make_unique<FolderTreeNode>(folder.first, std::move(getIcon(icon_type::folder))));
+        
+        folder_tree_node->label_clicked_.connect(this, [=]() {
+            file_selected_.emit(folder.first + "/");
+        });
+        if(selected_tree_path_.compare(folder.first + "/") == 0)
+        {
+            tree_->select(folder_tree_node);
+            folder_tree_node->label()->hide();
+            folder_tree_node->label_edit_->show();
+            folder_tree_node->label_edit_->doJavaScript(
+                Wt::WApplication::instance()->javaScriptClass() + ".dsblCtrlS("+folder_tree_node->label_edit_->id() + ");"
+            );
+        }
+        
+        if(folder.second.size() == 0)
+        {
+            
+            folder_tree_node->delete_btn_->clicked().connect(this, [=]()
+            {
+                // remove file from the file system
+                std::filesystem::path folder_path(default_folder_path_ + folder.first);
+                std::filesystem::remove_all(folder_path);
+                tree_->treeRoot()->removeChildNode(folder_tree_node);
+            });
+            
+        }else  {
+            folder_tree_node->expand();
+            folder_tree_node->delete_btn_->hide();
+            folder_tree_node->delete_btn_->disable();
+        }
+
+        auto add_file_btn = folder_tree_node->aditional_buttons_wrapper_->insertBefore(
+            std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-add-file"), Wt::TextFormat::XHTML),
+            folder_tree_node->delete_btn_
+        );
+        add_file_btn->setStyleClass("w-[16px] utility-button-colors");
+        add_file_btn->setAttributeValue("tabindex", "-1");
+
+        add_file_btn->clicked().connect(this, [=](){ createNewFileDialog(folder.first); });
+
+        for(const auto &file : folder.second)
+        {
+            auto file_tree_node = dynamic_cast<TreeNode*>(folder_tree_node->addChildNode(std::make_unique<TreeNode>(file, std::move(getIcon(icon_type::file))))); 
+            if(selected_tree_path_.compare(folder.first + "/" + file) == 0)
+            {
+                tree_->select(file_tree_node);
+                file_tree_node->label()->hide();
+                file_tree_node->label_edit_->show();
+            } 
+            
+            file_tree_node->label_clicked_.connect(this, [=]() {
+                file_selected_.emit(folder.first + "/" + file);
+            });
+        }
+
+
+    }
+
+}
+
+
+std::unique_ptr<Wt::WIconPair> FilesManager::getIcon(icon_type type)
+{
+    std::unique_ptr<Wt::WIconPair> icon;
+    if(type == icon_type::folder)
+    {
+        icon = std::make_unique<Wt::WIconPair>("folder","folder-open", false);
+    }else if(type == icon_type::file)
+    {
+        icon = std::make_unique<Wt::WIconPair>("file","file", false);
+    }else if(type == icon_type::temp)
+    {
+        icon = std::make_unique<Wt::WIconPair>("temp","temp", false);
+    }
+    icon->setIconsType(Wt::WIconPair::IconType::IconName);
+    return icon;
 }
 
 void FilesManager::setTreeFolderWidgets()
@@ -186,7 +434,7 @@ void FilesManager::setTreeFolderWidgets()
     selected_file_wrapper_ = nullptr;
     // add folders and files in the UI
 
-    for (const auto &folder : *folders_)
+    for (auto folder : folders_)
     {
         auto panel = sidebar_->contents_->addWidget(std::make_unique<Wt::WPanel>());
         panel->setCollapsible(true);
@@ -266,12 +514,8 @@ void FilesManager::setTreeFolderWidgets()
                     std::filesystem::path new_path(default_folder_path_ + new_file_name);
                     std::filesystem::rename(old_path, new_path);
                     sidebar_->contents_->clear();
-                    folders_->clear();
-                    auto folders = getFolders();
-                    for (const auto &folder : folders)
-                    {
-                        folders_->push_back(folder);
-                    }
+                    folders_.clear();
+                    folders_ = getFolders();
                     setTreeFolderWidgets();
                 }
                 removeChild(dialog);
@@ -280,74 +524,7 @@ void FilesManager::setTreeFolderWidgets()
             dialog->show(); 
         });
 
-        add_file_btn->clicked().connect(this, [=]()
-                                        {
-        auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new file in folder " + folder.first));
-        dialog->setOffsets(100, Wt::Side::Top);
-        dialog->setModal(true);
-        dialog->rejectWhenEscapePressed();
-        dialog->setStyleClass("z-[2]");
-        dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
-        dialog->contents()->setStyleClass("flex flex-col");
-
-        auto content = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
-        auto footer = dialog->contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
-        
-        content->setStyleClass("p-[8px]");
-        footer->setStyleClass("flex items-center justify-between p-[8px]");
-            
-        auto input_wrapper = content->addWidget(std::make_unique<Wt::WContainerWidget>());
-        input_wrapper->setStyleClass("flex flex-col items-center justify-center");
-        auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
-        error_label->setStyleClass("w-full text-md font-semibold");
-        
-        auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("Name"));
-        auto new_file_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
-        new_file_name_input->setStyleClass("w-full min-w-[200px] text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm focus:shadow");
-        label->setBuddy(new_file_name_input);
-        
-        auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
-        confirm_btn->setStyleClass("btn-default");
-        auto cancel_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Cancel"));
-        cancel_btn->setStyleClass("btn-red");
-
-        cancel_btn->clicked().connect(this, [=](){ dialog->reject(); });
-        new_file_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
-
-        confirm_btn->clicked().connect(this, [=](){ 
-            // check if the folder already exists
-            std::string new_file_name = new_file_name_input->text().toUTF8();
-            std::string pattern = R"(^[a-z-]+$)";
-            if(std::regex_match(new_file_name, std::regex(pattern)) == false) {
-                error_label->setText("Match reges:" + pattern);
-                return;
-            }
-            std::filesystem::path new_path(default_folder_path_ + folder.first + "/" + new_file_name + "." + file_extension_);
-            if (std::filesystem::exists(new_path)) {
-                error_label->setText("file with the same name already exists.");
-            }else {
-                dialog->accept();                
-            }
-        });
-        dialog->finished().connect(this, [=](){
-            if (dialog->result() == Wt::DialogCode::Accepted) {
-                std::string new_file_name = new_file_name_input->text().toUTF8();
-                std::filesystem::path new_path(default_folder_path_ + folder.first + "/" + new_file_name + "." + file_extension_);
-                std::ofstream new_file(new_path);
-                sidebar_->contents_->clear();
-                folders_->clear();
-                auto folders = getFolders();
-                for (const auto &folder : folders)
-                {
-                    folders_->push_back(folder);
-                }
-                setTreeFolderWidgets();
-            }
-            removeChild(dialog);
-        });
-
-        dialog->show();
-        });
+        add_file_btn->clicked().connect(this, [=](){ createNewFileDialog(folder.first); });
 
         // delete folder button
         if (folder.second.size() == 0)
@@ -376,12 +553,7 @@ void FilesManager::setTreeFolderWidgets()
                     // delete file
                     if (std::filesystem::remove(file_path)) {
                         sidebar_->contents_->clear();
-                        auto folders = getFolders();
-                        folders_->clear();
-                        for (const auto &folder : folders)
-                        {
-                            folders_->push_back(folder);
-                        }
+                        folders_ = getFolders();
                         setTreeFolderWidgets();
                     } else {
                         Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
@@ -393,14 +565,10 @@ void FilesManager::setTreeFolderWidgets()
             messageBox->show();
             auto folder_path = default_folder_path_ + folder.first;
             std::filesystem::remove_all(folder_path);
-            folders_->clear();
-            auto folders = getFolders();
-            for (const auto &folder : folders)
-            {
-                folders_->push_back(folder);
-            }
+            folders_ = getFolders();
 
-            setTreeFolderWidgets(); });
+            setTreeFolderWidgets(); 
+        });
         }
 
         // panel->centralWidget()->setStyleClass("asjkdhfaksjdfhajsdfk");
@@ -414,14 +582,10 @@ void FilesManager::setTreeFolderWidgets()
             // Select the first found file from the first found folder
             if (selected_file_wrapper_ == nullptr)
             {
-                // editor_->setCssEdditorText(getCssFromFile(default_folder_path_ + folder.first + "/" + file));
-                // std::cout << "\n\n -------------- path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
                 selected_file_wrapper_ = file_wrapper;
                 selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-                selected_file_path_ = default_folder_path_ + folder.first + "/" + file;
-                editor_->setFile(default_folder_path_ + folder.first + "/" + file);
-                // file_selected_.emit(default_folder_path_ + folder.first + "/" + file);
-                // std::cout << "\n\n path: " << default_folder_path_ + folder.first + "/" + file << "\n\n";
+                selected_file_path_ =  folder.first + "/" + file;
+                editor_->setFile( folder.first + "/" + file);
             }
         }
     }
@@ -466,12 +630,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                 // delete file
                 if (std::filesystem::remove(file_path)) {
                     sidebar_->contents_->clear();
-                    auto folders = getFolders();
-                    folders_->clear();
-                    for (const auto &folder : folders)
-                    {
-                        folders_->push_back(folder);
-                    }
+                    folders_ = getFolders();
                     setTreeFolderWidgets();
                 } else {
                     Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
@@ -543,12 +702,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
             std::filesystem::path new_path(default_folder_path_ + folder_name + "/" + new_file_name + "." + file_extension_);
             std::filesystem::rename(old_path, new_path);
             sidebar_->contents_->clear();
-            auto folders = getFolders();
-            folders_->clear();
-            for (const auto &folder : folders)
-            {
-                folders_->push_back(folder);
-            }
+            folders_ = getFolders();
             setTreeFolderWidgets();
         }
         removeChild(dialog);
@@ -559,7 +713,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
     file_wrapper->clicked().connect(this, [=]()
     {
         // Same file was chosen 
-        if(selected_file_path_.compare(default_folder_path_ + folder_name + "/" + file_name) == 0)
+        if(selected_file_path_.compare( folder_name + "/" + file_name) == 0)
         {  
             // if(editor_->unsavedChanges()) return;
             editor_->reuploadText();
@@ -596,7 +750,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                     selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
                     selected_file_wrapper_ = file_wrapper;
                     selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-                    selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
+                    selected_file_path_ =  folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                 }else if(messageBox->buttonResult() == Wt::StandardButton::Ignore)
                 {
@@ -604,7 +758,7 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
                     selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
                     selected_file_wrapper_ = file_wrapper;
                     selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-                    selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
+                    selected_file_path_ =  folder_name + "/" + file_name;
                     editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
                 }
                 removeChild(messageBox);
@@ -615,18 +769,18 @@ Wt::WContainerWidget* FilesManager::setTreeFileWidget(Wt::WContainerWidget* file
         // Other file was chosen and the current file has no unsaved changes
         else 
         {
-            selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
-            // editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
+            selected_file_path_ =  folder_name + "/" + file_name;
+
             if(selected_file_wrapper_ != nullptr) 
             {
                 selected_file_wrapper_->removeStyleClass("filesManager-menu-selected");
             }
             selected_file_wrapper_ = file_wrapper;
             selected_file_wrapper_->addStyleClass("filesManager-menu-selected");
-            selected_file_path_ = default_folder_path_ + folder_name + "/" + file_name;
+            selected_file_path_ =  folder_name + "/" + file_name;
             editor_->setFile(default_folder_path_ + folder_name + "/" + file_name);
         } 
-        file_selected_.emit(default_folder_path_ + folder_name + "/" + file_name);
+        file_selected_.emit( folder_name + "/" + file_name);
         
     });
     return file_wrapper;
@@ -637,14 +791,6 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
 {
     std::vector<std::pair<std::string, std::vector<std::string>>> return_folders;
     std::vector<std::string> folders;
-    // if(!std::filesystem::exists(default_folder_path_))
-    // {
-    //     std::filesystem::create_directory(default_folder_path_);
-    // }
-    // if(!std::filesystem::exists(default_folder_path_ + "/default"))
-    // {
-    //     std::filesystem::create_directory(default_folder_path_ + "/default");
-    // }
 
     for (const auto &entry : std::filesystem::directory_iterator(default_folder_path_))
     {
@@ -672,7 +818,6 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
     {
         std::sort(folder.second.begin(), folder.second.end());
     }
-    get_folders_signal_.emit();
     return return_folders;
 }
 

@@ -12,3 +12,7 @@
 .utility-button-colors {
 	@apply hover:bg-[#9a9a9a]/60;
 }
+
+.Wt-item {
+	zoom: 120%;
+}
