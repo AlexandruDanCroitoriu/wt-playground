@@ -55,12 +55,12 @@ namespace Stylus
             state_->doc_.SaveFile(state_->file_path_.c_str());
             if (editor_checkbox->isChecked())
             {
-                editor_->show();
+                editor_->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromRight, Wt::TimingFunction::EaseInOut, 5));
                 state_->xml_node_->SetAttribute("editor-open", "true");
             }
             else
             {
-                editor_->hide();
+                editor_->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromRight, Wt::TimingFunction::EaseInOut, 5) );
                 state_->xml_node_->SetAttribute("editor-open", "false");
             }
             state_->doc_.SaveFile(state_->file_path_.c_str());

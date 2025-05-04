@@ -179,13 +179,13 @@ Stylus::Stylus()
             }else if (e.key() == Wt::Key::A && content_wrapper->currentWidget() == xml_files_manager_){
                 if(xml_files_manager_->layout_->itemAt(0)->widget()->isHidden())
                 {
-                    xml_files_manager_->layout_->itemAt(0)->widget()->show();
-                    navbar->show();
+                    xml_files_manager_->layout_->itemAt(0)->widget()->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 1.5));
+                    navbar->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 5));
                     state_->xml_node_->SetAttribute("navigation-bar-hidden", "false");
                 }else
                 {
-                    xml_files_manager_->layout_->itemAt(0)->widget()->hide();
-                    navbar->hide();
+                    xml_files_manager_->layout_->itemAt(0)->widget()->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 1.5));
+                    navbar->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 5));
                     state_->xml_node_->SetAttribute("navigation-bar-hidden", "true");
                 }
                 state_->doc_.SaveFile(state_->file_path_.c_str());
