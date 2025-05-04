@@ -25,30 +25,56 @@ namespace Stylus
         // FilesManager("../stylus-resources/xml-templates/", "xml")
         FilesManager("../stylus-resources/xml-templates/", "xml", state->xml_node_->IntAttribute("sidebar-width"), state->xml_node_->Attribute("selected-file-path"))
     {
-        
+        if(!state_->xml_node_->BoolAttribute("editor-open"))
+        {
+            editor_->hide();
+        }
         auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
         // temp_wrapper->setStyleClass("rounded-md p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
-        temp_wrapper->setStyleClass("rounded-md p-2"); 
+        temp_wrapper->setStyleClass("rounded-md p-[8px] bg-[#FFF]"); 
 
         temp_wrapper->setOverflow(Wt::Overflow::Auto);
         temp_wrapper->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
         temp_wrapper->setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
         // layout_->addLayout(std::make_unique<Wt::WLayout>(), 1);
-        // test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-        auto test_template = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>());
-        test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-        // auto test_template = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
+        // temp_view->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+        auto temp_view = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>());
+        temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+        // auto temp_view = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         dark_mode_toggle_ = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
         
+        auto editor_checkbox = sidebar_->footer_->addWidget(std::make_unique<Wt::WCheckBox>("Editor"));
+        editor_checkbox->setChecked(state_->xml_node_->BoolAttribute("editor-open"));
+        editor_checkbox->keyWentDown().connect(this, [=](Wt::WKeyEvent e) { 
+            Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
+        });
+        editor_checkbox->setChecked(state_->xml_node_->BoolAttribute("editor-open"));
+        editor_checkbox->changed().connect(this, [=]()
+        {
+            state_->xml_node_->SetAttribute("editor-open", editor_checkbox->isChecked());
+            state_->doc_.SaveFile(state_->file_path_.c_str());
+            if (editor_checkbox->isChecked())
+            {
+                editor_->show();
+                state_->xml_node_->SetAttribute("editor-open", "true");
+            }
+            else
+            {
+                editor_->hide();
+                state_->xml_node_->SetAttribute("editor-open", "false");
+            }
+            state_->doc_.SaveFile(state_->file_path_.c_str());
+        });
+
         file_selected().connect(this, [=](Wt::WString file_path)
         {
-            test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+            temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
             state_->xml_node_->SetAttribute("selected-file-path", file_path.toUTF8().c_str());
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         file_saved().connect(this, [=](Wt::WString file_path)
         {
-            test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+            temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
         });
         
         sidebar_->width_changed_.connect(this, [=](Wt::WString width)

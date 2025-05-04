@@ -32,8 +32,7 @@ namespace Stylus {
             stylus_node_ = doc_.NewElement("stylus");
             stylus_node_->SetAttribute("selected-menu", "templates");
             stylus_node_->SetAttribute("open", "true");
-            stylus_node_->SetAttribute("navigation-bar-hidden", "false");
-            stylus_node_->SetAttribute("dark-mode", "true");
+            // stylus_node_->SetAttribute("dark-mode", "true");
             doc_.InsertFirstChild(stylus_node_);
         }
         xml_node_ = stylus_node_->FirstChildElement("xml-manager");
@@ -42,9 +41,11 @@ namespace Stylus {
             std::cerr << "Error finding <xml-manager> node in XML file." << std::endl;
             // create the node
             xml_node_ = doc_.NewElement("xml-manager");
-            xml_node_->SetAttribute("editor-width", 300);
+            xml_node_->SetAttribute("navigation-bar-hidden", "false");
+            xml_node_->SetAttribute("editor-width", 500);
             xml_node_->SetAttribute("sidebar-width", 300);
             xml_node_->SetAttribute("selected-file-path", "");
+            xml_node_->SetAttribute("editor-open", "true");
             stylus_node_->InsertEndChild(xml_node_);
         }
         css_node_ = stylus_node_->FirstChildElement("css-manager");

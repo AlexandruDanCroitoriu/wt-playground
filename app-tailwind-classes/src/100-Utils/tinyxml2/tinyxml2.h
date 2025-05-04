@@ -1046,8 +1046,6 @@ namespace tinyxml2
         */
         void *GetUserData() const { return _userData; }
 
-        // Wt::Signal<bool> &node_selected() { return node_selected_; }
-        // Wt::Signal<std::string> &style_class_changed() { return style_class_changed_; }
 
     protected:
         explicit XMLNode(XMLDocument *);
@@ -1069,8 +1067,6 @@ namespace tinyxml2
         void *_userData;
 
     private:
-        // Wt::Signal<bool> node_selected_;
-        // Wt::Signal<std::string> style_class_changed_;
 
         MemPool *_memPool;
         void Unlink(XMLNode *child);

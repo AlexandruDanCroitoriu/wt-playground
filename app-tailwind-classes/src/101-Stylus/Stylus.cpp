@@ -138,15 +138,25 @@ Stylus::Stylus()
     else if (std::strcmp(selected_menu, "javascript") == 0)
         javascript_menu_item->clicked().emit(Wt::WMouseEvent());
 
-    if(std::strcmp(state_->stylus_node_->Attribute("open"), "true") == 0)
+    if(state_->stylus_node_->BoolAttribute("open"))
         show();
     else
         hide();
 
+    if(state_->xml_node_->BoolAttribute("navigation-bar-hidden"))
+    {
+        navbar->hide();
+        xml_files_manager_->layout_->itemAt(0)->widget()->hide();
+    }else{
+        navbar->show();
+        xml_files_manager_->layout_->itemAt(0)->widget()->show();
+    }
+
 
     Wt::WApplication::instance()->globalKeyWentDown().connect([=](Wt::WKeyEvent e)
     { 
-        if (e.modifiers().test(Wt::KeyboardModifier::Alt) && e.modifiers().test(Wt::KeyboardModifier::Shift))
+        // if (e.modifiers().test(Wt::KeyboardModifier::Alt) && e.modifiers().test(Wt::KeyboardModifier::Shift))
+        if (e.modifiers().test(Wt::KeyboardModifier::Alt))
         {
             if (e.key() == Wt::Key::Q)
             {
@@ -166,14 +176,19 @@ Stylus::Stylus()
                 javascript_menu_item->clicked().emit(Wt::WMouseEvent());
             }else if (e.key() == Wt::Key::Key_4){
                 tailwind_menu_item->clicked().emit(Wt::WMouseEvent());
-            }else if (e.key() == Wt::Key::A){
+            }else if (e.key() == Wt::Key::A && content_wrapper->currentWidget() == xml_files_manager_){
                 if(xml_files_manager_->layout_->itemAt(0)->widget()->isHidden())
                 {
                     xml_files_manager_->layout_->itemAt(0)->widget()->show();
+                    navbar->show();
+                    state_->xml_node_->SetAttribute("navigation-bar-hidden", "false");
                 }else
                 {
                     xml_files_manager_->layout_->itemAt(0)->widget()->hide();
+                    navbar->hide();
+                    state_->xml_node_->SetAttribute("navigation-bar-hidden", "true");
                 }
+                state_->doc_.SaveFile(state_->file_path_.c_str());
             }
         }
     });

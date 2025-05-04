@@ -679,6 +679,9 @@
   .\!bg-\[\#FFF\] {
     background-color: #FFF !important;
   }
+  .bg-\[\#FFF\] {
+    background-color: #FFF;
+  }
   .bg-blue-50 {
     background-color: var(--color-blue-50);
   }
