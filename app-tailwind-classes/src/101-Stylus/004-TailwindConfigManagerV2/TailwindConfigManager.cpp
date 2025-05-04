@@ -218,16 +218,13 @@ namespace Stylus
         
         config_files_combobox_->activated().connect(this, [=]()
         {
-            std::cout << "\n\n file: " << config_files_combobox_->currentText().toUTF8() << "\n\n";
             std::string file_name = config_files_combobox_->currentText().toUTF8();
             if(file_name == "")
             {
                 file_name = default_config_file_name_;
             }
-            std::cout << "\n\n file: " << config_files_combobox_->currentText().toUTF8() << "\n\n";
             
             editor_->setFile(config_folder_path_ + file_name);
-            std::cout << "\n\n file: " << config_files_combobox_->currentText().toUTF8() << "\n\n";
             if(file_name == default_config_file_name_)
             {
                 editor_->setEditorReadOnly(true);
@@ -246,7 +243,6 @@ namespace Stylus
 
         for(const auto &file : config_files_)
         {
-            std::cout << "\n\n file: " << file << "\n\n";
             config_files_combobox_->addItem(file);
         }
 

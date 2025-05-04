@@ -57,7 +57,7 @@ Stylus::Stylus()
     auto css_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-css-logo")));
     auto javascript_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-javascript-logo")));
     auto tailwind_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-tailwind-logo")));
-    std::string nav_btns_styles = "w-[50px] p-[10px] m-[4px] cursor-pointer rounded-md flex items-center filesManager-menu";
+    std::string nav_btns_styles = "w-[30px] p-[10px] m-[4px] cursor-pointer rounded-md flex items-center filesManager-menu";
 
     templates_menu_item->setStyleClass(nav_btns_styles);
     tailwind_menu_item->setStyleClass(nav_btns_styles);
@@ -78,7 +78,7 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(xml_files_manager_);
         xml_files_manager_->editor_->resetLayout();
         // xml_files_manager_->editor_->reuploadText();
-        state_->stylus_open_node_->SetAttribute("selected-menu", "templates");
+        state_->stylus_node_->SetAttribute("selected-menu", "templates");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
@@ -89,7 +89,7 @@ Stylus::Stylus()
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         content_wrapper->setCurrentWidget(tailwind_config_);
         tailwind_config_->editor_->resetLayout();
-        state_->stylus_open_node_->SetAttribute("selected-menu", "tailwind");
+        state_->stylus_node_->SetAttribute("selected-menu", "tailwind");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
@@ -101,7 +101,7 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(css_files_manager_);
         css_files_manager_->editor_->resetLayout();
         // css_files_manager_->editor_->reuploadText();
-        state_->stylus_open_node_->SetAttribute("selected-menu", "css");
+        state_->stylus_node_->SetAttribute("selected-menu", "css");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
@@ -113,7 +113,7 @@ Stylus::Stylus()
         content_wrapper->setCurrentWidget(js_files_manager_);
         js_files_manager_->editor_->resetLayout();
         // js_files_manager_->editor_->reuploadText();
-        state_->stylus_open_node_->SetAttribute("selected-menu", "javascript");
+        state_->stylus_node_->SetAttribute("selected-menu", "javascript");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
 
@@ -128,7 +128,7 @@ Stylus::Stylus()
     });
 
 
-    auto selected_menu = state_->stylus_open_node_->Attribute("selected-menu");
+    auto selected_menu = state_->stylus_node_->Attribute("selected-menu");
     if (std::strcmp(selected_menu, "templates") == 0)
         templates_menu_item->clicked().emit(Wt::WMouseEvent());
     else if (std::strcmp(selected_menu, "tailwind") == 0)
@@ -138,7 +138,7 @@ Stylus::Stylus()
     else if (std::strcmp(selected_menu, "javascript") == 0)
         javascript_menu_item->clicked().emit(Wt::WMouseEvent());
 
-    if(std::strcmp(state_->stylus_open_node_->Attribute("open"), "true") == 0)
+    if(std::strcmp(state_->stylus_node_->Attribute("open"), "true") == 0)
         show();
     else
         hide();
@@ -152,10 +152,10 @@ Stylus::Stylus()
             {
                 if(isHidden()){
                     show();
-                    state_->stylus_open_node_->SetAttribute("open", "true");
+                    state_->stylus_node_->SetAttribute("open", "true");
                 }else{
                     hide();
-                    state_->stylus_open_node_->SetAttribute("open", "false");
+                    state_->stylus_node_->SetAttribute("open", "false");
                 }
                 state_->doc_.SaveFile(state_->file_path_.c_str());
             }else if (e.key() == Wt::Key::Key_1){

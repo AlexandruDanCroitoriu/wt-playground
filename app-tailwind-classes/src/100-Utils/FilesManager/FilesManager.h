@@ -8,8 +8,9 @@
 #include <Wt/WTreeNode.h>
 #include <Wt/WInPlaceEdit.h>
 #include <Wt/WLineEdit.h>
-
-
+#include <Wt/WPopupMenu.h>
+#include <Wt/WMessageBox.h>
+#include <Wt/WDialog.h>
 
 class FilesManagerSidebar : public Wt::WContainerWidget
 {
@@ -26,21 +27,41 @@ protected:
     
 };
 
+enum TreeNodeType
+{
+    Folder,
+    File
+};
+
 class TreeNode : public Wt::WTreeNode
 {
 public:
-    TreeNode(std::string name, std::unique_ptr<Wt::WIconPair> icon);
-    Wt::WContainerWidget* aditional_buttons_wrapper_;
-    Wt::WLineEdit* label_edit_;
-    Wt::WPushButton* delete_btn_;
+    TreeNode(std::string name, TreeNodeType type, std::string path);
+
+    Wt::Signal<> folders_changed_;
     Wt::Signal<> label_clicked_;
+
+    void showPopup(const Wt::WMouseEvent& event);
+
 private:
+    TreeNodeType type_;
+    std::unique_ptr<Wt::WPopupMenu> popup_;
+    std::string path_;
+    std::string name_;
+
+    void createNewFolderDialog();
+    void createRenameFolderDialog();
+    void createRemoveFolderMessageBox();
+
+    void createNewFileDialog();
+    void createRenameFileDialog();
+    void deleteFileMessageBox();
 };
 
 class FilesManager : public Wt::WContainerWidget
 {
 public:
-    FilesManager(std::string default_folder_path, std::string language, int sidebar_width = 240);
+    FilesManager(std::string default_folder_path, std::string language, int sidebar_width = 240, std::string selected_file_path = "");
 
     Wt::WHBoxLayout *layout_;
     MonacoEditor* editor_;
@@ -48,18 +69,11 @@ public:
     std::vector<std::pair<std::string, std::vector<std::string>>> folders_;
     
     void setTreeFolderWidgets();
-    void setTreeFolderWidgetsV2();
-    virtual Wt::WContainerWidget* setTreeFileWidget(Wt::WContainerWidget* files_wrapper, std::string folder_name, std::string file_name);
-    // void createFolderWidget(Wt::WContainerWidget* folder_wrapper, std::pair<std::string, std::vector<std::string>> folder);
-    // void createFileWidget(Wt::WContainerWidget* file_wrapper, std::string file);
     
     std::vector<std::pair<std::string, std::vector<std::string>>> getFolders();
 
-    void createNewFolderDialog();
-    void createNewFileDialog(std::string folder_name);
-    void deleteFileMessageBox(std::string file_name, std::string folder_name);
-
     Wt::Signal<Wt::WString>& file_saved() { return file_saved_; }
+    Wt::Signal<Wt::WString>& node_selected() { return node_selected_; }
     Wt::Signal<Wt::WString>& file_selected() { return file_selected_; }
 
     std::string default_folder_path_;
@@ -68,24 +82,13 @@ public:
     std::string file_extension_;
     
     FilesManagerSidebar* sidebar_;
-    Wt::WContainerWidget* selected_file_wrapper_;
 
-    Wt::WMessageBox* createMessageBox(std::string title, std::string temp);
-
-    
-    
-    
 private:
-    enum icon_type
-    {
-        folder,
-        file,
-        temp
-    };
-    std::unique_ptr<Wt::WIconPair> getIcon(icon_type type);
+
     Wt::WTree* tree_;
 
     Wt::Signal<Wt::WString> file_saved_; // returns path of the file
-    Wt::Signal<Wt::WString> file_selected_; // returns path of the file
+    Wt::Signal<Wt::WString> node_selected_; // returns path of the file
+    Wt::Signal<Wt::WString> file_selected_; // returns path of the selected file 
 
 };

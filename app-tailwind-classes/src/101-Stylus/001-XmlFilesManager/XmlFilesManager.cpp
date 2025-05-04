@@ -23,7 +23,7 @@ namespace Stylus
     XmlFilesManager::XmlFilesManager(std::shared_ptr<StylusState> state)
         : state_(state),
         // FilesManager("../stylus-resources/xml-templates/", "xml")
-        FilesManager("../stylus-resources/xml-templates/", "xml", state->xml_node_->IntAttribute("sidebar-width"))
+        FilesManager("../stylus-resources/xml-templates/", "xml", state->xml_node_->IntAttribute("sidebar-width"), state->xml_node_->Attribute("selected-file-path"))
     {
         
         auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
@@ -35,18 +35,20 @@ namespace Stylus
         temp_wrapper->setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
         // layout_->addLayout(std::make_unique<Wt::WLayout>(), 1);
         // test_template->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-        auto test_template = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
+        auto test_template = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>());
+        test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
         // auto test_template = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         dark_mode_toggle_ = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
         
         file_selected().connect(this, [=](Wt::WString file_path)
         {
             test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+            state_->xml_node_->SetAttribute("selected-file-path", file_path.toUTF8().c_str());
+            state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         file_saved().connect(this, [=](Wt::WString file_path)
         {
             test_template->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-            // file_saved().emit(file_path);
         });
         
         sidebar_->width_changed_.connect(this, [=](Wt::WString width)

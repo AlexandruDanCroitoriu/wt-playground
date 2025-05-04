@@ -8,7 +8,7 @@ namespace Stylus
         StylusState();
         tinyxml2::XMLDocument doc_;
         std::string file_path_ = "../stylus-state.xml";
-        tinyxml2::XMLElement* stylus_open_node_ = nullptr;
+        tinyxml2::XMLElement* stylus_node_ = nullptr;
         tinyxml2::XMLElement* xml_node_ = nullptr;
         tinyxml2::XMLElement* css_node_ = nullptr;
         tinyxml2::XMLElement* js_node_ = nullptr;
