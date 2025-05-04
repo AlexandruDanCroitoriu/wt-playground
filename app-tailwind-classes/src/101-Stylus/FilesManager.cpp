@@ -1,4 +1,4 @@
-#include "100-Utils/FilesManager/FilesManager.h"
+#include "101-Stylus/FilesManager.h"
 #include <filesystem>
 #include <Wt/WPushButton.h>
 #include <Wt/WMenu.h>
@@ -14,6 +14,9 @@
 #include <Wt/WRandom.h>
 #include <Wt/WApplication.h>
 #include <Wt/WText.h>
+
+namespace Stylus
+{
 
 FilesManagerSidebar::FilesManagerSidebar()
 {
@@ -170,7 +173,6 @@ void TreeNode::createNewFolderDialog()
     });
     dialog->show(); 
 }
-
 void TreeNode::createRenameFolderDialog()
 {
     auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Create new folder"));
@@ -234,7 +236,6 @@ void TreeNode::createRenameFolderDialog()
     dialog->show(); 
 
 }
-
 void TreeNode::createRemoveFolderMessageBox()
 {
     auto message_box = addChild(std::make_unique<Wt::WMessageBox>(
@@ -335,7 +336,6 @@ void TreeNode::createNewFileDialog()
 
     dialog->show();
 }
-
 void TreeNode::createRenameFileDialog()
 {
     auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Rename File"));
@@ -399,7 +399,6 @@ void TreeNode::createRenameFileDialog()
     dialog->show(); 
 
 }
-
 void TreeNode::deleteFileMessageBox()
 {
     auto message_box = addChild(std::make_unique<Wt::WMessageBox>(
@@ -464,10 +463,8 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     setLayout(std::move(layout));
  
     folders_ = getFolders();
-    // setTreeFolderWidgets(); 
     tree_ = sidebar_->contents_->addWidget(std::make_unique<Wt::WTree>());
     
-    // setTreeFolderWidgets(); 
 
     editor_->avalable_save().connect(this, [=](bool avalable)
                                         {
@@ -481,7 +478,6 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
     editor_->save_file_signal().connect(this, [=](std::string text)
                                         {
-        // std::cout << "\n\n Save file signal received.\n\n";
         if(selected_file_path_.compare("") == 0) {
             std::cout << "\n\n No file selected to save.\n\n";
             return;
@@ -491,10 +487,8 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
             std::cout << "\n\n Failed to open file: " << selected_file_path_ << "\n\n";
             return;
         }
-        std::cout << "\n\n Saving file: " << selected_file_path_ << "\n\n";
         file << text;
         file.close();
-        std::cout << "\n\n File saved: " << selected_file_path_ << "\n\n";
         editor_->textSaved(); // this is fo monaco to set the current text and emit avalable_save_ signal to fase
         
         file_saved_.emit(selected_file_path_);
@@ -519,8 +513,6 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     file_selected_.connect(this, [=](Wt::WString file_path) {
         editor_->setFile(default_folder_path_ + file_path.toUTF8());
     });
-    // node_selected_.emit(default_folder_path);
-    std::cout << "\n\n selected_file_path_: " << selected_file_path_ << "\n\n";
     node_selected_.emit(selected_file_path_);
 }
 
@@ -538,7 +530,6 @@ void FilesManager::setTreeFolderWidgets()
     tree_->treeRoot()->label()->setTextFormat(Wt::TextFormat::Plain);
     tree_->treeRoot()->expand();
     tree_->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
-    // tree_->treeRoot()->setSelectable(false);
     
     if(selected_tree_path_.compare(default_folder_path_) == 0) {
         tree_->select(root_folder);
@@ -547,7 +538,6 @@ void FilesManager::setTreeFolderWidgets()
     for(auto folder : folders_)
     {
         TreeNode *folder_tree_node = dynamic_cast<TreeNode*>(tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(folder.first, TreeNodeType::Folder, default_folder_path_)));
-        // tree_->treeRoot()->addChildNode(std::make_unique<FolderTreeNode>(folder.first));
             
         if(selected_tree_path_.compare(folder.first + "/") == 0)
         {
@@ -569,7 +559,6 @@ void FilesManager::setTreeFolderWidgets()
             {
                 folders_ = getFolders();
                 file_tree_node->label_clicked_.emit();
-                // setTreeFolderWidgets();
             });
         }
 
@@ -582,7 +571,6 @@ void FilesManager::setTreeFolderWidgets()
         {
             folders_ = getFolders();
             folder_tree_node->label_clicked_.emit();
-            // setTreeFolderWidgets();
         });
     }
 
@@ -631,4 +619,6 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
         std::sort(folder.second.begin(), folder.second.end());
     }
     return return_folders;
+}
+
 }

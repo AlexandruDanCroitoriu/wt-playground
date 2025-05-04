@@ -12,6 +12,9 @@
 #include <Wt/WMessageBox.h>
 #include <Wt/WDialog.h>
 
+namespace Stylus
+{
+
 class FilesManagerSidebar : public Wt::WContainerWidget
 {
 public:
@@ -92,3 +95,4 @@ private:
     Wt::Signal<Wt::WString> file_selected_; // returns path of the selected file 
 
 };
+}

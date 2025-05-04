@@ -146,7 +146,7 @@ Stylus::Stylus()
 
     Wt::WApplication::instance()->globalKeyWentDown().connect([=](Wt::WKeyEvent e)
     { 
-        if (e.modifiers().test(Wt::KeyboardModifier::Alt))
+        if (e.modifiers().test(Wt::KeyboardModifier::Alt) && e.modifiers().test(Wt::KeyboardModifier::Shift))
         {
             if (e.key() == Wt::Key::Q)
             {
