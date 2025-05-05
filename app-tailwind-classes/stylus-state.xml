@@ -1,6 +1,6 @@
-<stylus selected-menu="templates" open="true">
-    <xml-manager navigation-bar-hidden="false" editor-width="1148" sidebar-width="300" selected-file-path="experiments/test.xml" editor-open="true"/>
-    <css-manager sidebar-width="300" selected-file-path=""/>
-    <js-manager sidebar-width="300" selected-file-path=""/>
+<stylus selected-menu="templates" open="true" dark-mode="false">
+    <xml-manager navigation-bar-hidden="false" editor-width="750" sidebar-width="300" selected-file-path="experiments/test.xml" editor-open="true"/>
+    <css-manager sidebar-width="300" selected-file-path="stylus/test.css"/>
+    <js-manager sidebar-width="300" selected-file-path="test/asd.js"/>
     <tailwind-config selected-file-name="test.css"/>
 </stylus>

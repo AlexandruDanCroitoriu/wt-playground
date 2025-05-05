@@ -42,7 +42,7 @@ namespace Stylus
         temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
         // auto temp_view = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         dark_mode_toggle_ = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
-        
+      
         auto editor_checkbox = sidebar_->footer_->addWidget(std::make_unique<Wt::WCheckBox>("Editor"));
         editor_checkbox->setChecked(state_->xml_node_->BoolAttribute("editor-open"));
         editor_checkbox->keyWentDown().connect(this, [=](Wt::WKeyEvent e) { 
@@ -66,10 +66,10 @@ namespace Stylus
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
 
-        file_selected().connect(this, [=](Wt::WString file_path)
+        file_selected().connect(this, [=]()
         {
             temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-            state_->xml_node_->SetAttribute("selected-file-path", file_path.toUTF8().c_str());
+            state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         file_saved().connect(this, [=](Wt::WString file_path)
@@ -90,6 +90,17 @@ namespace Stylus
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
 
+        if(state_->stylus_node_->BoolAttribute("dark-mode")){
+            dark_mode_toggle_->setDarkMode(true);
+            editor_->setDarkTheme(true);
+        }
+        dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark)
+        {
+            std::cout << "\nDark mode changed to: " << dark << std::endl;
+            editor_->setDarkTheme(dark);
+            state_->stylus_node_->SetAttribute("dark-mode", dark ? "true" : "false");
+            state_->doc_.SaveFile(state_->file_path_.c_str());
+        });
     }
 
 }

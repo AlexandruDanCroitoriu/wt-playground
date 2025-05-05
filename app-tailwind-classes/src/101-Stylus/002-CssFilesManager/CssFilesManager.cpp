@@ -17,9 +17,9 @@ namespace Stylus
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
 
-        file_selected().connect(this, [=](Wt::WString file_path)
+        file_selected().connect(this, [=]()
         {
-            state_->css_node_->SetAttribute("selected-file-path", file_path.toUTF8().c_str());
+            state_->css_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         

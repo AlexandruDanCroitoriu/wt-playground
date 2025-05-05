@@ -1,6 +1,6 @@
 <messages>
     <message id="stylus-svg-add-folder">
-        <svg viewBox="0 0 16 16" class="w-4 h-4"
+        <svg viewBox="0 0 16 16" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg">
             <g stroke-width="0"></g>
             <g stroke-linecap="round" stroke-linejoin="round"></g>
@@ -10,7 +10,7 @@
         </svg>
     </message>
     <message id="stylus-svg-green-checked">
-        <svg viewBox="0 0 24 24" class="w-4 h-4 fill-green-400"
+        <svg viewBox="0 0 24 24" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg">
             <g stroke-width="0"></g>
             <g stroke-linecap="round" stroke-linejoin="round"></g>
@@ -20,7 +20,7 @@
         </svg>
     </message>
     <message id="stylus-svg-add-file">
-        <svg viewBox="0 0 24 24" fill="none" class="w-4 h-4"
+        <svg viewBox="0 0 24 24" fill="none" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg">
             <g stroke-width="0"></g>
             <g stroke-linecap="round" stroke-linejoin="round"></g>
@@ -30,7 +30,7 @@
         </svg>
     </message>
     <message id="stylus-svg-trash">
-        <svg version="1.1" class="w-4 h-4 fill-red-300"
+        <svg version="1.1" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" fill="#000000">
             <g stroke-width="0"></g>
@@ -62,7 +62,7 @@
         </svg>
     </message>
     <message id="stylus-svg-edit">
-        <svg viewBox="0 0 24 24" class="w-4 h-4 stroke-[#FFF]"
+        <svg viewBox="0 0 24 24" class="w-full h-full"
             xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g stroke-width="0"></g>
             <g stroke-linecap="round" stroke-linejoin="round"></g>

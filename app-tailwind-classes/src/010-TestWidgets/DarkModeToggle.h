@@ -3,6 +3,7 @@
 #include <Wt/WCheckBox.h>
 #include <Wt/WSignal.h>
 
+
 class DarkModeToggle : public Wt::WContainerWidget
 {
     public:

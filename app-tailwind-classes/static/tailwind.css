@@ -425,9 +425,6 @@
   .h-\[40px\] {
     height: 40px;
   }
-  .h-\[100px\] {
-    height: 100px;
-  }
   .h-\[100vh\] {
     height: 100vh;
   }
@@ -753,9 +750,6 @@
     --tw-gradient-to: var(--color-gray-50);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
-  .fill-\[\#000\] {
-    fill: #000;
-  }
   .fill-green-400 {
     fill: var(--color-green-400);
   }
@@ -764,9 +758,6 @@
   }
   .fill-white {
     fill: var(--color-white);
-  }
-  .stroke-\[\#000\] {
-    stroke: #000;
   }
   .stroke-green-300 {
     stroke: var(--color-green-300);

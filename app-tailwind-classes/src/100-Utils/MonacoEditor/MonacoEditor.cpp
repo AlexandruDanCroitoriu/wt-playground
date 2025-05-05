@@ -68,6 +68,7 @@ MonacoEditor::MonacoEditor(std::string language)
         if (e.key() == Wt::Key::S)
         {
             // textSaved();
+            std::cout << "\n\n MonacoEditor::keyWentDown() Ctrl+S pressed \n\n";
             save_file_signal_.emit(unsaved_text_);
         }
     } });
@@ -151,13 +152,22 @@ void MonacoEditor::resetLayout()
 {
     doJavaScript("setTimeout(function() { window." + editor_js_var_name_ + ".layout() }, 1);");
 }
-
 void MonacoEditor::setDarkTheme(bool dark)
 {
-    if (dark)
-        doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs-dark');");
-    else
-        doJavaScript("if(monaco.editor) monaco.editor.setTheme('vs');");
+    doJavaScript(R"(
+        (function() {
+            var interval = setInterval(function() {
+                if (window.)" + editor_js_var_name_ + R"() {
+                    clearInterval(interval);
+                    if ()" + (dark ? "true" : "false") + R"() {
+                        window.)" + editor_js_var_name_ + R"(.updateOptions({ theme: 'vs-dark' });
+                    } else {
+                        window.)" + editor_js_var_name_ + R"(.updateOptions({ theme: 'vs' });
+                    }
+                }
+            }, 100);
+        })();
+    )");
 }
 
 std::string MonacoEditor::getFileText(std::string file_path)
@@ -165,7 +175,7 @@ std::string MonacoEditor::getFileText(std::string file_path)
     std::ifstream file(file_path);
     if (!file.is_open())
     {
-        std::cout << "\n\n Failed to open file: " << file_path << "\n\n";
+        std::cout << "\n\n Failed to read file: " << file_path << "\n\n";
         return "";
     }
 

@@ -3,14 +3,9 @@
 #include "100-Utils/MonacoEditor/MonacoEditor.h"
 #include <Wt/WSignal.h>
 #include <Wt/WHBoxLayout.h>
-#include <Wt/WIconPair.h>
 #include <Wt/WTree.h>
 #include <Wt/WTreeNode.h>
-#include <Wt/WInPlaceEdit.h>
-#include <Wt/WLineEdit.h>
 #include <Wt/WPopupMenu.h>
-#include <Wt/WMessageBox.h>
-#include <Wt/WDialog.h>
 
 namespace Stylus
 {
@@ -19,10 +14,8 @@ class FilesManagerSidebar : public Wt::WContainerWidget
 {
 public:
     FilesManagerSidebar();
-    Wt::WContainerWidget* header_;
     Wt::WContainerWidget* contents_;
     Wt::WContainerWidget* footer_;
-    Wt::WTemplate* add_folder_btn_;
     Wt::Signal<Wt::WString> width_changed_;
 protected:
     // Custom implementation
@@ -77,7 +70,7 @@ public:
 
     Wt::Signal<Wt::WString>& file_saved() { return file_saved_; }
     Wt::Signal<Wt::WString>& node_selected() { return node_selected_; }
-    Wt::Signal<Wt::WString>& file_selected() { return file_selected_; }
+    Wt::Signal<>& file_selected() { return file_selected_; }
 
     std::string default_folder_path_;
     std::string selected_file_path_;
@@ -92,7 +85,7 @@ private:
 
     Wt::Signal<Wt::WString> file_saved_; // returns path of the file
     Wt::Signal<Wt::WString> node_selected_; // returns path of the file
-    Wt::Signal<Wt::WString> file_selected_; // returns path of the selected file 
+    Wt::Signal<> file_selected_; // returns path of the selected file 
 
 };
 }

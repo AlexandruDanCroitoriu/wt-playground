@@ -17,7 +17,8 @@ App::App(const Wt::WEnvironment &env)
 //   session_(appRoot() + "../dbo.db"),
 {
     // messageResourceBundle().use(docRoot() + "/templates");
-    messageResourceBundle().use(docRoot() + "/stylus-resources/xml-templates/stylus/svg");
+    // messageResourceBundle().use(docRoot() + "/stylus-resources/xml-templates/stylus/svg");
+    messageResourceBundle().use(docRoot() + "/templates");
 
     // JSs
     // require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
@@ -57,7 +58,7 @@ App::App(const Wt::WEnvironment &env)
 
     stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
 
-    // auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
+    auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
     // stylus_->xml_files_manager_->dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark){
     //     dark_mode_toggle->setDarkMode(dark);
     // });

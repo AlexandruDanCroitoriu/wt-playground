@@ -14,6 +14,10 @@
 #include <Wt/WRandom.h>
 #include <Wt/WApplication.h>
 #include <Wt/WText.h>
+#include <Wt/WIconPair.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WMessageBox.h>
+#include <Wt/WDialog.h>
 
 namespace Stylus
 {
@@ -25,8 +29,6 @@ FilesManagerSidebar::FilesManagerSidebar()
     // tree header
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     setMaximumSize(Wt::WLength(1000, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-    header_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    header_->setStyleClass("group flex items-center border-b border-solid");
 
     contents_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     contents_->setStyleClass("w-full flex-1 overflow-y-auto overflow-x-hidden flex flex-col");
@@ -196,8 +198,8 @@ void TreeNode::createRenameFolderDialog()
     auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
     error_label->setStyleClass("w-full text-[#B22222] text-md font-semibold");
     
-    auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>(this->label()->text()));
-    auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>());
+    auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>("current name: " + this->label()->text()));
+    auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>(this->label()->text()));
     new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
     label->setBuddy(new_folder_name_input);
     
@@ -229,6 +231,7 @@ void TreeNode::createRenameFolderDialog()
             std::filesystem::path old_path(path_ + this->label()->text().toUTF8());
             std::filesystem::path new_path(path_ + new_folder_name);
             std::filesystem::rename(old_path, new_path);
+            this->label()->setText(new_folder_name);
             folders_changed_.emit();
         }
         removeChild(dialog);
@@ -311,7 +314,7 @@ void TreeNode::createNewFileDialog()
     confirm_btn->clicked().connect(this, [=](){ 
         // check if the file name already exists
         std::string new_file_name = new_file_name_input->text().toUTF8();
-        std::string pattern = R"(^[a-z-]+$)";
+        std::string pattern = R"(^[a-z-.]+$)";
         if(std::regex_match(new_file_name, std::regex(pattern)) == false) {
             error_label->setText("Match reges:" + pattern);
             return;
@@ -338,7 +341,7 @@ void TreeNode::createNewFileDialog()
 }
 void TreeNode::createRenameFileDialog()
 {
-    auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Rename File"));
+    auto dialog = Wt::WApplication::instance()->root()->addChild(std::make_unique<Wt::WDialog>("Rename File: " + label()->text()));
 
     dialog->setModal(true);
     dialog->rejectWhenEscapePressed();
@@ -359,10 +362,8 @@ void TreeNode::createRenameFileDialog()
     auto error_label = content->addWidget(std::make_unique<Wt::WText>(""));
     error_label->setStyleClass("w-full text-[#B22222] text-md font-semibold");
     
-    auto label = input_wrapper->addWidget(std::make_unique<Wt::WLabel>(this->label()->text()));
-    auto new_folder_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>(this->label()->text()));
-    new_folder_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
-    label->setBuddy(new_folder_name_input);
+    auto new_file_name_input = input_wrapper->addWidget(std::make_unique<Wt::WLineEdit>(this->label()->text()));
+    new_file_name_input->setStyleClass("w-full min-w-[200px] placeholder:text-slate-400 text-sm border rounded-md px-3 py-2 transition duration-300 ease focus:outline-none shadow-sm");
     
     auto confirm_btn = footer->addWidget(std::make_unique<Wt::WPushButton>("Confirm"));
     confirm_btn->setStyleClass("btn-default");
@@ -370,10 +371,10 @@ void TreeNode::createRenameFileDialog()
     cancel_btn->setStyleClass("btn-red");
 
     cancel_btn->clicked().connect(this, [=](){ dialog->reject(); });
-    new_folder_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
+    new_file_name_input->enterPressed().connect(this, [=](){ confirm_btn->clicked().emit(Wt::WMouseEvent()); });
     confirm_btn->clicked().connect(this, [=](){ 
         // check if the file name already exists
-        std::string new_file_name = new_folder_name_input->text().toUTF8();
+        std::string new_file_name = new_file_name_input->text().toUTF8();
         std::string pattern = R"(^[a-z-.]+$)";
         if(std::regex_match(new_file_name, std::regex(pattern)) == false) {
             error_label->setText("Match reges:" + pattern);
@@ -388,10 +389,11 @@ void TreeNode::createRenameFileDialog()
     });
     dialog->finished().connect(this, [=](){
         if (dialog->result() == Wt::DialogCode::Accepted) {
-            std::string new_file_name = new_folder_name_input->text().toUTF8();
+            std::string new_file_name = new_file_name_input->text().toUTF8();
             std::filesystem::path old_path(path_ + this->label()->text().toUTF8());
             std::filesystem::path new_path(path_ + new_file_name);
             std::filesystem::rename(old_path, new_path);
+            this->label()->setText(new_file_name);
             folders_changed_.emit();
         }
         removeChild(dialog);
@@ -402,12 +404,8 @@ void TreeNode::createRenameFileDialog()
 void TreeNode::deleteFileMessageBox()
 {
     auto message_box = addChild(std::make_unique<Wt::WMessageBox>(
-        "Are you sure you want to delete the file ?", 
-        R"(
-            <div class='flex-1 text-center font-bold text-2xl'>Folder: )" + path_.substr(path_.find_last_of("/") + 1) + R"(</div>
-            <div class='flex-1 text-center font-bold text-2xl'>File: )" + label()->text() + R"(</div>
-        )",
-        Wt::Icon::Warning, Wt::StandardButton::None));
+        "Delete file: " + label()->text() + " ?", "",
+        Wt::Icon::None, Wt::StandardButton::None));
     message_box->setOffsets(100, Wt::Side::Top);
     message_box->setModal(true);
 
@@ -427,6 +425,7 @@ void TreeNode::deleteFileMessageBox()
             std::filesystem::path file_path = path_ + label()->text().toUTF8();
             // delete file
             if (std::filesystem::remove(file_path)) {
+                // std::cout << "\n\n File deleted: " << file_path << "\n\n";
                 folders_changed_.emit();
             } else {
                 Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
@@ -504,14 +503,15 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
         // if the last character is not /
         if(selected_tree_path_[selected_tree_path_.length()-1] != '/'){
             selected_file_path_ = file_path.toUTF8();
-            file_selected_.emit(selected_file_path_);
+            file_selected_.emit();
         }
         
         setTreeFolderWidgets();
     });
 
-    file_selected_.connect(this, [=](Wt::WString file_path) {
-        editor_->setFile(default_folder_path_ + file_path.toUTF8());
+    file_selected_.connect(this, [=]() {
+        std::cout << "\n\n file_selected_.signal: " << selected_file_path_ << "\n\n";
+        editor_->setFile(default_folder_path_ + selected_file_path_);
     });
     node_selected_.emit(selected_file_path_);
 }
@@ -519,6 +519,7 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
 void FilesManager::setTreeFolderWidgets()
 {
+    // std::cout << "\n\n selected_tree_path_: " << selected_tree_path_ << "\n\n";
     auto node = std::make_unique<TreeNode>(default_folder_path_, TreeNodeType::Folder, default_folder_path_);
     auto root_folder = node.get();
     root_folder->label_clicked_.connect(this, [=]()
@@ -553,16 +554,17 @@ void FilesManager::setTreeFolderWidgets()
             } 
             
             file_tree_node->label_clicked_.connect(this, [=]() {
-                node_selected_.emit(folder.first + "/" + file);
+                node_selected_.emit(folder.first + "/" + file_tree_node->label()->text().toUTF8());
             });
             file_tree_node->folders_changed_.connect(this, [=]()
             {
                 folders_ = getFolders();
                 file_tree_node->label_clicked_.emit();
             });
+      
         }
 
-        folder_tree_node->label_clicked_.connect(this, [=]() { node_selected_.emit(folder.first + "/"); });
+        folder_tree_node->label_clicked_.connect(this, [=]() { node_selected_.emit(folder_tree_node->label()->text() + "/"); });
         if(folder.second.size() > 0)
         {
             folder_tree_node->expand();
@@ -582,7 +584,6 @@ void FilesManager::setTreeFolderWidgets()
     {
         folders_ = getFolders();
         root_folder->label_clicked_.emit();
-        // setTreeFolderWidgets();
     });
 
 }
