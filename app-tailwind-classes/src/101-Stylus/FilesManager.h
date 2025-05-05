@@ -38,12 +38,11 @@ public:
     Wt::Signal<> label_clicked_;
 
     void showPopup(const Wt::WMouseEvent& event);
-
+    Wt::WContainerWidget* label_wrapper_;
+    std::string path_;
 private:
     TreeNodeType type_;
     std::unique_ptr<Wt::WPopupMenu> popup_;
-    std::string path_;
-    std::string name_;
 
     void createNewFolderDialog();
     void createRenameFolderDialog();

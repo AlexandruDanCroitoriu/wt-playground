@@ -131,16 +131,22 @@ void MonacoEditor::setFile(std::string file_path)
 void MonacoEditor::setEditorText(std::string text)
 {
     resetLayout();
-    doJavaScript(R"(
+    doJavaScript(
+    R"(
         setTimeout(function() {
-            if (window.)" +
-                        editor_js_var_name_ + R"() {
-                window.)" +
-                        editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
-                window.)" +
-                        editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
+            if (window.)" + editor_js_var_name_ + R"() {
+                window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
+                window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
             } else {
                 console.error("Editor instance is not initialized yet.");
+                setTimeout(function() {
+                    if (window.)" + editor_js_var_name_ + R"() {
+                        window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
+                        window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
+                    } else {
+                        console.error("Editor instance is still not initialized.");
+                    }
+                }, 1000);
             }
         }, 100);
     )");

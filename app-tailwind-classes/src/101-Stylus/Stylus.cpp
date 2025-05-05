@@ -50,14 +50,14 @@ Stylus::Stylus()
     auto navbar = contents()->addWidget(std::make_unique<Wt::WContainerWidget>());
     auto content_wrapper = contents()->addWidget(std::make_unique<Wt::WStackedWidget>());
 
-    navbar->setStyleClass("flex flex-col h-full border-r border-solid");
+    navbar->setStyleClass("flex flex-col h-full border-r border-solid dark:border-[#FFF]/50 bg-[#FFF] dark:bg-[#1e1e1e]");
     content_wrapper->setStyleClass("flex-1 h-full overflow-y-auto");
 
     auto templates_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-xml-logo")));
     auto css_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-css-logo")));
     auto javascript_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-javascript-logo")));
     auto tailwind_menu_item = navbar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-tailwind-logo")));
-    std::string nav_btns_styles = "w-[30px] p-[10px] m-[4px] cursor-pointer rounded-md flex items-center filesManager-menu";
+    std::string nav_btns_styles = "w-[40px] p-[10px] m-[4px] cursor-pointer rounded-md flex items-center filesManager-menu";
 
     templates_menu_item->setStyleClass(nav_btns_styles);
     tailwind_menu_item->setStyleClass(nav_btns_styles);
@@ -147,9 +147,8 @@ Stylus::Stylus()
     {
         navbar->hide();
         xml_files_manager_->layout_->itemAt(0)->widget()->hide();
-    }else{
-        navbar->show();
-        xml_files_manager_->layout_->itemAt(0)->widget()->show();
+        css_files_manager_->layout_->itemAt(0)->widget()->hide();
+        js_files_manager_->layout_->itemAt(0)->widget()->hide();
     }
 
 
@@ -176,16 +175,20 @@ Stylus::Stylus()
                 javascript_menu_item->clicked().emit(Wt::WMouseEvent());
             }else if (e.key() == Wt::Key::Key_4){
                 tailwind_menu_item->clicked().emit(Wt::WMouseEvent());
-            }else if (e.key() == Wt::Key::A && content_wrapper->currentWidget() == xml_files_manager_){
-                if(xml_files_manager_->layout_->itemAt(0)->widget()->isHidden())
+            }else if (e.key() == Wt::Key::A){
+                if(navbar->isHidden())
                 {
-                    xml_files_manager_->layout_->itemAt(0)->widget()->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 1.5));
-                    navbar->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 5));
+                    xml_files_manager_->layout_->itemAt(0)->widget()->show();
+                    css_files_manager_->layout_->itemAt(0)->widget()->show();
+                    js_files_manager_->layout_->itemAt(0)->widget()->show();
+                    navbar->show();
                     state_->xml_node_->SetAttribute("navigation-bar-hidden", "false");
                 }else
                 {
-                    xml_files_manager_->layout_->itemAt(0)->widget()->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 1.5));
-                    navbar->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 5));
+                    xml_files_manager_->layout_->itemAt(0)->widget()->hide();
+                    css_files_manager_->layout_->itemAt(0)->widget()->hide();
+                    js_files_manager_->layout_->itemAt(0)->widget()->hide();
+                    navbar->hide();
                     state_->xml_node_->SetAttribute("navigation-bar-hidden", "true");
                 }
                 state_->doc_.SaveFile(state_->file_path_.c_str());

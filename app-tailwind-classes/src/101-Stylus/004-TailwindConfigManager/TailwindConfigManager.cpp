@@ -37,7 +37,7 @@ namespace Stylus
 
         config_files_ = getConfigFiles();
 
-        sidebar->setStyleClass("flex items-center space-x-[10px]");
+        sidebar->setStyleClass("flex items-center space-x-[10px] bg-[#FFF] dark:bg-[#1e1e1e] text-[#1e1e1e] dark:text-[#FFF] ");
         config_files_combobox_ = sidebar->addWidget(std::make_unique<Wt::WComboBox>());
         config_files_combobox_->setStyleClass("max-w-[240px] border rounded-[8px] block w-full p-[8px] disabled:bg-[#F3F4F6] disabled:text-[#9CA3AF] disabled:cursor-not-allowed");
         config_files_combobox_->keyWentDown().connect(this, [=](Wt::WKeyEvent event)
@@ -45,20 +45,18 @@ namespace Stylus
             Wt::WApplication::instance()->globalKeyWentDown().emit(event); // Emit the global key event
         });
 
-     
-
         std::string btn_styles = " rounded-[6px] w-[40px] h-[40px] p-[6px] utility-button-colors ";
         auto add_file_btn = sidebar->addWidget(std::make_unique<Wt::WTemplate>(Wt::WString::tr("stylus-svg-add-file")));
         add_file_btn->setStyleClass(btn_styles);
         
         delete_file_btn_ = sidebar->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-trash"), Wt::TextFormat::XHTML));
+        // delete_file_btn_ = sidebar->addWidget(std::make_unique<Wt::WPushButton>(""));
         delete_file_btn_->setAttributeValue("tabindex", "-1");
         delete_file_btn_->setStyleClass(btn_styles + "disabled:cursor-not-allowed disabled:bg-[#EC133B]/50 hover:disabled:!bg-[#EC133B]/50");
 
         auto save_file_btn = sidebar->addWidget(std::make_unique<Wt::WPushButton>(Wt::WString::tr("stylus-svg-green-checked"), Wt::TextFormat::XHTML));
         save_file_btn->setAttributeValue("tabindex", "-1");
         save_file_btn->setStyleClass(btn_styles);
-
 
 
         editor_->avalable_save().connect(this, [=](bool avalable)

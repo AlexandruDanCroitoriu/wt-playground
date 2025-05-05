@@ -6,7 +6,7 @@
 DarkModeToggle::DarkModeToggle(bool dark)
 {
     setHtmlTagName("label");
-    setStyleClass("inline-flex cursor-pointer items-center");
+    setStyleClass("inline-flex cursor-pointer items-center m-1");
     checkBox_ = addWidget(std::make_unique<Wt::WCheckBox>());
     // checkBox_->setChecked(dark);
     setAttributeValue("for", checkBox_->id());

@@ -458,9 +458,6 @@
   .w-48 {
     width: calc(var(--spacing) * 48);
   }
-  .w-\[30px\] {
-    width: 30px;
-  }
   .w-\[40px\] {
     width: 40px;
   }
@@ -912,11 +909,17 @@
     --tw-tracking: var(--tracking-wider);
     letter-spacing: var(--tracking-wider);
   }
+  .text-\[\#1e1e1e\] {
+    color: #1e1e1e;
+  }
   .text-\[\#B22222\] {
     color: #B22222;
   }
   .text-black {
     color: var(--color-black);
+  }
+  .text-blue-400 {
+    color: var(--color-blue-400);
   }
   .text-blue-500 {
     color: var(--color-blue-500);
@@ -1599,6 +1602,11 @@
       }
     }
   }
+  .dark\:border-\[\#FFF\]\/50 {
+    &:where(.dark, .dark *) {
+      border-color: color-mix(in oklab, #FFF 50%, transparent);
+    }
+  }
   .dark\:border-blue-800 {
     &:where(.dark, .dark *) {
       border-color: var(--color-blue-800);
@@ -1624,6 +1632,11 @@
       border-color: var(--color-yellow-800);
     }
   }
+  .dark\:bg-\[\#1e1e1e\] {
+    &:where(.dark, .dark *) {
+      background-color: #1e1e1e;
+    }
+  }
   .dark\:bg-black {
     &:where(.dark, .dark *) {
       background-color: var(--color-black);
@@ -1642,6 +1655,16 @@
   .dark\:bg-gray-900 {
     &:where(.dark, .dark *) {
       background-color: var(--color-gray-900);
+    }
+  }
+  .dark\:text-\[\#FFF\] {
+    &:where(.dark, .dark *) {
+      color: #FFF;
+    }
+  }
+  .dark\:text-\[\#e8e8e8\] {
+    &:where(.dark, .dark *) {
+      color: #e8e8e8;
     }
   }
   .dark\:text-blue-400 {
@@ -1707,6 +1730,11 @@
       }
     }
   }
+  .\[\&\>\.Wt-selected\]\:\!bg-green-300 {
+    &>.Wt-selected {
+      background-color: var(--color-green-300) !important;
+    }
+  }
 }
 .Wt-panel .body {
   padding: calc(var(--spacing) * 0) !important;
@@ -1727,21 +1755,17 @@
 }
 .filesManager-menu-selected {
   background-color: oklch(0.623 0.214 259.815);
-  --tw-font-weight: var(--font-weight-extrabold) !important;
-  font-weight: var(--font-weight-extrabold) !important;
-  color: #FFF;
   &:hover {
     @media (hover: hover) {
       background-color: oklch(0.623 0.214 259.815);
     }
   }
 }
-.utility-button-colors {
-  &:hover {
-    @media (hover: hover) {
-      background-color: color-mix(in oklab, #9a9a9a 60%, transparent);
-    }
-  }
+.Wt-selected {
+  background-color: var(--color-green-300) !important;
+}
+.unsaved-changes > .Wt-selected {
+  background-color: var(--color-red-300) !important;
 }
 @property --tw-translate-x {
   syntax: "*";

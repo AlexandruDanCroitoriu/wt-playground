@@ -17,9 +17,6 @@ namespace Stylus {
     public:
         Stylus();
             
-        
-    
-        // TemplatesManager* templates_files_manager_;
         XmlFilesManager* xml_files_manager_;
         CssFilesManager* css_files_manager_;
         JsFilesManager* js_files_manager_;

@@ -1,18 +1,21 @@
 @reference "tailwindcss";
 
-
+/* main menu navigation styles for button menu item and selected */
 .filesManager-menu {
 	@apply hover:bg-[oklch(0.932_0.032_255.585)] p-1;
 }
 .filesManager-menu-selected {
-		@apply bg-[oklch(0.623_0.214_259.815)] !font-extrabold hover:bg-[oklch(0.623_0.214_259.815)] text-[#FFF];
-}
-
-
-.utility-button-colors {
-	@apply hover:bg-[#9a9a9a]/60;
+		@apply bg-[oklch(0.623_0.214_259.815)] hover:bg-[oklch(0.623_0.214_259.815)];
 }
 
 .Wt-item {
 	/* zoom: 200%; */
+}
+
+.Wt-selected {
+	@apply !bg-green-300;
+}
+
+.unsaved-changes > .Wt-selected {
+	@apply !bg-red-300;
 }

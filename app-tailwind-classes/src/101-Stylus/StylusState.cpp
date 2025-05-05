@@ -30,6 +30,7 @@ namespace Stylus {
             std::cerr << "Error finding <stylus> node in XML file." << std::endl;
             // create the node
             stylus_node_ = doc_.NewElement("stylus");
+            stylus_node_->SetAttribute("navigation-bar-hidden", "false");
             stylus_node_->SetAttribute("selected-menu", "templates");
             stylus_node_->SetAttribute("open", "true");
             stylus_node_->SetAttribute("dark-mode", "true");
@@ -41,7 +42,6 @@ namespace Stylus {
             std::cerr << "Error finding <xml-manager> node in XML file." << std::endl;
             // create the node
             xml_node_ = doc_.NewElement("xml-manager");
-            xml_node_->SetAttribute("navigation-bar-hidden", "false");
             xml_node_->SetAttribute("editor-width", 500);
             xml_node_->SetAttribute("sidebar-width", 300);
             xml_node_->SetAttribute("selected-file-path", "");
