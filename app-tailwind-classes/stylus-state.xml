@@ -1,5 +1,5 @@
 <stylus navigation-bar-hidden="false" selected-menu="tailwind" open="true" dark-mode="true">
-    <xml-manager editor-width="500" sidebar-width="300" selected-file-path="exmp/alert.xml" editor-open="true"/>
+    <xml-manager editor-width="1012" sidebar-width="300" selected-file-path="exmp/alert.xml" editor-open="true" navigation-bar-hidden="true"/>
     <css-manager sidebar-width="300" selected-file-path="stylus/stylus.css"/>
     <js-manager sidebar-width="300" selected-file-path="test/asd.js"/>
     <tailwind-config editor-width="1154" selected-file-name="0.css"/>

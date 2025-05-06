@@ -337,6 +337,7 @@ namespace Stylus
         // std::cout << "\n\nFile written successfully: " << "../stylus-resources/tailwind4/input.css\n\n";
         file.close();
 
+        output_editor_->setFile("../static/tailwind.css");
         // std::cout << "\n\nGenerating CSS file...\n\n";
         auto session_id = Wt::WApplication::instance()->sessionId();
         Wt::WServer::instance()->ioService().post([this, session_id](){
@@ -346,7 +347,6 @@ namespace Stylus
                 Wt::WApplication::instance()->removeStyleSheet(prev_css_file_.toUTF8());
                 Wt::WApplication::instance()->useStyleSheet(current_css_file_.toUTF8());
                 prev_css_file_ = current_css_file_;
-                output_editor_->setFile("../static/tailwind.css");
                 Wt::WApplication::instance()->triggerUpdate();
             }); 
         });
