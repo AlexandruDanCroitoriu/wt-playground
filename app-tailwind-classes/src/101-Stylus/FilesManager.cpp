@@ -24,7 +24,7 @@ namespace Stylus
 
 FilesManagerSidebar::FilesManagerSidebar()
 {
-    setStyleClass("flex flex-col h-screen bg-[#FFF] dark:bg-[#1e1e1e] dark:text-[#e8e8e8]");
+    setStyleClass("flex flex-col h-screen stylus-background");
     setLayoutSizeAware(true);
     // tree header
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
@@ -469,14 +469,15 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     editor_->avalable_save().connect(this, [=](bool avalable)
                                         {
         TreeNode* selected_node;
-        if(selected_file_path_.compare("") != 0) {
-            auto selected_nodes = tree_->selectedNodes();
+        if(selected_file_path_.compare("") == 0) {
+            return;
+        }
+        auto selected_nodes = tree_->selectedNodes();
 
-            for(auto node : selected_nodes) {
-                if(node->label()->text().toUTF8().compare(selected_file_path_.substr(selected_file_path_.find_last_of("/")+1)) == 0) {
-                    selected_node = dynamic_cast<TreeNode*>(node);
-                    break;
-                }
+        for(auto node : selected_nodes) {
+            if(node->label()->text().toUTF8().compare(selected_file_path_.substr(selected_file_path_.find_last_of("/")+1)) == 0) {
+                selected_node = dynamic_cast<TreeNode*>(node);
+                break;
             }
         }
         if(selected_node == nullptr) {
@@ -498,6 +499,9 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
     editor_->save_file_signal().connect(this, [=](std::string text)
                                         {
+        if(selected_file_path_.compare("") == 0) {
+            return;
+        }
         std::cout << "\n\n save file signal emitted.\n\n";
         if(selected_file_path_.compare("") == 0) {
             std::cout << "\n\n No file selected to save.\n\n";
@@ -553,9 +557,6 @@ void FilesManager::setTreeFolderWidgets()
     tree_->treeRoot()->expand();
     tree_->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
     
-    std::cout << "\n\n --- selected_tree_path_: " << selected_tree_path_ << "\n\n";
-    std::cout << "\n\n --- default_folder_path_: " << default_folder_path_ << "\n\n";
-
     if(selected_tree_path_.compare(default_folder_path_) == 0) {
         // root_folder->addStyleClass("[&>.Wt-selected]:!bg-green-300");
         tree_->select(root_folder);

@@ -15,21 +15,27 @@ namespace Stylus
     public:
         TailwindConfigManager(std::shared_ptr<StylusState> state);
 
-        MonacoEditor* editor_;
-        std::string getConfig();
-
-    private:
-        Wt::WVBoxLayout* layout_;
+        MonacoEditor* config_editor_;
+        MonacoEditor* output_editor_;
+        
+        void generateCssFile();
+        private:
+        Wt::WHBoxLayout* layout_;
         Wt::WComboBox* config_files_combobox_;
         Wt::WPushButton* delete_file_btn_;
-
+        
         std::shared_ptr<StylusState> state_;
         std::string config_folder_path_;
         std::string default_config_file_name_;
         std::vector<std::string> config_files_;
-
-
+        
+        
         std::vector<std::string> getConfigFiles();
+        std::string getConfig();
+
+        Wt::WString current_css_file_;
+        Wt::WString prev_css_file_;
+        std::string css_files_root_path_ = "../stylus-resources/tailwind4/css/";
     };
 
 }

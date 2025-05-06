@@ -75,6 +75,7 @@ namespace Stylus {
             std::cerr << "Error finding <tailwind-config> node in XML file." << std::endl;
             // create the node
             tailwind_config_node_ = doc_.NewElement("tailwind-config");
+            tailwind_config_node_->SetAttribute("editor-width", 500);
             tailwind_config_node_->SetAttribute("selected-file-name", "");
             stylus_node_->InsertEndChild(tailwind_config_node_);
         }

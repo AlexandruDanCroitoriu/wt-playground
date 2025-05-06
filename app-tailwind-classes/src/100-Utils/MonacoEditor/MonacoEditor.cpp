@@ -17,6 +17,7 @@ MonacoEditor::MonacoEditor(std::string language)
 {
     setLayoutSizeAware(true);
     setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+    // setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::Pixel));
     setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
     
     js_signal_text_changed_.connect(this, &MonacoEditor::editorTextChanged);

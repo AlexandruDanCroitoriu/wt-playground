@@ -1,11 +1,16 @@
 @reference "tailwindcss";
 
+/* stylus background colors */
+.stylus-background {
+	@apply bg-[#FFF] dark:bg-[#1e1e1e] dark:text-[#e8e8e8];
+} 
+
 /* main menu navigation styles for button menu item and selected */
 .filesManager-menu {
-	@apply hover:bg-[oklch(0.932_0.032_255.585)] p-1;
+	@apply hover:bg-[#dbeafe] dark:hover:bg-[#2563eb];
 }
 .filesManager-menu-selected {
-		@apply bg-[oklch(0.623_0.214_259.815)] hover:bg-[oklch(0.623_0.214_259.815)];
+		@apply bg-[#2563eb] hover:bg-[#2563eb] dark:bg-[#1e40af] dark:hover:bg-[#1e40af];
 }
 
 .Wt-item {
@@ -13,9 +18,9 @@
 }
 
 .Wt-selected {
-	@apply !bg-green-300;
+	@apply !bg-[#b9fca9] dark:!bg-[#5cff5f] dark:text-[#000];
 }
 
 .unsaved-changes > .Wt-selected {
-	@apply !bg-red-300;
+	@apply !bg-[#ff8c8c] dark:!bg-[#ff4d4d]; 
 }

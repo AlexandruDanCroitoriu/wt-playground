@@ -25,9 +25,8 @@ namespace Stylus {
         
         private:
         std::shared_ptr<StylusState> state_;
-        void generateCssFile();
-        Wt::WString current_css_file_;
-        Wt::WString prev_css_file_;
+        // void generateCssFile();
+
 
 };
 }

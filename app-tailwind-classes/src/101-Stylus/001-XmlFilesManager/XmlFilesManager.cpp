@@ -31,7 +31,7 @@ namespace Stylus
         }
         auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
         // temp_wrapper->setStyleClass("rounded-md p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
-        temp_wrapper->setStyleClass("p-[8px] bg-[#FFF] dark:bg-[#1e1e1e]"); 
+        temp_wrapper->setStyleClass("p-[8px] stylus-background"); 
 
         temp_wrapper->setOverflow(Wt::Overflow::Auto);
         temp_wrapper->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
@@ -48,7 +48,6 @@ namespace Stylus
         editor_checkbox->keyWentDown().connect(this, [=](Wt::WKeyEvent e) { 
             Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
         });
-        editor_checkbox->setChecked(state_->xml_node_->BoolAttribute("editor-open"));
         editor_checkbox->changed().connect(this, [=]()
         {
             state_->xml_node_->SetAttribute("editor-open", editor_checkbox->isChecked());
