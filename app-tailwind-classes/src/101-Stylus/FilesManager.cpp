@@ -537,7 +537,7 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
             editor_->setEditorReadOnly(true);
         }else {
             editor_->setEditorReadOnly(false);
-            editor_->setEditorText(file_path, state_->getFileText(file_path));
+            editor_->setEditorText(data_.root_resource_url_ + selected_file_path_, state_->getFileText(file_path));
         }
     });
     

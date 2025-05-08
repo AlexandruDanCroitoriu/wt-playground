@@ -117,6 +117,7 @@ void MonacoEditor::setEditorText(std::string resource_path, std::string file_con
             setTimeout(function() {
                 if(!window.)" + editor_js_var_name_ + R"() {
                     setTimeout(function() {
+                        console.log("Setting editor text to: )" + resource_path_url + R"(");
                         if (window.)" + editor_js_var_name_ + R"() {
                             fetch(')" + resource_path_url + R"(')
                             .then(response => response.text())
