@@ -11,6 +11,25 @@ namespace Stylus {
 
     StylusState::StylusState()
     {
+
+        js_editor_data_.extension_ = "js";
+        js_editor_data_.root_folder_path_ = "../static/stylus-resources/js/";
+        js_editor_data_.root_resource_url_ = "static/stylus-resources/js/";
+
+        xml_editor_data_.extension_ = "xml";
+        xml_editor_data_.root_folder_path_ = "../static/stylus-resources/xml/";
+        xml_editor_data_.root_resource_url_ = "static/stylus-resources/xml/";
+
+        css_editor_data_.extension_ = "css";
+        css_editor_data_.root_folder_path_ = "../static/stylus-resources/tailwind4/css/";
+        css_editor_data_.root_resource_url_ = "static/stylus-resources/tailwind4/css/";
+
+        tailwind_config_editor_data_.extension_ = "css";
+        tailwind_config_editor_data_.root_folder_path_ = "../static/stylus-resources/tailwind-config/";
+        tailwind_config_editor_data_.root_resource_url_ = "static/stylus-resources/tailwind-config/";
+
+        tailwind_input_file_path_ = "../static/stylus-resources/tailwind4/input.css";
+
         doc_.LoadFile(file_path_.c_str());
         if (doc_.ErrorID() != tinyxml2::XML_SUCCESS)
         {
@@ -85,8 +104,23 @@ namespace Stylus {
         {
             std::cerr << "Error saving XML file: " << doc_.ErrorID() << std::endl;
         }
-        std::cout << "\n\n stylus state loaded \n\n";
+        // std::cout << "\n\n stylus state loaded \n\n";
     }
 
 
+    std::string StylusState::getFileText(std::string file_path)
+    {
+        std::ifstream file(file_path);
+        if (!file.is_open())
+        {
+            std::cout << "\n\n Failed to read file: " << file_path << "\n\n";
+            return "!Failed to read file!";
+        }
+    
+        std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+        Wt::WString file_content_wt = Wt::WString::fromUTF8(file_content);
+        return file_content;
+    }
+    
 }

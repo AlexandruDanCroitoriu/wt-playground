@@ -1,0 +1,26 @@
+@reference "tailwindcss";
+
+/* stylus background colors */
+.stylus-background {
+	@apply bg-[#FFF] dark:bg-[#1e1e1e] dark:text-[#e8e8e8];
+} 
+ 
+/* main menu navigation styles for button menu item and selected */
+.filesManager-menu {
+	@apply hover:bg-[#dbeafe] dark:hover:bg-[#2563eb];
+}
+.filesManager-menu-selected {
+		@apply bg-[#2563eb] hover:bg-[#2563eb] dark:bg-[#1e40af] dark:hover:bg-[#1e40af];
+}
+
+.Wt-item {
+	/* zoom: 200%; */
+}
+
+.Wt-selected {
+	@apply !bg-[#b9fca9] dark:!bg-[#5cff5f] dark:text-[#000];
+}
+
+.unsaved-changes > .Wt-selected {
+	@apply !bg-[#ff8c8c] dark:!bg-[#ff4d4d]; 
+}

@@ -16,9 +16,7 @@ MonacoEditor::MonacoEditor(std::string language)
         current_text_("")
 {
     setLayoutSizeAware(true);
-    setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-    // setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::Pixel));
-    setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+    // setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(240, Wt::LengthUnit::Pixel));
     
     js_signal_text_changed_.connect(this, &MonacoEditor::editorTextChanged);
     doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
@@ -38,7 +36,7 @@ MonacoEditor::MonacoEditor(std::string language)
                 detectIndentation: false,
                 trimAutoWhitespace: false,
                 lineEnding: '\n',
-                minimap: { enabled: false },
+                minimap: { enabled: true },
             });
 
             window.)" + editor_js_var_name_ + R"(.onDidChangeModelContent(function (event) {
@@ -58,27 +56,24 @@ MonacoEditor::MonacoEditor(std::string language)
     )";
 
     setJavaScriptMember("editorTextChanged", initializer);
-    // setFile(file_path);
-    // setJavaScriptMember("editorTextChanged", "initializeEditor('" + id() + "', '"+current_text_+"');");
 
     keyWentDown().connect([=](Wt::WKeyEvent e)
                             { 
-    Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
-    if (e.modifiers().test(Wt::KeyboardModifier::Control))
-    {
-        if (e.key() == Wt::Key::S)
+        Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
+        if (e.modifiers().test(Wt::KeyboardModifier::Control))
         {
-            // textSaved();
-            std::cout << "\n\n MonacoEditor::keyWentDown() Ctrl+S pressed \n\n";
-            save_file_signal_.emit(unsaved_text_);
-        }
-    } });
+            if (e.key() == Wt::Key::S)
+            {
+                save_file_signal_.emit(unsaved_text_);
+            }
+        } 
+    });
+    setEditorReadOnly(true);
 }
 
 void MonacoEditor::layoutSizeChanged(int width, int height)
 {
-    // resetLayout(); // This is not needed as it is already called in setEditorText
-    setEditorText(unsaved_text_); // This is not needed as some times the text is not set when the app server serves the first app instance
+    resetLayout(); // This is not needed as it is already called in setEditorText
     if(width >= 240) {
         width_changed_.emit(Wt::WString(std::to_string(width)));
     }
@@ -87,9 +82,14 @@ void MonacoEditor::layoutSizeChanged(int width, int height)
 
 void MonacoEditor::editorTextChanged(std::string text)
 {
-    std::cout << "\n\n redived text: " << "\n\n";
-    if (text.compare(unsaved_text_) == 0)
+    std::cout << "\n\n Editor Text Changed: " << text << "\n\n";
+    std::cout << "\n\n Editor Text Changed current: " << current_text_ << "\n\n";
+    std::cout << "\n\n Editor Text Changed unsaved: " << unsaved_text_ << "\n\n";
+    if (text.compare(unsaved_text_) == 0){
+        std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
+    }
+    unsaved_text_ = text;
     if (text.compare(current_text_) == 0)
     {
         avalable_save_.emit(false);
@@ -97,8 +97,6 @@ void MonacoEditor::editorTextChanged(std::string text)
         std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
     }
-    std::cout << "\n\n MonacoEditor::editorTextChanged()\n\n";
-    unsaved_text_ = text;
     avalable_save_.emit(true);
 }
 
@@ -114,51 +112,59 @@ void MonacoEditor::setEditorReadOnly(bool read_only) {
 
 bool MonacoEditor::unsavedChanges()
 {
-    // std::cout << "\n\n MonacoEditor::unsavedChanges()";
     if (current_text_.compare(unsaved_text_) == 0)
     {
-        std::cout << " No unsaved changes \n\n";
+        // std::cout << " No unsaved changes \n\n";
         return false;
     }
-    std::cout << "unsaved changes \n\n";
+    // std::cout << "unsaved changes \n\n";
     return true;
 }
 
-void MonacoEditor::setFile(std::string file_path)
+void MonacoEditor::setEditorText(std::string resource_path, std::string file_content)
 {
-    setEditorText(getFileText(file_path));
-}
-
-void MonacoEditor::setEditorText(std::string text)
-{
+    if(current_text_.compare("") == 0)
+    {
+        setEditorReadOnly(false);
+    }
     resetLayout();
+    auto resource_path_url = resource_path + "?v=" + Wt::WRandom::generateId();
     doJavaScript(
-    R"(
-        setTimeout(function() {
-            if (window.)" + editor_js_var_name_ + R"() {
-                window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
-                window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
-            } else {
-                console.error("Editor instance is not initialized yet.");
-                setTimeout(function() {
-                    if (window.)" + editor_js_var_name_ + R"() {
-                        window.)" + editor_js_var_name_ + R"(_current_text = `)" + text + R"(`;
-                        window.)" + editor_js_var_name_ + R"(.setValue(`)" + text + R"(`);
-                    } else {
-                        console.error("Editor instance is still not initialized.");
-                    }
-                }, 1000);
-            }
-        }, 100);
-    )");
-    current_text_ = text;
-    unsaved_text_ = text;
+        R"(
+            setTimeout(function() {
+                if(!window.)" + editor_js_var_name_ + R"() {
+                    setTimeout(function() {
+                        if (window.)" + editor_js_var_name_ + R"() {
+                            fetch(')" + resource_path_url + R"(')
+                            .then(response => response.text())
+                            .then(css => {
+                                window.)" + editor_js_var_name_ + R"(_current_text = css;
+                                window.)" + editor_js_var_name_ + R"(.setValue(css);
+                            });
+                        } else {
+                            console.error("Editor instance is stil l not initialized.");
+                        }
+                    }, 2000);
+                    return;
+                }
+                console.log("Setting editor text to: )" + resource_path_url + R"(");
+                fetch(')" + resource_path_url + R"(')
+                    .then(response => response.text())
+                    .then(css => {
+                        window.)" + editor_js_var_name_ + R"(_current_text = css;
+                        window.)" + editor_js_var_name_ + R"(.setValue(css);
+                    });
+            }, 100); // Delay to ensure the editor is ready
+        )");
+    current_text_ = file_content;
+    unsaved_text_ = current_text_;
 }
 
 void MonacoEditor::resetLayout()
 {
-    doJavaScript("setTimeout(function() { window." + editor_js_var_name_ + ".layout() }, 1);");
+    doJavaScript("setTimeout(function() { window." + editor_js_var_name_ + ".layout() }, 200);");
 }
+
 void MonacoEditor::setDarkTheme(bool dark)
 {
     doJavaScript(R"(
@@ -175,22 +181,4 @@ void MonacoEditor::setDarkTheme(bool dark)
             }, 100);
         })();
     )");
-}
-
-std::string MonacoEditor::getFileText(std::string file_path)
-{
-    std::ifstream file(file_path);
-    if (!file.is_open())
-    {
-        std::cout << "\n\n Failed to read file: " << file_path << "\n\n";
-        return "";
-    }
-
-    std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    file.close();
-    Wt::WString file_content_wt = Wt::WString::fromUTF8(file_content);
-    // file_content = std::regex_replace(file_content, std::regex("\n"), "\\n");
-    // file_content = std::regex_replace(file_content, std::regex("\r"), "\\r");
-    // file_content = std::regex_replace(file_content, std::regex("\t"), "\\t");
-    return file_content;
 }

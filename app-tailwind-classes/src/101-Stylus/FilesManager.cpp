@@ -45,7 +45,7 @@ FilesManagerSidebar::FilesManagerSidebar()
 void FilesManagerSidebar::layoutSizeChanged(int width, int height)
 {
     if(width >= 240) {
-        width_changed_.emit(Wt::WString(std::to_string(width)));
+        width_changed_.emit(std::to_string(width));
     }
 }
 
@@ -123,7 +123,7 @@ void TreeNode::createNewFolderDialog()
     dialog->rejectWhenEscapePressed();
     dialog->setOffsets(100, Wt::Side::Top);
 
-    dialog->setStyleClass("");
+    dialog->setStyleClass("stylus-background");
     dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     dialog->contents()->setStyleClass("flex flex-col");
 
@@ -184,7 +184,7 @@ void TreeNode::createRenameFolderDialog()
     dialog->rejectWhenEscapePressed();
     dialog->setOffsets(100, Wt::Side::Top);
 
-    dialog->setStyleClass("");
+    dialog->setStyleClass("stylus-background");
     dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     dialog->contents()->setStyleClass("flex flex-col");
 
@@ -251,7 +251,7 @@ void TreeNode::createRemoveFolderMessageBox()
     message_box->setOffsets(100, Wt::Side::Top);
     message_box->setModal(true);
 
-    message_box->setStyleClass("");
+    message_box->setStyleClass("stylus-background");
     message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     message_box->contents()->addStyleClass("flex items-center");
     message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
@@ -284,7 +284,7 @@ void TreeNode::createNewFileDialog()
     dialog->setOffsets(100, Wt::Side::Top);
     dialog->setModal(true);
     dialog->rejectWhenEscapePressed();
-    dialog->setStyleClass("z-[2]");
+    dialog->setStyleClass("stylus-background");
     dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     dialog->contents()->setStyleClass("flex flex-col");
 
@@ -348,7 +348,7 @@ void TreeNode::createRenameFileDialog()
     dialog->rejectWhenEscapePressed();
     dialog->setOffsets(100, Wt::Side::Top);
 
-    dialog->setStyleClass("");
+    dialog->setStyleClass("stylus-background");
     dialog->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     dialog->contents()->setStyleClass("flex flex-col");
 
@@ -410,7 +410,7 @@ void TreeNode::deleteFileMessageBox()
     message_box->setOffsets(100, Wt::Side::Top);
     message_box->setModal(true);
 
-    message_box->setStyleClass("");
+    message_box->setStyleClass("stylus-background");
     message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
     message_box->contents()->addStyleClass("flex items-center");
     message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
@@ -426,42 +426,39 @@ void TreeNode::deleteFileMessageBox()
             std::filesystem::path file_path = path_ + label()->text().toUTF8();
             // delete file
             if (std::filesystem::remove(file_path)) {
-                // std::cout << "\n\n File deleted: " << file_path << "\n\n";
+                std::cout << "\n\n File deleted: " << file_path << "\n\n";
                 folders_changed_.emit();
             } else {
                 Wt::WApplication::instance()->log("ERROR") << "\n\nError deleting file.\n\n";                    
             }
         }
-        removeChild(message_box);
+        removeChild(message_box); 
     });
     
     message_box->show(); 
 }
 
 
-FilesManager::FilesManager(std::string default_folder_path, std::string language, int sidebar_width, std::string selected_file_path)
-    : default_folder_path_(default_folder_path),
-    file_extension_(language),
+FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManagementData data, int sidebar_width, std::string selected_file_path)
+    : state_(state),
+    data_(data),
     selected_file_path_(selected_file_path),
-    selected_tree_path_(default_folder_path)
+    selected_tree_path_("")
 {
-    std::cout << "\n\n Selected_file_path_: " << selected_file_path_ << "\n\n";
-    // setHeight(Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-    if (file_extension_.compare("javascript") == 0)
-    {
-        file_extension_ = "js";
+    auto grid_layout = std::make_unique<Wt::WGridLayout>();
+
+    sidebar_ = grid_layout->addWidget(std::make_unique<FilesManagerSidebar>(), 0, 0);
+    if(data.extension_.compare("js") == 0) {
+        editor_ = grid_layout->addWidget(std::make_unique<MonacoEditor>("javascript"), 0, 1, 0, 0, Wt::AlignmentFlag::Baseline);
+    }else{
+        editor_ = grid_layout->addWidget(std::make_unique<MonacoEditor>(data.extension_), 0, 1, 0, 0, Wt::AlignmentFlag::Baseline);
     }
 
-    auto layout = std::make_unique<Wt::WHBoxLayout>();
-    
-    sidebar_ = layout->insertWidget(0, std::make_unique<FilesManagerSidebar>(), 1);
-    editor_ = layout->insertWidget(1, std::make_unique<MonacoEditor>(language), 1);
-    
-    layout->setResizable(0, true, Wt::WLength(sidebar_width, Wt::LengthUnit::Pixel));
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout_ = layout.get();
-    setLayout(std::move(layout));
+    grid_layout->setColumnResizable(0, true, Wt::WLength(sidebar_width, Wt::LengthUnit::Pixel));
+    grid_layout->setContentsMargins(0, 0, 0, 0);
+
+    grid_layout_ = grid_layout.get();
+    setLayout(std::move(grid_layout));
  
     folders_ = getFolders();
     tree_ = sidebar_->contents_->addWidget(std::make_unique<Wt::WTree>());
@@ -472,6 +469,12 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
         if(selected_file_path_.compare("") == 0) {
             return;
         }
+
+        if(!std::fstream(data_.root_folder_path_ +  selected_file_path_).good()) {
+            std::cout << "\n\n avalable save but file not found: " << data_.root_folder_path_ + selected_file_path_ << "\n\n";
+            return;
+        }
+
         auto selected_nodes = tree_->selectedNodes();
 
         for(auto node : selected_nodes) {
@@ -485,30 +488,20 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
             return;
         }
         if(avalable) {
-            // selected_node->toggleStyleClass("[&>.Wt-selected]:!bg-green-300", false, true);
             selected_node->toggleStyleClass("unsaved-changes", true, true);
-            std::cout << "\n\n save avalabe.\n\n";
-            
         }
         else {
-            // selected_node->toggleStyleClass("[&>.Wt-selected]:!bg-green-300", true, true);
             selected_node->toggleStyleClass("unsaved-changes", false, true);
-            std::cout << "\n\n save not avalable.\n\n";
         }
     });
 
     editor_->save_file_signal().connect(this, [=](std::string text)
                                         {
         if(selected_file_path_.compare("") == 0) {
-            return;
-        }
-        std::cout << "\n\n save file signal emitted.\n\n";
-        if(selected_file_path_.compare("") == 0) {
             std::cout << "\n\n No file selected to save.\n\n";
-
             return;
         }
-        std::ofstream file(default_folder_path_ + selected_file_path_);
+        std::ofstream file(data_.root_folder_path_ + selected_file_path_);
         if (!file.is_open()) {
             std::cout << "\n\n Failed to open file: " << selected_file_path_ << "\n\n";
             return;
@@ -522,10 +515,12 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
     node_selected_.connect(this, [=](Wt::WString file_path) {
         if(file_path.toUTF8().compare("") == 0) {
-            file_path = default_folder_path_;
+            selected_file_path_ = "";
+            file_selected_.emit();
+            file_path = data_.root_folder_path_;
         }
         selected_tree_path_ = file_path.toUTF8();
-        std::cout << "\n\n selected_tree_path_: " << selected_tree_path_ << "\n\n";
+
         // if the last character is not /
         if(selected_tree_path_[selected_tree_path_.length()-1] != '/'){
             selected_file_path_ = file_path.toUTF8();
@@ -536,7 +531,15 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
     });
 
     file_selected_.connect(this, [=]() {
-        editor_->setFile(default_folder_path_ + selected_file_path_);
+        std::string file_path = data_.root_folder_path_ + selected_file_path_;
+        if(std::fstream(file_path).good() == false) {
+            std::cout << "\n\n Selected file not found: " << file_path << "\n\n";
+            editor_->setEditorText("static/stylus-resources/empty-file", state_->getFileText("../static/stylus-resources/empty-file"));
+            editor_->setEditorReadOnly(true);
+        }else {
+            editor_->setEditorReadOnly(false);
+            editor_->setEditorText(file_path, state_->getFileText(file_path));
+        }
     });
     node_selected_.emit(selected_file_path_);
 }
@@ -544,8 +547,7 @@ FilesManager::FilesManager(std::string default_folder_path, std::string language
 
 void FilesManager::setTreeFolderWidgets()
 {
-    // std::cout << "\n\n selected_tree_path_: " << selected_tree_path_ << "\n\n";
-    auto node = std::make_unique<TreeNode>(default_folder_path_, TreeNodeType::Folder, default_folder_path_);
+    auto node = std::make_unique<TreeNode>(data_.root_folder_path_, TreeNodeType::Folder, data_.root_folder_path_);
     auto root_folder = node.get();
     root_folder->label_clicked_.connect(this, [=]()
     {
@@ -557,35 +559,37 @@ void FilesManager::setTreeFolderWidgets()
     tree_->treeRoot()->expand();
     tree_->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
     
-    if(selected_tree_path_.compare(default_folder_path_) == 0) {
-        // root_folder->addStyleClass("[&>.Wt-selected]:!bg-green-300");
+    if(selected_tree_path_.compare(data_.root_folder_path_) == 0) {
         tree_->select(root_folder);
     }
 
     for(auto folder : folders_)
     {
-        TreeNode *folder_tree_node = dynamic_cast<TreeNode*>(tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(folder.first, TreeNodeType::Folder, default_folder_path_)));
+        TreeNode *folder_tree_node = dynamic_cast<TreeNode*>(tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(folder.first, TreeNodeType::Folder, data_.root_folder_path_)));
         if(selected_tree_path_.compare(folder.first + "/") == 0)
         {
-            // folder_tree_node->addStyleClass("[&>.Wt-selected]:!bg-green-300");
             tree_->select(folder_tree_node);
         }
 
         for(const auto &file : folder.second)
         {
-            auto file_tree_node = dynamic_cast<TreeNode*>(folder_tree_node->addChildNode(std::make_unique<TreeNode>(file, TreeNodeType::File, default_folder_path_ + folder.first + "/"))); 
+            auto file_tree_node = dynamic_cast<TreeNode*>(folder_tree_node->addChildNode(std::make_unique<TreeNode>(file, TreeNodeType::File, data_.root_folder_path_ + folder.first + "/"))); 
             if(selected_file_path_.compare(folder.first + "/" + file) == 0)
             {
                 if(editor_->unsavedChanges()) {
                     file_tree_node->addStyleClass("unsaved-changes");
                 }else {
-                    // file_tree_node->addStyleClass("[&>.Wt-selected]:!bg-green-300");
                 }
                 tree_->select(file_tree_node);
             }
             
             file_tree_node->label_clicked_.connect(this, [=]() {
-                if(selected_file_path_.compare(folder.first + "/" + file) == 0) {
+                if(selected_file_path_.compare(folder.first + "/" + file_tree_node->label()->text().toUTF8()) == 0) {
+                    if(!std::ifstream(data_.root_folder_path_ + folder.first + "/" + file_tree_node->label()->text().toUTF8()).good()){
+                        std::cout << "\n\n File was deleted -----: " << data_.root_folder_path_ + folder.first + "/" + file_tree_node->label()->text().toUTF8() << "\n\n";
+                        root_folder->label_clicked_.emit();
+                        file_selected_.emit();
+                    }
                     return;
                 }
                 if(editor_->unsavedChanges()) {
@@ -595,7 +599,7 @@ void FilesManager::setTreeFolderWidgets()
 
                     message_box->setOffsets(100, Wt::Side::Top);
                     message_box->setModal(true);
-                    message_box->setStyleClass("");
+                    message_box->setStyleClass("stylus-background");
                     message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
                     message_box->contents()->addStyleClass("flex items-center");
                     message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
@@ -655,8 +659,7 @@ void FilesManager::setTreeFolderWidgets()
 
     root_folder->label_clicked_.connect(this, [=]()
     {
-        std::cout << "\n\n root_folder clicked.\n\n";
-        node_selected_.emit(default_folder_path_);
+        node_selected_.emit(data_.root_folder_path_);
     });
     root_folder->folders_changed_.connect(this, [=]()
     {
@@ -672,7 +675,7 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
     std::vector<std::pair<std::string, std::vector<std::string>>> return_folders;
     std::vector<std::string> folders;
 
-    for (const auto &entry : std::filesystem::directory_iterator(default_folder_path_))
+    for (const auto &entry : std::filesystem::directory_iterator(data_.root_folder_path_))
     {
         if (entry.is_directory())
         {
@@ -682,7 +685,7 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
     for (const auto &folder : folders)
     {
         std::vector<std::string> files;
-        for (const auto &entry : std::filesystem::directory_iterator(default_folder_path_ + folder))
+        for (const auto &entry : std::filesystem::directory_iterator(data_.root_folder_path_ + folder))
         {
             if (entry.is_regular_file())
             {
@@ -698,7 +701,10 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
     {
         std::sort(folder.second.begin(), folder.second.end());
     }
+    
     return return_folders;
 }
+
+
 
 }

@@ -1,11 +1,14 @@
 #pragma once
-#include <Wt/WContainerWidget.h>
 #include "100-Utils/MonacoEditor/MonacoEditor.h"
+#include "101-Stylus/StylusState.h"
+
+#include <Wt/WContainerWidget.h>
 #include <Wt/WSignal.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WTree.h>
 #include <Wt/WTreeNode.h>
 #include <Wt/WPopupMenu.h>
+#include <Wt/WGridLayout.h>
 
 namespace Stylus
 {
@@ -16,11 +19,14 @@ public:
     FilesManagerSidebar();
     Wt::WContainerWidget* contents_;
     Wt::WContainerWidget* footer_;
-    Wt::Signal<Wt::WString> width_changed_;
+    Wt::Signal<Wt::WString>& width_changed() { return width_changed_; }
+
 protected:
     // Custom implementation
     void layoutSizeChanged(int width, int height) override;
     
+private:
+    Wt::Signal<Wt::WString> width_changed_;
 };
 
 enum TreeNodeType
@@ -56,9 +62,9 @@ private:
 class FilesManager : public Wt::WContainerWidget
 {
 public:
-    FilesManager(std::string default_folder_path, std::string language, int sidebar_width = 240, std::string selected_file_path = "");
+    FilesManager(std::shared_ptr<StylusState> steate, StylusEditorManagementData data, int sidebar_width = 240, std::string selected_file_path = "");
 
-    Wt::WHBoxLayout *layout_;
+    Wt::WGridLayout *grid_layout_;
     MonacoEditor* editor_;
 
     std::vector<std::pair<std::string, std::vector<std::string>>> folders_;
@@ -71,14 +77,14 @@ public:
     Wt::Signal<Wt::WString>& node_selected() { return node_selected_; }
     Wt::Signal<>& file_selected() { return file_selected_; }
 
-    std::string default_folder_path_;
     std::string selected_file_path_;
     std::string selected_tree_path_;
-    std::string file_extension_;
     
     FilesManagerSidebar* sidebar_;
+    StylusEditorManagementData data_;
 
 private:
+    std::shared_ptr<StylusState> state_;
 
     Wt::WTree* tree_;
 

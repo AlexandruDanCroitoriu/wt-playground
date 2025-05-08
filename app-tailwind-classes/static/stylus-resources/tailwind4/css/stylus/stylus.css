@@ -14,11 +14,11 @@
 }
 
 .Wt-item {
-	/* zoom: 200%; */
+	/* zoom: 125%; */
 }
 
 .Wt-selected {
-	@apply !bg-[#b9fca9] dark:!bg-[#5cff5f] dark:text-[#000];
+	@apply !bg-[#b9fca9] dark:!bg-[#a8ffaa] dark:font-bold dark:text-[#000];
 }
 
 .unsaved-changes > .Wt-selected {

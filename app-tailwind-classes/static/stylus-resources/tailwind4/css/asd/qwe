@@ -1,0 +1,11 @@
+@reference "tailwindcss";
+
+.clasa-de-stiluri {
+	@apply bg-green-200 p-5 text-black;
+	zoom: 200%;
+}
+
+
+/* .clasa-de-stiluri {
+
+} */

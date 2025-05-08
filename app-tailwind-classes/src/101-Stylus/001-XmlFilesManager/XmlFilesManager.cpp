@@ -22,25 +22,21 @@ namespace Stylus
 
     XmlFilesManager::XmlFilesManager(std::shared_ptr<StylusState> state)
         : state_(state),
-        // FilesManager("../stylus-resources/xml-templates/", "xml")
-        FilesManager("../stylus-resources/xml-templates/", "xml", state->xml_node_->IntAttribute("sidebar-width"), state->xml_node_->Attribute("selected-file-path"))
+        // FilesManager("../static/stylus-resources/xml-templates/", "xml")
+        FilesManager(state, state->xml_editor_data_, state->xml_node_->IntAttribute("sidebar-width"), state->xml_node_->Attribute("selected-file-path"))
     {
+
         if(!state_->xml_node_->BoolAttribute("editor-open"))
         {
             editor_->hide();
         }
-        auto temp_wrapper = layout_->insertWidget(2, std::make_unique<Wt::WContainerWidget>(), 1);
-        // temp_wrapper->setStyleClass("rounded-md p-2 bg-radial-[at_50%_75%] from-gray-50 via-gray-100 to-gray-50"); 
+        auto temp_wrapper = grid_layout_->addWidget(std::make_unique<Wt::WContainerWidget>(), 0, 2);
+        grid_layout_->setColumnResizable(1, true, Wt::WLength(state_->xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
         temp_wrapper->setStyleClass("p-[8px] stylus-background"); 
 
-        temp_wrapper->setOverflow(Wt::Overflow::Auto);
-        temp_wrapper->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-        temp_wrapper->setMaximumSize(Wt::WLength::Auto, Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
-        // layout_->addLayout(std::make_unique<Wt::WLayout>(), 1);
-        // temp_view->setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
+
         auto temp_view = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>());
         temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-        // auto temp_view = addWidget(std::make_unique<Wt::WTemplate>("<div></div>"));
         dark_mode_toggle_ = sidebar_->footer_->addWidget(std::make_unique<DarkModeToggle>());
       
         auto editor_checkbox = sidebar_->footer_->addWidget(std::make_unique<Wt::WCheckBox>("Editor"));
@@ -48,6 +44,7 @@ namespace Stylus
         editor_checkbox->keyWentDown().connect(this, [=](Wt::WKeyEvent e) { 
             Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
         });
+
         editor_checkbox->changed().connect(this, [=]()
         {
             state_->xml_node_->SetAttribute("editor-open", editor_checkbox->isChecked());
@@ -67,35 +64,51 @@ namespace Stylus
 
         file_selected().connect(this, [=]()
         {
-            temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-            state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
+            std::cout << "\nFile selected: " << selected_file_path_ << std::endl;
+            if(std::fstream(data_.root_folder_path_ + selected_file_path_).good() == false)
+            {
+                state_->xml_node_->SetAttribute("selected-file-path", "");
+                temp_view->setTemplateText("<div class='text-red-500'>File not found</div>", Wt::TextFormat::UnsafeXHTML);
+            }
+            else {
+                state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
+                temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+            }
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         file_saved().connect(this, [=](Wt::WString file_path)
         {
+            // std::cout << "\nFile saved: " << file_path.toUTF8() << std::endl;
             temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
         });
         
-        sidebar_->width_changed_.connect(this, [=](Wt::WString width)
+        sidebar_->width_changed().connect(this, [=](Wt::WString width)
         {
-            state_->xml_node_->SetAttribute("sidebar-width", std::stoi(width.toUTF8()));
-            state_->doc_.SaveFile(state_->file_path_.c_str());
+            if(std::stoi(width.toUTF8()) != state_->xml_node_->IntAttribute("sidebar-width"))
+            {
+                std::cout << "\nSidebar width changed to: " << width.toUTF8() << std::endl;
+                state_->xml_node_->SetAttribute("sidebar-width", std::stoi(width.toUTF8()));
+                state_->doc_.SaveFile(state_->file_path_.c_str());
+            }
         });
-        layout_->setResizable(1, true, Wt::WLength(state_->xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
 
-        editor_->width_changed_.connect(this, [=](Wt::WString width)
+        editor_->width_changed().connect(this, [=](Wt::WString width)
         {
-            state_->xml_node_->SetAttribute("editor-width", std::stoi(width.toUTF8()));
-            state_->doc_.SaveFile(state_->file_path_.c_str());
+            if(std::stoi(width.toUTF8()) != state_->xml_node_->IntAttribute("editor-width"))
+            {
+                std::cout << "\nEditor width changed to: " << width.toUTF8() << std::endl;
+                state_->xml_node_->SetAttribute("editor-width", std::stoi(width.toUTF8()));
+                state_->doc_.SaveFile(state_->file_path_.c_str());
+            }
         });
 
         if(state_->stylus_node_->BoolAttribute("dark-mode")){
             dark_mode_toggle_->setDarkMode(true);
             editor_->setDarkTheme(true);
         }
+
         dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark)
         {
-            std::cout << "\nDark mode changed to: " << dark << std::endl;
             editor_->setDarkTheme(dark);
             state_->stylus_node_->SetAttribute("dark-mode", dark ? "true" : "false");
             state_->doc_.SaveFile(state_->file_path_.c_str());

@@ -7,6 +7,7 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WComboBox.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WGridLayout.h>
 
 namespace Stylus
 {
@@ -20,7 +21,8 @@ namespace Stylus
         
         void generateCssFile();
         private:
-        Wt::WHBoxLayout* layout_;
+        
+        Wt::WGridLayout* grid_layout_;
         Wt::WComboBox* config_files_combobox_;
         Wt::WPushButton* delete_file_btn_;
         
@@ -29,13 +31,10 @@ namespace Stylus
         std::string default_config_file_name_;
         std::vector<std::string> config_files_;
         
-        
         std::vector<std::string> getConfigFiles();
-        std::string getConfig();
 
         Wt::WString current_css_file_;
         Wt::WString prev_css_file_;
-        std::string css_files_root_path_ = "../stylus-resources/tailwind4/css/";
     };
 
 }
