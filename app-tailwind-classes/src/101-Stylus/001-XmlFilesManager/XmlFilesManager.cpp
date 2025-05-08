@@ -78,7 +78,6 @@ namespace Stylus
         });
         file_saved().connect(this, [=](Wt::WString file_path)
         {
-            // std::cout << "\nFile saved: " << file_path.toUTF8() << std::endl;
             temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
         });
         

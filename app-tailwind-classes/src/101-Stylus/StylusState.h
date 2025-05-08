@@ -33,6 +33,3 @@ namespace Stylus
     };
 
 }
-
-
-// state_->default_folder_path_ + state_->xml_folder_name_

@@ -16,7 +16,7 @@
     --color-yellow-300: oklch(0.905 0.182 98.111);
     --color-yellow-800: oklch(0.476 0.114 61.907);
     --color-green-50: oklch(0.982 0.018 155.826);
-    --color-green-200: oklch(0.6 0.118 184.704);
+    --color-green-200: oklch(0.925 0.084 155.995);
     --color-green-300: oklch(0.871 0.15 154.449);
     --color-green-400: oklch(0.792 0.209 151.711);
     --color-green-800: oklch(0.448 0.119 151.328);
@@ -1755,12 +1755,6 @@
       }
     }
   }
-}
-.clasa-de-stiluri {
-  background-color: var(--color-green-200);
-  padding: calc(var(--spacing) * 5);
-  color: var(--color-black);
-  zoom: 200%;
 }
 .stylus-background {
   background-color: #FFF;

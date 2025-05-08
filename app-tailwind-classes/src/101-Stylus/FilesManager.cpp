@@ -463,7 +463,7 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
     folders_ = getFolders();
     tree_ = sidebar_->contents_->addWidget(std::make_unique<Wt::WTree>());
 
-    editor_->avalable_save().connect(this, [=](bool avalable)
+    editor_->avalable_save().connect(this, [=]()
                                         {
         TreeNode* selected_node;
         if(selected_file_path_.compare("") == 0) {
@@ -487,7 +487,7 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
             std::cout << "\n\n No node found for the selected file.\n\n";
             return;
         }
-        if(avalable) {
+        if(editor_->unsavedChanges()) {
             selected_node->toggleStyleClass("unsaved-changes", true, true);
         }
         else {
@@ -533,7 +533,6 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
     file_selected_.connect(this, [=]() {
         std::string file_path = data_.root_folder_path_ + selected_file_path_;
         if(std::fstream(file_path).good() == false) {
-            std::cout << "\n\n Selected file not found: " << file_path << "\n\n";
             editor_->setEditorText("static/stylus-resources/empty-file", state_->getFileText("../static/stylus-resources/empty-file"));
             editor_->setEditorReadOnly(true);
         }else {
@@ -541,6 +540,7 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
             editor_->setEditorText(file_path, state_->getFileText(file_path));
         }
     });
+    
     node_selected_.emit(selected_file_path_);
 }
 

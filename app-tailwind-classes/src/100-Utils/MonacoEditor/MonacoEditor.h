@@ -9,7 +9,6 @@ class MonacoEditor : public Wt::WContainerWidget
     public:
         MonacoEditor(std::string language);
         void setDarkTheme(bool dark);
-        void resetLayout();
         void setEditorReadOnly(bool read_only);
 
         bool unsavedChanges();
@@ -18,7 +17,7 @@ class MonacoEditor : public Wt::WContainerWidget
         void setEditorText(std::string resource_path, std::string file_content);
         
         Wt::Signal<std::string>& save_file_signal() { return save_file_signal_; }
-        Wt::Signal<bool>& avalable_save() { return avalable_save_; }
+        Wt::Signal<>& avalable_save() { return avalable_save_; }
         Wt::Signal<Wt::WString>& width_changed() { return width_changed_; }
         
     protected:
@@ -27,9 +26,10 @@ class MonacoEditor : public Wt::WContainerWidget
         
     private:
         void editorTextChanged(std::string text);
+        void resetLayout();
         
         Wt::JSignal<std::string> js_signal_text_changed_;
-        Wt::Signal<bool> avalable_save_;
+        Wt::Signal<> avalable_save_;
         Wt::Signal<std::string> save_file_signal_;
         
         std::string current_text_;

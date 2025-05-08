@@ -1,14 +1,6 @@
 #include "100-Utils/MonacoEditor/MonacoEditor.h"
-#include <Wt/WText.h>
 #include <Wt/WApplication.h>
-#include <Wt/WPushButton.h>
 #include <Wt/WRandom.h>
-
-#include <filesystem>
-#include <iostream>
-#include <fstream>
-#include <regex>
-
 
 MonacoEditor::MonacoEditor(std::string language)
     : js_signal_text_changed_(this, "editorTextChanged"),
@@ -16,7 +8,6 @@ MonacoEditor::MonacoEditor(std::string language)
         current_text_("")
 {
     setLayoutSizeAware(true);
-    // setMinimumSize(Wt::WLength(240, Wt::LengthUnit::Pixel), Wt::WLength(240, Wt::LengthUnit::Pixel));
     
     js_signal_text_changed_.connect(this, &MonacoEditor::editorTextChanged);
     doJavaScript(R"(require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' } });)");
@@ -82,28 +73,22 @@ void MonacoEditor::layoutSizeChanged(int width, int height)
 
 void MonacoEditor::editorTextChanged(std::string text)
 {
-    std::cout << "\n\n Editor Text Changed: " << text << "\n\n";
-    std::cout << "\n\n Editor Text Changed current: " << current_text_ << "\n\n";
-    std::cout << "\n\n Editor Text Changed unsaved: " << unsaved_text_ << "\n\n";
     if (text.compare(unsaved_text_) == 0){
-        std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
     }
     unsaved_text_ = text;
     if (text.compare(current_text_) == 0)
     {
-        avalable_save_.emit(false);
         unsaved_text_ = text;
-        std::cout << "\n\n Text Did Not Change as it was the SAME \n\n";
         return;
     }
-    avalable_save_.emit(true);
+    avalable_save_.emit();
 }
 
 void MonacoEditor::textSaved()
 {
     current_text_ = unsaved_text_;
-    avalable_save_.emit(false);
+    avalable_save_.emit();
 }
 
 void MonacoEditor::setEditorReadOnly(bool read_only) { 
@@ -114,10 +99,8 @@ bool MonacoEditor::unsavedChanges()
 {
     if (current_text_.compare(unsaved_text_) == 0)
     {
-        // std::cout << " No unsaved changes \n\n";
         return false;
     }
-    // std::cout << "unsaved changes \n\n";
     return true;
 }
 
@@ -154,7 +137,7 @@ void MonacoEditor::setEditorText(std::string resource_path, std::string file_con
                         window.)" + editor_js_var_name_ + R"(_current_text = css;
                         window.)" + editor_js_var_name_ + R"(.setValue(css);
                     });
-            }, 100); // Delay to ensure the editor is ready
+            }, 10); // Delay to ensure the editor is ready
         )");
     current_text_ = file_content;
     unsaved_text_ = current_text_;

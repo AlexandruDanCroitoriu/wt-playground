@@ -54,7 +54,6 @@ Stylus::Stylus()
         css_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         content_wrapper->setCurrentWidget(xml_files_manager_);
-        xml_files_manager_->editor_->resetLayout();
         state_->stylus_node_->SetAttribute("selected-menu", "templates");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
@@ -65,7 +64,6 @@ Stylus::Stylus()
         css_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         content_wrapper->setCurrentWidget(tailwind_config_);
-        tailwind_config_->config_editor_->resetLayout();
         state_->stylus_node_->SetAttribute("selected-menu", "tailwind");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
@@ -76,7 +74,6 @@ Stylus::Stylus()
         css_menu_item->toggleStyleClass("filesManager-menu-selected", true);
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         content_wrapper->setCurrentWidget(css_files_manager_);
-        css_files_manager_->editor_->resetLayout();
         state_->stylus_node_->SetAttribute("selected-menu", "css");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
@@ -87,21 +84,9 @@ Stylus::Stylus()
         css_menu_item->toggleStyleClass("filesManager-menu-selected", false);
         javascript_menu_item->toggleStyleClass("filesManager-menu-selected", true);
         content_wrapper->setCurrentWidget(js_files_manager_);
-        js_files_manager_->editor_->resetLayout();
         state_->stylus_node_->SetAttribute("selected-menu", "javascript");
         state_->doc_.SaveFile(state_->file_path_.c_str());
     });
-
-    content_wrapper->currentWidgetChanged().connect([=]() {
-        if(content_wrapper->currentIndex() == 0){
-            xml_files_manager_->editor_->resetLayout();
-        }else if(content_wrapper->currentIndex() == 2){
-            css_files_manager_->editor_->resetLayout();
-        }else if(content_wrapper->currentIndex() == 3){
-            js_files_manager_->editor_->resetLayout();
-        }
-    });
-
 
     auto selected_menu = state_->stylus_node_->Attribute("selected-menu");
     if (std::strcmp(selected_menu, "templates") == 0)

@@ -75,9 +75,9 @@ namespace Stylus
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
 
-        config_editor_->avalable_save().connect(this, [=](bool avalable)
+        config_editor_->avalable_save().connect(this, [=]()
         {
-            if(avalable)
+            if(config_editor_->unsavedChanges())
             {
                 config_files_combobox_->setDisabled(true);
                 save_file_btn->setDisabled(false);

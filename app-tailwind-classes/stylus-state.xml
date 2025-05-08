@@ -1,6 +1,6 @@
-<stylus navigation-bar-hidden="false" selected-menu="templates" open="true" dark-mode="true">
-    <xml-manager editor-width="1094" sidebar-width="282" selected-file-path="test/test.xml" editor-open="true"/>
-    <css-manager sidebar-width="300" selected-file-path="asd/qwe"/>
-    <js-manager sidebar-width="300" selected-file-path=""/>
-    <tailwind-config editor-width="1013" selected-file-name="asd.css"/>
+<stylus navigation-bar-hidden="false" selected-menu="javascript" open="true" dark-mode="true">
+    <xml-manager editor-width="1123" sidebar-width="240" selected-file-path="experiments/test.xml" editor-open="true"/>
+    <css-manager sidebar-width="300" selected-file-path="stylus/test.css"/>
+    <js-manager sidebar-width="300" selected-file-path="experiments/console.js"/>
+    <tailwind-config editor-width="1013" selected-file-name="0.css"/>
 </stylus>
