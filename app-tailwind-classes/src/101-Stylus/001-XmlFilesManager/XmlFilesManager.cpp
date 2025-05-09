@@ -16,6 +16,7 @@
 #include <Wt/WText.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WLayout.h>
+#include "001-App/App.h"
 
 namespace Stylus
 {
@@ -101,10 +102,7 @@ namespace Stylus
             }
         });
 
-        if(state_->stylus_node_->BoolAttribute("dark-mode")){
-            dark_mode_toggle_->setDarkMode(true);
-            editor_->setDarkTheme(true);
-        }
+
 
         dark_mode_toggle_->dark_mode_changed_.connect(this, [=](bool dark)
         {
@@ -112,6 +110,13 @@ namespace Stylus
             state_->stylus_node_->SetAttribute("dark-mode", dark ? "true" : "false");
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
+
+        if(state_->stylus_node_->BoolAttribute("dark-mode")){
+            dynamic_cast<App*>(Wt::WApplication::instance())->dark_mode_changed_.emit(true);
+            // dark_mode_toggle_->setDarkMode(true);
+            // editor_->setDarkTheme(true);
+        }
+
     }
 
 }

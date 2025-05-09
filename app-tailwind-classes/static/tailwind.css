@@ -1816,6 +1816,28 @@
     background-color: #ff4d4d !important;
   }
 }
+.Wt-vrh2 {
+  &:where(.dark, .dark *) {
+    background-color: #000;
+  }
+  &:where(.dark, .dark *) {
+    &:hover {
+      @media (hover: hover) {
+        background-color: #000;
+      }
+    }
+  }
+  &:where(.dark, .dark *) {
+    &:active {
+      background-color: #000;
+    }
+  }
+}
+.clasa-de-stiluri {
+  background-color: var(--color-green-200);
+  padding: calc(var(--spacing) * 5);
+  color: var(--color-black);
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;

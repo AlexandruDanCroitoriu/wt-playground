@@ -24,3 +24,7 @@
 .unsaved-changes > .Wt-selected {
 	@apply !bg-[#ff8c8c] dark:!bg-[#ff4d4d]; 
 }
+
+.Wt-vrh2 {
+	@apply dark:bg-[#000] dark:hover:bg-[#000] dark:active:bg-[#000];
+}

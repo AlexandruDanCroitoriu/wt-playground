@@ -48,14 +48,15 @@ MonacoEditor::MonacoEditor(std::string language)
 
     setJavaScriptMember("editorTextChanged", initializer);
 
-    keyWentDown().connect([=](Wt::WKeyEvent e)
-                            { 
+    keyWentDown().connect([=](Wt::WKeyEvent e){ 
         Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
         if (e.modifiers().test(Wt::KeyboardModifier::Control))
         {
             if (e.key() == Wt::Key::S)
             {
-                save_file_signal_.emit(unsaved_text_);
+                if(unsavedChanges()){
+                    save_file_signal_.emit(unsaved_text_);
+                }
             }
         } 
     });
@@ -73,15 +74,7 @@ void MonacoEditor::layoutSizeChanged(int width, int height)
 
 void MonacoEditor::editorTextChanged(std::string text)
 {
-    if (text.compare(unsaved_text_) == 0){
-        return;
-    }
     unsaved_text_ = text;
-    if (text.compare(current_text_) == 0)
-    {
-        unsaved_text_ = text;
-        return;
-    }
     avalable_save_.emit();
 }
 
@@ -106,10 +99,6 @@ bool MonacoEditor::unsavedChanges()
 
 void MonacoEditor::setEditorText(std::string resource_path, std::string file_content)
 {
-    if(current_text_.compare("") == 0)
-    {
-        setEditorReadOnly(false);
-    }
     resetLayout();
     auto resource_path_url = resource_path + "?v=" + Wt::WRandom::generateId();
     doJavaScript(

@@ -121,6 +121,7 @@ Stylus::Stylus()
             {
                 if(isHidden()){
                     show();
+                    content_wrapper->setCurrentWidget(content_wrapper->currentWidget());
                     state_->stylus_node_->SetAttribute("open", "true");
                 }else{
                     hide();

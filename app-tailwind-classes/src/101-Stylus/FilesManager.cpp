@@ -58,10 +58,25 @@ TreeNode::TreeNode(std::string name, TreeNodeType type, std::string path)
     label_wrapper_ = labelArea();
     // label_wrapper_->addStyleClass("label_wrapper ");
 
-    label_wrapper_->clicked().connect(this, [=]()
+    // label_wrapper_->clicked().connect(this, [=]()
+    // {
+    //     std::cout << "\nlabel clicked" << "\n";
+    //     label_clicked_.emit();
+    // });
+
+    if(type_ == TreeNodeType::Folder)
     {
-        label_clicked_.emit();
-    });
+        setSelectable(false);
+    }else {
+        selected().connect(this, [=](bool selected)
+        {
+            if (selected) {
+                std::cout << "\n" << label()->text() << "\n";
+                label_clicked_.emit();
+            }
+        });
+    }
+    // label_wrapper_->clicked().preventPropagation();
 
     label_wrapper_->mouseWentUp().connect(this, [=](const Wt::WMouseEvent& event)
     {
@@ -442,8 +457,7 @@ void TreeNode::deleteFileMessageBox()
 FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManagementData data, int sidebar_width, std::string selected_file_path)
     : state_(state),
     data_(data),
-    selected_file_path_(selected_file_path),
-    selected_tree_path_("")
+    selected_file_path_(selected_file_path)
 {
     auto grid_layout = std::make_unique<Wt::WGridLayout>();
 
@@ -512,24 +526,7 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
         
         file_saved_.emit(selected_file_path_);
     });
-
-    node_selected_.connect(this, [=](Wt::WString file_path) {
-        if(file_path.toUTF8().compare("") == 0) {
-            selected_file_path_ = "";
-            file_selected_.emit();
-            file_path = data_.root_folder_path_;
-        }
-        selected_tree_path_ = file_path.toUTF8();
-
-        // if the last character is not /
-        if(selected_tree_path_[selected_tree_path_.length()-1] != '/'){
-            selected_file_path_ = file_path.toUTF8();
-            file_selected_.emit();
-        }
-        
-        setTreeFolderWidgets();
-    });
-
+  
     file_selected_.connect(this, [=]() {
         std::string file_path = data_.root_folder_path_ + selected_file_path_;
         if(std::fstream(file_path).good() == false) {
@@ -539,9 +536,13 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
             editor_->setEditorReadOnly(false);
             editor_->setEditorText(data_.root_resource_url_ + selected_file_path_, state_->getFileText(file_path));
         }
+        setTreeFolderWidgets();
+
     });
     
-    node_selected_.emit(selected_file_path_);
+    // node_selected_.emit(selected_file_path_);
+    // setTreeFolderWidgets();
+    file_selected_.emit();
 }
 
 
@@ -549,27 +550,19 @@ void FilesManager::setTreeFolderWidgets()
 {
     auto node = std::make_unique<TreeNode>(data_.root_folder_path_, TreeNodeType::Folder, data_.root_folder_path_);
     auto root_folder = node.get();
-    root_folder->label_clicked_.connect(this, [=]()
-    {
-        setTreeFolderWidgets();
-    });
+    // root_folder->label_clicked_.connect(this, [=]()
+    // {
+    //     setTreeFolderWidgets();
+    // });
     tree_->setTreeRoot(std::move(node));
-    tree_->setSelectionMode(Wt::SelectionMode::Extended);
+    tree_->setSelectionMode(Wt::SelectionMode::Single);
     tree_->treeRoot()->label()->setTextFormat(Wt::TextFormat::Plain);
     tree_->treeRoot()->expand();
     tree_->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
-    
-    if(selected_tree_path_.compare(data_.root_folder_path_) == 0) {
-        tree_->select(root_folder);
-    }
 
     for(auto folder : folders_)
     {
         TreeNode *folder_tree_node = dynamic_cast<TreeNode*>(tree_->treeRoot()->addChildNode(std::make_unique<TreeNode>(folder.first, TreeNodeType::Folder, data_.root_folder_path_)));
-        if(selected_tree_path_.compare(folder.first + "/") == 0)
-        {
-            tree_->select(folder_tree_node);
-        }
 
         for(const auto &file : folder.second)
         {
@@ -578,96 +571,45 @@ void FilesManager::setTreeFolderWidgets()
             {
                 if(editor_->unsavedChanges()) {
                     file_tree_node->addStyleClass("unsaved-changes");
-                }else {
                 }
+                std::cout << "\n\n File selected: " << data_.root_folder_path_ + folder.first + "/" + file << "\n\n";
                 tree_->select(file_tree_node);
             }
-            
-            file_tree_node->label_clicked_.connect(this, [=]() {
-                if(selected_file_path_.compare(folder.first + "/" + file_tree_node->label()->text().toUTF8()) == 0) {
-                    if(!std::ifstream(data_.root_folder_path_ + folder.first + "/" + file_tree_node->label()->text().toUTF8()).good()){
-                        std::cout << "\n\n File was deleted -----: " << data_.root_folder_path_ + folder.first + "/" + file_tree_node->label()->text().toUTF8() << "\n\n";
-                        root_folder->label_clicked_.emit();
-                        file_selected_.emit();
-                    }
-                    return;
+      
+            // file_tree_node->label_clicked_.connect(this, [=]()
+            file_tree_node->selected().connect(this, [=](bool selected)
+            {
+                if(selected){
+                    selected_file_path_ = folder.first + "/" + file_tree_node->label()->text().toUTF8();
+                    file_selected_.emit();
                 }
-                if(editor_->unsavedChanges()) {
-                    auto message_box = addChild(std::make_unique<Wt::WMessageBox>(
-                        "Unsaved changes", "You have unsaved changes. Do you want to save them?",
-                        Wt::Icon::None, Wt::StandardButton::None));
-
-                    message_box->setOffsets(100, Wt::Side::Top);
-                    message_box->setModal(true);
-                    message_box->setStyleClass("stylus-background");
-                    message_box->titleBar()->setStyleClass("flex items-center justify-center p-[8px] cursor-pointer border-b border-solid text-xl font-bold");
-                    message_box->contents()->addStyleClass("flex items-center");
-                    message_box->footer()->setStyleClass("flex items-center justify-between p-[8px]");
-
-                    auto save_btn = message_box->addButton("Save", Wt::StandardButton::Yes);
-                    auto discard_btn = message_box->addButton("Discard Changes", Wt::StandardButton::No);
-                    auto cancel_btn = message_box->addButton("Cancel", Wt::StandardButton::Cancel);
-
-                    save_btn->setStyleClass("btn-default");
-                    discard_btn->setStyleClass("btn-red");
-                    cancel_btn->setStyleClass("btn-default");
-
-                    message_box->buttonClicked().connect([=] {
-                        if (message_box->buttonResult() == Wt::StandardButton::Yes)
-                        {
-                            editor_->save_file_signal().emit(editor_->getUnsavedText());
-                            file_tree_node->label_clicked_.emit();
-                        }
-                        else if (message_box->buttonResult() == Wt::StandardButton::No)
-                        {
-                            node_selected_.emit(folder.first + "/" + file_tree_node->label()->text().toUTF8());
-                        }
-                        else if (message_box->buttonResult() == Wt::StandardButton::Cancel)
-                        {
-                            setTreeFolderWidgets();
-                        }
-                        message_box->accept();
-                    });
-                    message_box->show();    
-                }else {
-                    node_selected_.emit(folder.first + "/" + file_tree_node->label()->text().toUTF8());
-                }
-
             });
+
             file_tree_node->folders_changed_.connect(this, [=]()
             {
                 folders_ = getFolders();
                 file_tree_node->label_clicked_.emit();
             });
-            file_tree_node->setSelectable(false);
 
         }
 
-        folder_tree_node->label_clicked_.connect(this, [=]() { node_selected_.emit(folder_tree_node->label()->text() + "/"); });
         if(folder.second.size() > 0)
         {
             folder_tree_node->expand();
         }
+
         folder_tree_node->folders_changed_.connect(this, [=]()
         {
             folders_ = getFolders();
-            folder_tree_node->label_clicked_.emit();
+            file_selected_.emit();
         });
-        folder_tree_node->setSelectable(false);
-
     }
 
-    root_folder->label_clicked_.connect(this, [=]()
-    {
-        node_selected_.emit(data_.root_folder_path_);
-    });
     root_folder->folders_changed_.connect(this, [=]()
     {
         folders_ = getFolders();
-        root_folder->label_clicked_.emit();
+        file_selected_.emit();
     });
-    root_folder->setSelectable(false);
-
 }
 
 std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getFolders()
@@ -704,7 +646,5 @@ std::vector<std::pair<std::string, std::vector<std::string>>> FilesManager::getF
     
     return return_folders;
 }
-
-
 
 }

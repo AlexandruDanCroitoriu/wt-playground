@@ -61,13 +61,13 @@ App::App(const Wt::WEnvironment &env)
     // tailwind_config_center_ = root()->addChild(std::make_unique<TailwindConfigCenter>());
     // tailwind_config_center_->show();
 
-    stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
-    stylus_->show();
+  
     auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
 
     root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease overflow-hidden");
 
-   
+    stylus_ = root()->addChild(std::make_unique<Stylus::Stylus>());
+    // stylus_->show();
 
     // stylus_->brain_->generateCssFile();
 

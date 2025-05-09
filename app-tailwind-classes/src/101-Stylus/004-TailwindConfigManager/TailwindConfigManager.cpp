@@ -265,12 +265,19 @@ namespace Stylus
             save_file_btn->setHidden(true);
         });
 
+        std::string selected_file_name = state_->tailwind_config_node_->Attribute("selected-file-name");
+        if(selected_file_name == "")
+        {
+            selected_file_name = default_config_file_name_;
+        }
         for(const auto &file : config_files_)
         {
             config_files_combobox_->addItem(file);
+            if(selected_file_name.compare(file) == 0){
+                config_files_combobox_->setCurrentIndex(config_files_combobox_->findText(selected_file_name));
+            }
         }
 
-        config_files_combobox_->setCurrentIndex(config_files_combobox_->findText(state_->tailwind_config_node_->Attribute("selected-file-name")));
         config_files_combobox_->activated().emit(config_files_combobox_->currentIndex());
         
         setLayout(std::move(grid_layout));

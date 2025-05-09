@@ -74,11 +74,10 @@ namespace Stylus
         std::vector<std::pair<std::string, std::vector<std::string>>> getFolders();
 
         Wt::Signal<Wt::WString>& file_saved() { return file_saved_; }
-        Wt::Signal<Wt::WString>& node_selected() { return node_selected_; }
+        // Wt::Signal<Wt::WString>& node_selected() { return node_selected_; }
         Wt::Signal<>& file_selected() { return file_selected_; }
 
         std::string selected_file_path_;
-        std::string selected_tree_path_;
         
         FilesManagerSidebar* sidebar_;
         StylusEditorManagementData data_;
@@ -89,7 +88,7 @@ namespace Stylus
         Wt::WTree* tree_;
 
         Wt::Signal<Wt::WString> file_saved_; // returns path of the file
-        Wt::Signal<Wt::WString> node_selected_; // returns path of the file
+        // Wt::Signal<Wt::WString> node_selected_; // returns path of the file
         Wt::Signal<> file_selected_; // returns path of the selected file 
 
     };
