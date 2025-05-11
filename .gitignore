@@ -1,5 +1,7 @@
 build
 node_modules
+
+# those files are generated and automaticaly changed by stylus
 app-tailwind-classes/stylus-state.xml
 app-tailwind-classes/static/tailwind.css
 app-tailwind-classes/static/stylus-resources/tailwind4/input.css
