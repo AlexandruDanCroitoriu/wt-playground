@@ -1,4 +1,5 @@
 build
 node_modules
 .secrets
-stylus-state
+stylus-state.xml
+app-tailwind-classes/static/stylus-resources/tailwind4/input.css
