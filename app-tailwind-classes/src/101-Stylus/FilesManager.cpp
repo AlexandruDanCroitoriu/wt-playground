@@ -31,10 +31,11 @@ FilesManagerSidebar::FilesManagerSidebar()
     setMaximumSize(Wt::WLength(1000, Wt::LengthUnit::Pixel), Wt::WLength(100, Wt::LengthUnit::ViewportHeight));
 
     contents_ = addWidget(std::make_unique<Wt::WContainerWidget>());
-    contents_->setStyleClass("w-full flex-1 overflow-y-auto overflow-x-hidden flex flex-col");
+    contents_->setStyleClass("w-full flex-[1] overflow-y-auto overflow-x-hidden flex flex-col");
 
     footer_ = addWidget(std::make_unique<Wt::WContainerWidget>());
     footer_->setStyleClass("flex items-center justify-between p-[3px] border-t border-solid");
+    footer_->hide();
 
     Wt::WStringStream contextJS;
     contextJS << WT_CLASS << ".$('" << id() << "').oncontextmenu = "
@@ -462,11 +463,14 @@ FilesManager::FilesManager(std::shared_ptr<StylusState> state, StylusEditorManag
     auto grid_layout = std::make_unique<Wt::WGridLayout>();
 
     sidebar_ = grid_layout->addWidget(std::make_unique<FilesManagerSidebar>(), 0, 0);
+    sidebar_->addStyleClass("z-[100]");
+
     if(data.extension_.compare("js") == 0) {
         editor_ = grid_layout->addWidget(std::make_unique<MonacoEditor>("javascript"), 0, 1, 0, 0, Wt::AlignmentFlag::Baseline);
     }else{
         editor_ = grid_layout->addWidget(std::make_unique<MonacoEditor>(data.extension_), 0, 1, 0, 0, Wt::AlignmentFlag::Baseline);
     }
+    editor_->setStyleClass("z-[99] h-screen");
 
     grid_layout->setColumnResizable(0, true, Wt::WLength(sidebar_width, Wt::LengthUnit::Pixel));
     grid_layout->setContentsMargins(0, 0, 0, 0);
@@ -588,7 +592,8 @@ void FilesManager::setTreeFolderWidgets()
             file_tree_node->folders_changed_.connect(this, [=]()
             {
                 folders_ = getFolders();
-                file_tree_node->label_clicked_.emit();
+                // file_tree_node->label_clicked_.emit();
+                file_selected_.emit();
             });
 
         }

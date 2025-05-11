@@ -24,7 +24,7 @@ App::App(const Wt::WEnvironment &env)
     // JSs
     // require(docRoot() + "/stylus-resources/js/experiments/console.js?v=" + Wt::WRandom::generateId());
     require(docRoot() + "/static/monaco-edditor.js");
-    require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
+    // require("https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4");
     // require("https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js");
     
     // CSS
@@ -62,7 +62,7 @@ App::App(const Wt::WEnvironment &env)
     // tailwind_config_center_->show();
 
   
-    auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
+    // auto dark_mode_toggle = root()->addWidget(std::make_unique<DarkModeToggle>());
 
     root()->setStyleClass("flex flex-col items-start w-[100vw] h-[100vh] m-0 dark:bg-gray-900 transition duration-300 ease overflow-hidden");
 

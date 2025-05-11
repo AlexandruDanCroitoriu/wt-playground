@@ -20,13 +20,13 @@ class MonacoEditor : public Wt::WContainerWidget
         Wt::Signal<>& avalable_save() { return avalable_save_; }
         Wt::Signal<Wt::WString>& width_changed() { return width_changed_; }
         
+        void resetLayout();
     protected:
         // Custom implementation
         void layoutSizeChanged(int width, int height) override;
         
     private:
         void editorTextChanged(std::string text);
-        void resetLayout();
         
         Wt::JSignal<std::string> js_signal_text_changed_;
         Wt::Signal<> avalable_save_;

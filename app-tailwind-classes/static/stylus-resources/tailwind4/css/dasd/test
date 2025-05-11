@@ -1,8 +1,0 @@
-@reference "tailwindcss";
-
-.clasa-de-stiluri {
-	@apply bg-green-200 p-5 text-black;
-	/* background-color: green;
-	padding: 30px;
-	color: black; */
-}

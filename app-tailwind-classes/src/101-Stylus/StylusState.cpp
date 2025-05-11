@@ -47,7 +47,6 @@ namespace Stylus {
         if (stylus_node_ == nullptr)
         {
             std::cerr << "Error finding <stylus> node in XML file." << std::endl;
-            // create the node
             stylus_node_ = doc_.NewElement("stylus");
             stylus_node_->SetAttribute("navigation-bar-hidden", "false");
             stylus_node_->SetAttribute("selected-menu", "templates");
@@ -59,40 +58,38 @@ namespace Stylus {
         if (xml_node_ == nullptr)
         {
             std::cerr << "Error finding <xml-manager> node in XML file." << std::endl;
-            // create the node
             xml_node_ = doc_.NewElement("xml-manager");
             xml_node_->SetAttribute("editor-width", 500);
             xml_node_->SetAttribute("sidebar-width", 300);
             xml_node_->SetAttribute("selected-file-path", "");
             xml_node_->SetAttribute("editor-open", "true");
+            xml_node_->SetAttribute("navigation-bar-hidden", "false");
             stylus_node_->InsertEndChild(xml_node_);
         }
         css_node_ = stylus_node_->FirstChildElement("css-manager");
         if (css_node_ == nullptr)
         {
             std::cerr << "Error finding <css-manager> node in XML file." << std::endl;
-            // create the node
             css_node_ = doc_.NewElement("css-manager");
             css_node_->SetAttribute("sidebar-width", 300);
             css_node_->SetAttribute("selected-file-path", "");
+            css_node_->SetAttribute("navigation-bar-hidden", "false");
             stylus_node_->InsertEndChild(css_node_);
         }
         js_node_ = stylus_node_->FirstChildElement("js-manager");
         if (js_node_ == nullptr)
         {
             std::cerr << "Error finding <js-manager> node in XML file." << std::endl;
-            // create the node
             js_node_ = doc_.NewElement("js-manager");
             js_node_->SetAttribute("sidebar-width", 300);
             js_node_->SetAttribute("selected-file-path", "");
+            js_node_->SetAttribute("navigation-bar-hidden", "false");
             stylus_node_->InsertEndChild(js_node_);
         }
-        // save the file
         tailwind_config_node_ = stylus_node_->FirstChildElement("tailwind-config");
         if (tailwind_config_node_ == nullptr)
         {
             std::cerr << "Error finding <tailwind-config> node in XML file." << std::endl;
-            // create the node
             tailwind_config_node_ = doc_.NewElement("tailwind-config");
             tailwind_config_node_->SetAttribute("editor-width", 500);
             tailwind_config_node_->SetAttribute("selected-file-name", "");

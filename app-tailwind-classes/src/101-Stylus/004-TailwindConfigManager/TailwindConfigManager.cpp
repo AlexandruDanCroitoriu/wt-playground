@@ -27,6 +27,10 @@ namespace Stylus
     : state_(state),
     default_config_file_name_("0.css")
     {
+
+        current_css_file_ = Wt::WApplication::instance()->docRoot() + "/../static/tailwind.css?v=" + Wt::WRandom::generateId();
+        Wt::WApplication::instance()->useStyleSheet(current_css_file_.toUTF8());
+
         // auto sidebar = addWidget(std::make_unique<WContainerWidget>());
         // auto editors_wrapper = addWidget(std::make_unique<WContainerWidget>());
         auto grid_layout = std::make_unique<Wt::WGridLayout>();
@@ -45,7 +49,7 @@ namespace Stylus
         config_files_ = getConfigFiles();
         
         output_editor_->setEditorReadOnly(true);
-        setStyleClass("flex flex-col h-screen stylus-background");
+        setStyleClass("flex flex-col h-[100vh] stylus-background");
         sidebar->setStyleClass("flex items-center space-x-[10px] stylus-background border-b border-solid");
         // config_editor_->addStyleClass("h-full");
         config_files_combobox_ = sidebar->addWidget(std::make_unique<Wt::WComboBox>());
@@ -126,7 +130,7 @@ namespace Stylus
                 return;
             }
             auto message_box = addChild(std::make_unique<Wt::WMessageBox>("Are you sure you want to delete the file ?", 
-                "<div class='flex-1 text-center font-bold text-2xl'>" + config_files_combobox_->currentText().toUTF8() + "</div>",
+                "<div class='flex-[1] text-center font-bold text-2xl'>" + config_files_combobox_->currentText().toUTF8() + "</div>",
                 Wt::Icon::Warning, Wt::StandardButton::None)
             );
             message_box->setOffsets(100, Wt::Side::Top);
@@ -275,10 +279,13 @@ namespace Stylus
             config_files_combobox_->addItem(file);
             if(selected_file_name.compare(file) == 0){
                 config_files_combobox_->setCurrentIndex(config_files_combobox_->findText(selected_file_name));
+                config_editor_->setEditorText(state_->tailwind_config_editor_data_.root_resource_url_ + selected_file_name, state_->getFileText(state_->tailwind_config_editor_data_.root_folder_path_ + selected_file_name));
+                output_editor_->setEditorText("static/tailwind.css", state_->getFileText("../static/tailwind.css"));
+            }else {
+                config_files_combobox_->activated().emit(config_files_combobox_->findText(default_config_file_name_));
             }
         }
 
-        config_files_combobox_->activated().emit(config_files_combobox_->currentIndex());
         
         setLayout(std::move(grid_layout));
     }
@@ -313,8 +320,14 @@ namespace Stylus
         file << "/* Import TailwindCSS base styles */\n";
         file << "@import \"tailwindcss\";\n\n";
         file << "/* Import custom CSS files for additional styles */\n";
-        // std::cout << "\n\n writing file imports \n\n";
+        
+        file << "\n";
+        file << "/* Source additional templates and styles */\n";
+        file << "@source \"../xml/\";\n";
+        file << "@source \"../../../src/\";\n\n";
 
+       
+        file << "/* Import custom CSS files */\n";
         for (const auto &css_folder : std::filesystem::directory_iterator(state_->css_editor_data_.root_folder_path_))
         {
             if (css_folder.is_directory())
@@ -329,21 +342,17 @@ namespace Stylus
                 }
             }
         }
-        file << "\n";
-        file << "/* Source additional templates and styles */\n";
-        file << "@source \"../xml/\";\n";
-        file << "@source \"../../../src/\";\n\n";
-
-        file << "/* Define custom variants */\n";
-        file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
-
+ 
         file << "/* Define custom theme */\n";
         file << state_->getFileText(state_->tailwind_config_editor_data_.root_folder_path_ + config_files_combobox_->currentText().toUTF8()) << "\n\n";
+
+        // file << "/* Define custom variants */\n";
+        // file << "@custom-variant dark (&:where(.dark, .dark *));\n\n";
 
         // std::cout << "\n\nFile written successfully: " << "../static/stylus-resources/tailwind4/input.css\n\n";
         file.close();
 
-        // std::cout << "\n\nGenerating CSS file...\n\n";
+        std::cout << "\n\nGenerating CSS file...\n\n";
         auto session_id = Wt::WApplication::instance()->sessionId();
         Wt::WServer::instance()->ioService().post([this, session_id](){
             std::system("cd ../static/stylus-resources/tailwind4 && npm run build");
@@ -353,6 +362,7 @@ namespace Stylus
                 Wt::WApplication::instance()->useStyleSheet(current_css_file_.toUTF8());
                 prev_css_file_ = current_css_file_;
                 Wt::WApplication::instance()->triggerUpdate();
+                std::cout << "\n\n CSS file generated successfully: " << current_css_file_ << "\n\n";       
                 output_editor_->setEditorText("static/tailwind.css", state_->getFileText("../static/tailwind.css"));
             }); 
         });

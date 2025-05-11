@@ -26,14 +26,14 @@ namespace Stylus
         // FilesManager("../static/stylus-resources/xml-templates/", "xml")
         FilesManager(state, state->xml_editor_data_, state->xml_node_->IntAttribute("sidebar-width"), state->xml_node_->Attribute("selected-file-path"))
     {
-
+        sidebar_->footer_->show();
         if(!state_->xml_node_->BoolAttribute("editor-open"))
         {
             editor_->hide();
         }
         auto temp_wrapper = grid_layout_->addWidget(std::make_unique<Wt::WContainerWidget>(), 0, 2);
         grid_layout_->setColumnResizable(1, true, Wt::WLength(state_->xml_node_->IntAttribute("editor-width"), Wt::LengthUnit::Pixel));
-        temp_wrapper->setStyleClass("p-[8px] stylus-background"); 
+        temp_wrapper->setStyleClass("p-[8px] stylus-background overflow-y-auto h-screen"); 
 
 
         auto temp_view = temp_wrapper->addWidget(std::make_unique<Wt::WTemplate>());
@@ -46,18 +46,19 @@ namespace Stylus
             Wt::WApplication::instance()->globalKeyWentDown().emit(e); // Emit the global key event
         });
 
+
         editor_checkbox->changed().connect(this, [=]()
         {
             state_->xml_node_->SetAttribute("editor-open", editor_checkbox->isChecked());
             state_->doc_.SaveFile(state_->file_path_.c_str());
             if (editor_checkbox->isChecked())
             {
-                editor_->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromRight, Wt::TimingFunction::EaseInOut, 5));
+                editor_->animateShow(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 500));
                 state_->xml_node_->SetAttribute("editor-open", "true");
             }
             else
             {
-                editor_->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromRight, Wt::TimingFunction::EaseInOut, 5) );
+                editor_->animateHide(Wt::WAnimation(Wt::AnimationEffect::SlideInFromLeft, Wt::TimingFunction::EaseInOut, 500));
                 state_->xml_node_->SetAttribute("editor-open", "false");
             }
             state_->doc_.SaveFile(state_->file_path_.c_str());
@@ -66,15 +67,18 @@ namespace Stylus
         file_selected().connect(this, [=]()
         {
             std::cout << "\nFile selected: " << selected_file_path_ << std::endl;
-            if(std::fstream(data_.root_folder_path_ + selected_file_path_).good() == false)
-            {
-                state_->xml_node_->SetAttribute("selected-file-path", "");
-                temp_view->setTemplateText("<div class='text-red-500'>File not found</div>", Wt::TextFormat::UnsafeXHTML);
-            }
-            else {
-                state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
-                temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
-            }
+            // if(std::fstream(data_.root_folder_path_ + selected_file_path_).good() == false)
+            // {
+            //     state_->xml_node_->SetAttribute("selected-file-path", "");
+            //     temp_view->setTemplateText("<div class='text-red-500'>File not found</div>", Wt::TextFormat::UnsafeXHTML);
+            // }
+            // else {
+            //     state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
+            //     temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
+            // }
+            std::string file_path = data_.root_folder_path_ + selected_file_path_;
+            state_->xml_node_->SetAttribute("selected-file-path", selected_file_path_.c_str());
+            temp_view->setTemplateText(editor_->getUnsavedText(), Wt::TextFormat::UnsafeXHTML);
             state_->doc_.SaveFile(state_->file_path_.c_str());
         });
         file_saved().connect(this, [=](Wt::WString file_path)

@@ -9,8 +9,9 @@
 .filesManager-menu {
 	@apply hover:bg-[#dbeafe] dark:hover:bg-[#2563eb];
 }
+
 .filesManager-menu-selected {
-		@apply bg-[#2563eb] hover:bg-[#2563eb] dark:bg-[#1e40af] dark:hover:bg-[#1e40af];
+	@apply bg-[#2563eb] hover:bg-[#2563eb] dark:bg-[#1e40af] dark:hover:bg-[#1e40af];
 }
 
 .Wt-item {
@@ -18,7 +19,7 @@
 }
 
 .Wt-selected {
-	@apply !bg-[#b9fca9] dark:!bg-[#a8ffaa] dark:font-bold dark:text-[#000];
+	@apply !bg-[#b9fca9] dark:!bg-[#a8ffaa] dark:font-[700] dark:text-[#000];
 }
 
 .unsaved-changes > .Wt-selected {

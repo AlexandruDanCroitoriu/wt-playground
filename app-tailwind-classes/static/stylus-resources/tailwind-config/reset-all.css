@@ -3,5 +3,5 @@
 
 /* Define custom theme */
 @theme {
-	
+  --*: initial;
 }
